@@ -36,7 +36,7 @@ const profile = {
   phone: "+1 (650) 537-7182",
   socials: [
     { label: "GitHub", href: "https://github.com/Edwardwang66", icon: Github },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/edward-wang/", icon: Linkedin },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/edwardwang123/", icon: Linkedin },
     { label: "Email", href: "mailto:wanghanqing66@gmail.com", icon: Mail },
   ],
   education: [
@@ -343,38 +343,64 @@ function Home({ go }) {
     <main className="max-w-5xl mx-auto px-6 sm:px-10">
       {/* Hero */}
       <section className="pt-24 sm:pt-32 pb-20 sm:pb-28">
-        <div className="flex items-center gap-2 text-xs text-neutral-500 mb-8">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          {profile.location}
-        </div>
-        <h1 className="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
-          {profile.tagline}
-        </h1>
-        <p className="mt-8 text-neutral-500 max-w-xl text-base sm:text-lg leading-relaxed">
-          {profile.role}. Hands-on with ROS/ROS2, perception-to-motion
-          integration, sensor fusion, and the messy parts of moving from
-          simulation to hardware.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => {
-              const el = document.getElementById("work");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white text-sm hover:bg-neutral-700 transition"
-          >
-            Selected work
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => go({ page: "about" })}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-300 text-neutral-900 text-sm hover:border-neutral-900 transition"
-          >
-            About me
-          </button>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 items-start">
+          <div className="sm:col-span-2">
+            <div className="flex items-center gap-2 text-xs text-neutral-500 mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              {profile.location}
+            </div>
+            <h1 className="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+              {profile.tagline}
+            </h1>
+            <p className="mt-8 text-neutral-500 max-w-xl text-base sm:text-lg leading-relaxed">
+              {profile.role}. Hands-on with ROS/ROS2, perception-to-motion
+              integration, sensor fusion, and the messy parts of moving from
+              simulation to hardware.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => {
+                  const el = document.getElementById("work");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white text-sm hover:bg-neutral-700 transition"
+              >
+                Selected work
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => go({ page: "about" })}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-300 text-neutral-900 text-sm hover:border-neutral-900 transition"
+              >
+                About me
+              </button>
+            </div>
+            <div className="mt-8 flex gap-4">
+              {profile.socials.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition"
+                  >
+                    <Icon className="w-5 h-5" />
+                    {s.label}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+          <div className="sm:col-span-1">
+            <img
+              src="/IMG_9036.JPG"
+              alt="Edward Wang"
+              className="w-full rounded-lg object-cover aspect-square shadow-lg"
+            />
+          </div>
         </div>
       </section>
 
