@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode
+.idea
+
+# Node / Vite (for vite-portfolio/)
+node_modules
+dist
+dist-ssr
+*.log
+dist/
+node_modules/
