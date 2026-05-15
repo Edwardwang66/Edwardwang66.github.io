@@ -394,12 +394,17 @@ function Home({ go }) {
               })}
             </div>
           </div>
-          <div className="sm:col-span-1">
-            <img
-              src="/IMG_9036.JPG"
-              alt="Edward Wang"
-              className="w-full rounded-lg object-cover aspect-square shadow-lg"
-            />
+          <div className="sm:col-span-1 flex justify-center">
+            <div className="relative w-full max-w-xs">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 to-blue-100/30 rounded-3xl blur-3xl opacity-50 -z-10"></div>
+              <div className="relative bg-white rounded-3xl overflow-hidden border border-neutral-200/60 shadow-2xl hover:shadow-3xl transition-shadow duration-300 p-1">
+                <img
+                  src="/IMG_9036.JPG"
+                  alt="Edward Wang"
+                  className="w-full aspect-square object-cover rounded-3xl"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -785,15 +790,28 @@ function About() {
         <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-6">
           About
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
-          I'm {profile.name}. I work on robots — from perception to control.
-        </h1>
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-12 gap-8 text-neutral-700 leading-relaxed">
-          <div className="sm:col-span-3" />
-          <div className="sm:col-span-9 space-y-5 text-base sm:text-lg">
-            {profile.bio.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-8 items-start">
+          <div className="sm:col-span-7">
+            <h1 className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+              I'm {profile.name}. I work on robots — from perception to control.
+            </h1>
+            <div className="mt-8 space-y-5 text-base sm:text-lg text-neutral-700 leading-relaxed">
+              {profile.bio.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </div>
+          <div className="sm:col-span-5 flex justify-center">
+            <div className="relative w-full max-w-xs">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 to-emerald-100/30 rounded-3xl blur-3xl opacity-50 -z-10"></div>
+              <div className="relative bg-white rounded-3xl overflow-hidden border border-neutral-200/60 shadow-2xl hover:shadow-3xl transition-shadow duration-300 p-1">
+                <img
+                  src="/IMG_9036.JPG"
+                  alt="Edward Wang"
+                  className="w-full aspect-square object-cover rounded-3xl"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
