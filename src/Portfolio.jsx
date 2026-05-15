@@ -343,7 +343,7 @@ function Home({ go }) {
     <main className="max-w-5xl mx-auto px-6 sm:px-10">
       {/* Hero */}
       <section className="pt-24 sm:pt-32 pb-20 sm:pb-28">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 items-start">
+        <div className="grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1fr)_10rem] sm:grid-cols-3 gap-8 sm:gap-12 items-start">
           <div className="sm:col-span-2">
             <div className="flex items-center gap-2 text-xs text-neutral-500 mb-8">
               <span className="relative flex h-2 w-2">
@@ -394,17 +394,12 @@ function Home({ go }) {
               })}
             </div>
           </div>
-          <div className="sm:col-span-1 flex justify-center">
-            <div className="relative w-full max-w-xs">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 to-blue-100/30 rounded-3xl blur-3xl opacity-50 -z-10"></div>
-              <div className="relative bg-white rounded-3xl overflow-hidden border border-neutral-200/60 shadow-2xl hover:shadow-3xl transition-shadow duration-300 p-1">
-                <img
-                  src="/IMG_9036.JPG"
-                  alt="Edward Wang"
-                  className="w-full aspect-square object-cover rounded-3xl"
-                />
-              </div>
-            </div>
+          <div className="sm:col-span-1 flex items-start justify-center min-[520px]:justify-end pt-2 sm:pt-8">
+            <img
+              src="/IMG_9036.JPG"
+              alt="Edward Wang"
+              className="w-40 h-40 sm:w-64 sm:h-64 object-cover rounded-2xl shadow-xl"
+            />
           </div>
         </div>
       </section>
@@ -791,17 +786,7 @@ function About() {
           About
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-8 items-start">
-          <div className="sm:col-span-7">
-            <h1 className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
-              I'm {profile.name}. I work on robots — from perception to control.
-            </h1>
-            <div className="mt-8 space-y-5 text-base sm:text-lg text-neutral-700 leading-relaxed">
-              {profile.bio.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-          </div>
-          <div className="sm:col-span-5 flex justify-center">
+          <div className="sm:col-span-5 flex justify-center sm:justify-start">
             <div className="relative w-full max-w-xs">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-100/30 to-emerald-100/30 rounded-3xl blur-3xl opacity-50 -z-10"></div>
               <div className="relative bg-white rounded-3xl overflow-hidden border border-neutral-200/60 shadow-2xl hover:shadow-3xl transition-shadow duration-300 p-1">
@@ -811,6 +796,16 @@ function About() {
                   className="w-full aspect-square object-cover rounded-3xl"
                 />
               </div>
+            </div>
+          </div>
+          <div className="sm:col-span-7">
+            <h1 className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+              I'm {profile.name}. I work on robots — from perception to control.
+            </h1>
+            <div className="mt-8 space-y-5 text-base sm:text-lg text-neutral-700 leading-relaxed">
+              {profile.bio.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
             </div>
           </div>
         </div>
