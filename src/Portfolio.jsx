@@ -102,7 +102,7 @@ const profile = {
   },
   coursework: {
     "Robotics & AI":
-      "ECE 276A Sensing and Estimation in Robotics · ECE 148 Introduction to Autonomous Vehicles · ECE 176 Deep Learning and Applications",
+      "ECE 276A Sensing and Estimation in Robotics · ECE 276B Planning and Learning in Robotics · ECE 148 Introduction to Autonomous Vehicles · ECE 176 Deep Learning and Applications",
     "Computer Vision": "CSE 152A/B Introduction to Computer Vision",
     "Systems & Hardware":
       "ECE 111 Advanced Digital Design · CSE 141 Computer Architecture · CSE 141L Computer Architecture Project · CSE 140 Digital Systems Design",
@@ -250,8 +250,79 @@ const projects = [
     ],
   },
   {
-    id: "embedded-digital",
+    id: "planning-control",
     no: "05",
+    year: "2025",
+    title: "Planning and Learning in Robotics",
+    role: "Course project · MDPs, planning & reinforcement learning",
+    tags: ["Motion planning", "Reinforcement learning", "MDP"],
+    summary:
+      "Discrete and continuous planning across two projects — MDP-based policy learning in grid-world environments and reinforcement learning across diverse physics simulations.",
+    cover: "from-indigo-900 via-violet-700 to-indigo-400",
+    context: "UC San Diego · ECE 276B",
+    overview:
+      "Two-project course spanning the core algorithms behind robot planning. PR1 covered discrete MDPs and value iteration in the MiniGrid DoorKey environment; PR2 applied policy-gradient reinforcement learning to a set of continuous, physics-based simulation environments.",
+    challenge:
+      "Bridge the gap between clean algorithmic definitions — Bellman equations, policy gradients — and environments that are stochastic, partially observable, or physically complex enough to expose implementation subtleties.",
+    approach:
+      "PR1: Implemented value iteration and policy extraction over the full MDP, then tested across DoorKey maps of increasing size (5×5 through 10×10) and varying key-door configurations including shortcut and direct-route variants. PR2: Applied a policy-gradient method to seven benchmark environments ranging from 2D games (Flappy Bird, Maze, Monza) to 3D manipulation tasks (Single Cube, Tower, Window, Room), tuning hyper-parameters per environment.",
+    outcome:
+      "Solid intuition for when discrete planning is tractable and when it isn't, and direct experience debugging RL policies across environments with very different reward structures and dynamics.",
+    stack: ["Python", "NumPy", "MiniGrid", "Reinforcement learning", "Policy gradient", "MDP"],
+    links: [],
+    gallery: [],
+    media: {
+      type: "pr-reports",
+      coverImage: "/ece276b/pr1/gif/partA/doorkey.gif",
+      reports: [
+        {
+          name: "PR1 — Discrete Planning & MDPs",
+          pdf: { name: "PR1 Report", src: "/ece276b/pr1/report.pdf" },
+          sections: [
+            {
+              label: "Part A — DoorKey Environments",
+              gifs: [
+                { src: "/ece276b/pr1/gif/partA/doorkey.gif", label: "DoorKey overview" },
+                { src: "/ece276b/pr1/gif/partA/doorkey-5x5-normal.gif", label: "5×5 Normal" },
+                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-shortcut.gif", label: "6×6 Shortcut" },
+                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-direct.gif", label: "8×8 Direct" },
+                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-shortcut.gif", label: "8×8 Shortcut" },
+              ],
+            },
+            {
+              label: "Part B — 10×10 DoorKey",
+              gifs: [
+                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-1.gif", label: "Episode 1" },
+                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-5.gif", label: "Episode 5" },
+                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-15.gif", label: "Episode 15" },
+              ],
+            },
+          ],
+        },
+        {
+          name: "PR2 — Reinforcement Learning Across Environments",
+          pdf: { name: "PR2 Report", src: "/ece276b/pr2/ECE276B_PR2_report.pdf" },
+          sections: [
+            {
+              label: "All Environments",
+              gifs: [
+                { src: "/ece276b/pr2/gifs/E1_Flappy_Bird.gif", label: "E1 Flappy Bird" },
+                { src: "/ece276b/pr2/gifs/E2_Maze.gif", label: "E2 Maze" },
+                { src: "/ece276b/pr2/gifs/E3_Monza.gif", label: "E3 Monza" },
+                { src: "/ece276b/pr2/gifs/E4_Single_Cube.gif", label: "E4 Single Cube" },
+                { src: "/ece276b/pr2/gifs/E5_Tower.gif", label: "E5 Tower" },
+                { src: "/ece276b/pr2/gifs/E6_Window.gif", label: "E6 Window" },
+                { src: "/ece276b/pr2/gifs/E7_Room.gif", label: "E7 Room" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "embedded-digital",
+    no: "06",
     year: "2024 — 2025",
     title: "Embedded & Digital Control Systems",
     role: "Course projects · Hardware design",
@@ -540,7 +611,7 @@ function ProjectDetail({ id, go }) {
         <img
           src={project.media.coverImage}
           alt="Project cover"
-          className="mt-12 aspect-[16/9] w-full rounded-lg object-contain"
+          className={project.media.type === "pr-reports" ? "mt-12 w-64 h-64 rounded-lg object-contain mx-auto" : "mt-12 aspect-[16/9] w-full rounded-lg object-contain"}
         />
       ) : project.media && project.media.type === "images" && project.media.files[0] ? (
         <img
@@ -709,6 +780,52 @@ function ProjectDetail({ id, go }) {
                     width="100%"
                     height="600px"
                   />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {project.media.type === "pr-reports" && (
+            <div className="space-y-16">
+              {project.media.reports.map((report, ri) => (
+                <div key={ri}>
+                  <h3 className="font-serif text-xl text-neutral-900 mb-8">{report.name}</h3>
+
+                  {/* GIF sections */}
+                  {report.sections.map((section, si) => (
+                    <div key={si} className="mb-10">
+                      <div className="text-xs uppercase tracking-[0.15em] text-neutral-400 mb-4">
+                        {section.label}
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {section.gifs.map((gif, gi) => (
+                          <div key={gi} className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
+                            <img
+                              src={gif.src}
+                              alt={gif.label}
+                              className="w-full object-contain"
+                            />
+                            <div className="px-3 py-2 text-xs text-neutral-500 bg-neutral-50">
+                              {gif.label}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Embedded PDF */}
+                  <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
+                    <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
+                      <div className="text-sm font-medium text-neutral-900">{report.pdf.name}</div>
+                    </div>
+                    <embed
+                      src={report.pdf.src + "#toolbar=1&navpanes=0&scrollbar=1"}
+                      type="application/pdf"
+                      width="100%"
+                      height="700px"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
