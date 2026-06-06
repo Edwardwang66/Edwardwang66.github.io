@@ -181,8 +181,8 @@ const projects = [
       type: "mixed",
       coverImage: "/c12.ai/1.JPG",
       items: [
-        { type: "video", src: "/c12.ai/IMG_1671.mov", label: "Lab operations demo" },
-        { type: "video", src: "/c12.ai/IMG_1672.mov", label: "Robotic arm in action" },
+        { type: "video", src: "/c12.ai/IMG_1671.mp4", label: "Lab operations demo" },
+        { type: "video", src: "/c12.ai/IMG_1672.mp4", label: "Robotic arm in action" },
       ],
     },
   },
@@ -725,9 +725,12 @@ function ProjectDetail({ id, go }) {
                         controls
                         muted
                         autoPlay
-                        className="w-full h-full object-cover aspect-video"
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="w-full aspect-video object-contain bg-black"
                       >
-                        <source src={item.src} />
+                        <source src={item.src} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                     )}
@@ -750,17 +753,7 @@ function ProjectDetail({ id, go }) {
                 <div className="mt-8 space-y-6">
                   <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">Research Reports</div>
                   {project.media.pdfs.map((file, i) => (
-                    <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                        <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                      </div>
-                      <embed
-                        src={file.src + "#toolbar=1&navpanes=0"}
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                      />
-                    </div>
+                    <PdfViewer key={i} name={file.name} src={file.src} />
                   ))}
                 </div>
               )}
@@ -770,17 +763,7 @@ function ProjectDetail({ id, go }) {
           {project.media.type === "pdfs" && (
             <div className="space-y-6">
               {project.media.files.map((file, i) => (
-                <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                  <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                    <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                  </div>
-                  <embed
-                    src={file.src + "#toolbar=1&navpanes=0"}
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                  />
-                </div>
+                <PdfViewer key={i} name={file.name} src={file.src} />
               ))}
             </div>
           )}
@@ -815,17 +798,7 @@ function ProjectDetail({ id, go }) {
                   ))}
 
                   {/* Embedded PDF */}
-                  <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                    <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                      <div className="text-sm font-medium text-neutral-900">{report.pdf.name}</div>
-                    </div>
-                    <embed
-                      src={report.pdf.src + "#toolbar=1&navpanes=0&scrollbar=1"}
-                      type="application/pdf"
-                      width="100%"
-                      height="700px"
-                    />
-                  </div>
+                  <PdfViewer name={report.pdf.name} src={report.pdf.src} height="700px" />
                 </div>
               ))}
             </div>
@@ -889,6 +862,49 @@ function Meta({ label, value }) {
         {label}
       </div>
       <div className="text-neutral-900">{value}</div>
+    </div>
+  );
+}
+
+/**
+ * Inline PDF viewer with a reliable fallback. Many browsers — especially on
+ * mobile — refuse to render PDFs inside <embed>/<object>, leaving a blank box.
+ * The header always exposes an "Open" link, and the <object> degrades to a
+ * visible "open in a new tab" message when inline rendering isn't available.
+ */
+function PdfViewer({ name, src, height = "600px" }) {
+  return (
+    <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
+      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100 flex items-center justify-between gap-3">
+        <div className="text-sm font-medium text-neutral-900">{name}</div>
+        <a
+          href={src}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-900 transition whitespace-nowrap"
+        >
+          Open <ArrowUpRight className="w-3 h-3" />
+        </a>
+      </div>
+      <object
+        data={src + "#toolbar=1&navpanes=0"}
+        type="application/pdf"
+        style={{ width: "100%", height }}
+        className="block"
+      >
+        <div className="px-4 py-10 text-sm text-neutral-600 text-center">
+          This browser can't display the PDF inline.{" "}
+          <a
+            href={src}
+            target="_blank"
+            rel="noreferrer"
+            className="text-neutral-900 underline underline-offset-2 hover:decoration-neutral-900"
+          >
+            Open the PDF in a new tab
+          </a>
+          .
+        </div>
+      </object>
     </div>
   );
 }
