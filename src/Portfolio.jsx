@@ -8,6 +8,8 @@ import {
   Linkedin,
   ExternalLink,
   Phone,
+  FileText,
+  Download,
 } from "lucide-react";
 
 /**
@@ -797,8 +799,8 @@ function ProjectDetail({ id, go }) {
                     </div>
                   ))}
 
-                  {/* Embedded PDF */}
-                  <PdfViewer name={report.pdf.name} src={report.pdf.src} height="700px" />
+                  {/* Report PDF */}
+                  <PdfViewer name={report.pdf.name} src={report.pdf.src} />
                 </div>
               ))}
             </div>
@@ -867,44 +869,38 @@ function Meta({ label, value }) {
 }
 
 /**
- * Inline PDF viewer with a reliable fallback. Many browsers — especially on
- * mobile — refuse to render PDFs inside <embed>/<object>, leaving a blank box.
- * The header always exposes an "Open" link, and the <object> degrades to a
- * visible "open in a new tab" message when inline rendering isn't available.
+ * PDF as a clean document card. Inline <embed>/<object> PDFs render as a blank
+ * box on any browser/device without a built-in PDF plugin (common on mobile and
+ * locked-down desktops) and force-download large files on page load. This card
+ * always renders, loads instantly, and gives clear Open / Download actions.
  */
-function PdfViewer({ name, src, height = "600px" }) {
+function PdfViewer({ name, src }) {
   return (
-    <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100 flex items-center justify-between gap-3">
-        <div className="text-sm font-medium text-neutral-900">{name}</div>
+    <div className="border border-neutral-200 rounded-lg bg-neutral-50 p-5 flex items-center gap-4">
+      <div className="shrink-0 w-12 h-12 rounded-md bg-neutral-900 text-white flex items-center justify-center">
+        <FileText className="w-6 h-6" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-neutral-900 truncate">{name}</div>
+        <div className="text-xs text-neutral-500 mt-0.5">PDF document</div>
+      </div>
+      <div className="shrink-0 flex items-center gap-2">
         <a
           href={src}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-900 transition whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-900 text-white text-xs hover:bg-neutral-700 transition whitespace-nowrap"
         >
-          Open <ArrowUpRight className="w-3 h-3" />
+          Open <ArrowUpRight className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href={src}
+          download
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-300 text-neutral-900 text-xs hover:border-neutral-900 transition whitespace-nowrap"
+        >
+          <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Download</span>
         </a>
       </div>
-      <object
-        data={src + "#toolbar=1&navpanes=0"}
-        type="application/pdf"
-        style={{ width: "100%", height }}
-        className="block"
-      >
-        <div className="px-4 py-10 text-sm text-neutral-600 text-center">
-          This browser can't display the PDF inline.{" "}
-          <a
-            href={src}
-            target="_blank"
-            rel="noreferrer"
-            className="text-neutral-900 underline underline-offset-2 hover:decoration-neutral-900"
-          >
-            Open the PDF in a new tab
-          </a>
-          .
-        </div>
-      </object>
     </div>
   );
 }
