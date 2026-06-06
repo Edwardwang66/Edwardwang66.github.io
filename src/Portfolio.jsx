@@ -284,56 +284,19 @@ const projects = [
             {
               label: "Part A — DoorKey Environments",
               gifs: [
-                { src: "/ece276b/pr1/gif/partA/doorkey.gif", label: "DoorKey Overview" },
-                { src: "/ece276b/pr1/gif/partA/smoke-test.gif", label: "Smoke Test" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-5x5-normal.gif", label: "5×5 Normal" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-normal.gif", label: "6×6 Normal" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-direct.gif", label: "6×6 Direct" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-shortcut.gif", label: "6×6 Shortcut" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-normal.gif", label: "8×8 Normal" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-direct.gif", label: "8×8 Direct" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-shortcut.gif", label: "8×8 Shortcut" },
+                {
+                  src: "/ece276b/pr1/gif/partA-all.gif",
+                  label: "All 9 DoorKey environments — plays each run end to end, then the next",
+                },
               ],
             },
             {
               label: "Part B — 10×10 DoorKey (Random Maps)",
               gifs: [
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-1.gif", label: "Map 1" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-2.gif", label: "Map 2" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-3.gif", label: "Map 3" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-4.gif", label: "Map 4" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-5.gif", label: "Map 5" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-6.gif", label: "Map 6" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-7.gif", label: "Map 7" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-8.gif", label: "Map 8" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-9.gif", label: "Map 9" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-10.gif", label: "Map 10" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-11.gif", label: "Map 11" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-12.gif", label: "Map 12" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-13.gif", label: "Map 13" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-14.gif", label: "Map 14" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-15.gif", label: "Map 15" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-16.gif", label: "Map 16" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-17.gif", label: "Map 17" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-18.gif", label: "Map 18" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-19.gif", label: "Map 19" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-20.gif", label: "Map 20" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-21.gif", label: "Map 21" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-22.gif", label: "Map 22" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-23.gif", label: "Map 23" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-24.gif", label: "Map 24" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-25.gif", label: "Map 25" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-26.gif", label: "Map 26" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-27.gif", label: "Map 27" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-28.gif", label: "Map 28" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-29.gif", label: "Map 29" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-30.gif", label: "Map 30" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-31.gif", label: "Map 31" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-32.gif", label: "Map 32" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-33.gif", label: "Map 33" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-34.gif", label: "Map 34" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-35.gif", label: "Map 35" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-36.gif", label: "Map 36" },
+                {
+                  src: "/ece276b/pr1/gif/partB-all.gif",
+                  label: "All 36 random 10×10 maps — plays each run end to end, then the next",
+                },
               ],
             },
           ],
@@ -819,6 +782,20 @@ function ProjectDetail({ id, go }) {
                       <div className="text-xs uppercase tracking-[0.15em] text-neutral-400 mb-4">
                         {section.label}
                       </div>
+                      {section.gifs.length === 1 ? (
+                        <figure className="max-w-sm mx-auto">
+                          <div className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
+                            <img
+                              src={section.gifs[0].src}
+                              alt={section.gifs[0].label}
+                              className="w-full object-contain [image-rendering:pixelated]"
+                            />
+                          </div>
+                          <figcaption className="mt-2 text-center text-xs text-neutral-500">
+                            {section.gifs[0].label}
+                          </figcaption>
+                        </figure>
+                      ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {section.gifs.map((gif, gi) => (
                           <div key={gi} className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
@@ -833,6 +810,7 @@ function ProjectDetail({ id, go }) {
                           </div>
                         ))}
                       </div>
+                      )}
                     </div>
                   ))}
 
