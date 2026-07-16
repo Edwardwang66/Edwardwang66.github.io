@@ -12,3 +12,7 @@ dist-ssr
 *.log
 dist/
 node_modules/
+
+# Local Codex execution workspaces and review artifacts
+.worktrees/
+.superpowers/
