@@ -1,6 +1,10 @@
 # Edward Wang Portfolio Redesign
 
-Status: approved visual direction
+Status: superseded on 2026-07-17
+
+Do not implement this direction. It is superseded by
+`docs/superpowers/specs/2026-07-17-portfolio-original-plus-design.md` after
+visual review of the live original site.
 
 Date: 2026-07-16
 

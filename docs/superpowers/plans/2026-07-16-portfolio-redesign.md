@@ -1,5 +1,10 @@
 # Quiet Personal Portfolio Redesign Implementation Plan
 
+Status: superseded on 2026-07-17. Do not execute this plan. The approved
+direction is now defined in
+`docs/superpowers/specs/2026-07-17-portfolio-original-plus-design.md`; a new
+implementation plan must be written from that specification after user review.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
 
 **Goal:** Rebuild Edward Wang's portfolio in the approved Quiet Personal A+ direction while preserving its content, three-view state navigation, and complete project media.
