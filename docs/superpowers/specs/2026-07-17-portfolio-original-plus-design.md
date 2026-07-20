@@ -1,8 +1,10 @@
 # Edward Wang Portfolio — Original+ Design Specification
 
-Status: approved visual direction; awaiting specification review
+Status: approved visual direction and Apple craft revision; awaiting specification review
 
 Date: 2026-07-17
+
+Revised: 2026-07-20
 
 ## 1. Supersession and implementation foundation
 
@@ -52,6 +54,8 @@ The Original+ prototype established the approved design read:
 - Text-led project index with only one controlled image expanded at a time
 - Blue and gold used as small markers, not as a full theme
 - Bioyond Robotics presented as the current practice
+- An invisible Apple craft layer for response, motion, material, and typography
+  precision without adopting an Apple product-page aesthetic
 
 ## 4. Design principles
 
@@ -73,12 +77,15 @@ Do not introduce:
 - A fully sans-serif visual system
 - Dark control-room styling
 - Large blue or gold surfaces
-- Bento grids, dashboard cards, glass effects, or dense fact panels
+- Bento grids, dashboard cards, decorative glass cards, or dense fact panels;
+  functional translucency is reserved for the existing navigation only
 - Crop marks, numbered portrait labels, offset backing plates, or theatrical
   photo treatments
 - Full-width image walls or equal visual weight for every project
 - Scanning lines, continuous drift, parallax, marquee, cursor effects, or
   decorative entrance sequences
+- SF Pro or another Apple-identifying font replacement, device mockups,
+  hardware silhouettes, or product-launch-style scroll storytelling
 - Invented technical metrics, fake interface diagrams, or exaggerated claims
 - Framework migration or a new routing system
 
@@ -101,15 +108,25 @@ skill group while keeping existing education, experience, and project data.
 
 ### 7.1 Navigation
 
-Keep the original navigation composition:
+Keep the original navigation composition and give only this structural layer a
+restrained Apple-style material treatment:
 
-- Sticky white/translucent header with subtle backdrop blur
+- Sticky header using approximately 76–86% white, `18–22px` backdrop blur, and
+  restrained saturation no higher than approximately 140%
 - Black circular `EW` mark and `Edward Wang` label on desktop
 - `Work` and `About` controls on the right
 - Active view shown with the original restrained outlined pill treatment
 - Header height approximately 64–66px
+- A 10–14px scroll-edge fade appears only while content passes beneath the
+  header after approximately 4px of page scroll, replacing a permanently
+  visible hard divider
 
 Do not add a contact CTA, theme switcher, archive label, or secondary nav row.
+Do not apply the translucent material to project panels, cards, images, or page
+sections, and do not stack translucent surfaces.
+When `backdrop-filter` is unavailable, fall back to an approximately 96% opaque
+white header with a subtle neutral lower border; navigation legibility may not
+depend on blur support.
 
 ### 7.2 Hero
 
@@ -220,6 +237,14 @@ The trigger owns `aria-expanded` and `aria-controls`; the panel has the matching
 `id`. `Open project` is a normal link inside the sibling panel and is never
 nested inside the trigger. Inactive panels must be removed from the tab order
 and accessibility tree after their closing transition.
+
+Compact controls such as navigation pills and hero actions respond on
+pointer-down with a scale of approximately `0.98–0.99`, settling within
+approximately 80–100ms. Keyboard activation preserves the visible focus ring
+and receives an equivalent immediate color response without requiring scale.
+Full-width project triggers do not scale; they respond immediately
+through background tone, active number, and at most a 2px arrow movement so the
+document never appears to jump.
 
 #### Expanded content
 
@@ -383,6 +408,13 @@ blue-and-gold theme.
 - Project index titles: approximately 24–32px
 - Labels and metadata: approximately 9–12px
 - Normal body measure: approximately 60–70 characters
+- Enable `font-optical-sizing: auto` where the loaded font supports it
+- Hero tracking: approximately `-0.02em` to `-0.03em`
+- Project-title tracking: approximately `-0.012em` to `-0.018em`
+- Body tracking: approximately `0`; small uppercase labels may use
+  approximately `0.08em` to `0.14em`
+- Type and related spacing use responsive `rem`, `em`, and `clamp()` values so
+  browser text-size changes do not break the layout
 
 Do not replace this pairing with Helvetica-only typography.
 
@@ -396,22 +428,55 @@ Do not replace this pairing with Helvetica-only typography.
 - Rounded corners are reserved for the portrait, compact media, and the
   original pill controls
 - Ordinary content is not wrapped in cards
+- The navigation is the only translucent material; content surfaces remain
+  opaque white or the approved soft support color
 
 ## 11. Motion
 
-The approved motion language is M1 archive unfold, adapted to the original
-site:
+The approved motion language remains M1 archive unfold, but its behavior follows
+the invisible Apple craft layer rather than a fixed cinematic timeline.
 
-- Project drawer: approximately 520–600ms
-- Image reveal: clip or mask plus opacity, approximately 520–650ms
-- Hover and link response: approximately 120–180ms
-- Navigation and project arrows may move by only a few pixels
-- No layout bounce after media loads; reserve image dimensions
+### 11.1 Immediate response
 
-Motion must use a calm ease such as `cubic-bezier(.2,.78,.2,1)`.
+- Visual feedback begins on pointer-down, not after click release.
+- Compact controls use the 80–100ms press treatment defined above.
+- Project triggers remain fully operable while a previous disclosure is moving.
+- The 900ms mobile observer pause suppresses automatic scroll activation only;
+  it never blocks direct tap, keyboard, or pointer input.
 
-With `prefers-reduced-motion: reduce`, drawers may change state immediately and
-all nonessential animation is removed.
+### 11.2 Interruptible disclosure spring
+
+- Project geometry uses a critically damped spring with damping ratio `1.0`,
+  response approximately `0.36–0.42s`, and no overshoot.
+- A new project selection retargets the current on-screen presentation value;
+  it does not wait for the previous open or close animation to finish.
+- Rapid A → B → A switching must preserve continuity without a jump, delayed
+  input, or velocity brick wall.
+- The image reveal may combine the spring-driven disclosure with a restrained
+  clip or mask and opacity change, but it may not bounce, zoom, or drift.
+- Entry and exit use the same anchored path: evidence opens from its project row
+  and returns to that row.
+
+### 11.3 Performance boundaries
+
+- Use one shared, local `requestAnimationFrame` spring primitive for disclosure
+  progress; do not add Framer Motion or another heavyweight animation framework
+  solely for this interaction.
+- Measure disclosure content only when its target changes. Do not read layout on
+  every document scroll frame beyond the existing trigger-position calculation.
+- Use transform and opacity for the visual layer where possible, reserve media
+  dimensions, and remove `will-change` after motion settles.
+- Only the single navigation layer uses backdrop blur.
+
+### 11.4 Motion and material preferences
+
+- `prefers-reduced-motion: reduce`: replace the spring and spatial reveal with a
+  160–200ms opacity cross-fade or an immediate state change.
+- `prefers-reduced-transparency: reduce`: use an opaque white navigation with no
+  backdrop blur or saturation.
+- `prefers-contrast: more`: use an opaque or near-opaque navigation, darker text,
+  and a defined contrasting lower border instead of the soft edge fade.
+- Do not add sound, vibration, simulated haptics, or looping ambient motion.
 
 ## 12. Responsive behavior
 
@@ -448,6 +513,11 @@ Content remains data-driven. The project active state is a single project ID or
 index shared by click, keyboard, and mobile scroll activation. There must not be
 independent booleans that allow multiple drawers to remain open.
 
+Motion state is separate from content state: one shared disclosure primitive
+receives the active project ID and retargets from its current presentation
+value. Components must not create per-project timers or block interaction until
+an animation callback finishes.
+
 ## 14. Accessibility and fallbacks
 
 - Project rows are semantic buttons with `aria-expanded` and a controlled panel
@@ -464,6 +534,8 @@ independent booleans that allow multiple drawers to remain open.
 - Contrast for body text and controls meets WCAG AA
 - The green availability indicator is accompanied by text and is not the sole
   carrier of status
+- Reduced motion, reduced transparency, and increased contrast each have an
+  independent fallback; one preference must not be used as a proxy for another
 
 ## 15. Validation and acceptance
 
@@ -480,6 +552,10 @@ The implementation is acceptable when all of the following pass:
 - Desktop click and keyboard activation switch the active project correctly.
 - Mobile scrolling opens projects sequentially in both directions without
   moving the user's scroll position.
+- Compact controls visibly respond by the next rendered frame after
+  pointer-down, while full-width project rows remain geometrically stable.
+- Rapid A → B → A project changes remain interruptible, continuous, and free of
+  bounce or input lockout.
 - No homepage project image exceeds the approved controlled scale.
 - Project detail Outcome appears before optional extra evidence.
 - Project lead media and evidence obey role-specific size limits.
@@ -488,5 +564,6 @@ The implementation is acceptable when all of the following pass:
 - Desktop visual checks pass at 1440px and 1024px.
 - Mobile visual checks pass at 390px and 320px.
 - Keyboard navigation, focus visibility, and reduced motion are verified.
+- Reduced-transparency and increased-contrast navigation fallbacks are verified.
 - There is no horizontal overflow.
 - `npm test`, the production build, and end-to-end tests pass.
