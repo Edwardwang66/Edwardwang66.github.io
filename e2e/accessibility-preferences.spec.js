@@ -20,6 +20,18 @@ test("keyboard focus stays visible and disclosure semantics remain related", asy
   await expect(trigger).toBeFocused();
 });
 
+test("programmatic project heading focus does not resemble a control", async ({ page }) => {
+  await page.goto("/");
+  const openProject = page.getByRole("link", { name: "Open project", exact: true });
+  await openProject.focus();
+  await page.keyboard.press("Enter");
+  const title = page.locator("#project-title");
+  await expect(title).toBeFocused();
+  expect(
+    await title.evaluate((node) => getComputedStyle(node).outlineStyle)
+  ).toBe("none");
+});
+
 test("reduced motion is immediate and independent", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

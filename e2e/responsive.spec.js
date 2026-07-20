@@ -4,6 +4,7 @@ import {
   expectEditorialFonts,
   expectNoHorizontalOverflow,
   mediaBox,
+  openProject,
 } from "./helpers.js";
 
 for (const viewport of [
@@ -56,3 +57,13 @@ for (const viewport of [
     }
   });
 }
+
+test("tablet project facts keep a two-column editorial rhythm", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto("/");
+  await openProject(page, "planning-control");
+  const columns = await page.locator(".project-fact").evaluateAll((facts) =>
+    [...new Set(facts.map((fact) => Math.round(fact.getBoundingClientRect().left)))]
+  );
+  expect(columns).toHaveLength(2);
+});
