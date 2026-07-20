@@ -85,7 +85,7 @@ describe("portfolio baseline", () => {
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
     clock.advance(16);
 
-    fireEvent.click(screen.getByRole("button", { name: /Next project/ }));
+    fireEvent.click(screen.getByRole("link", { name: /Next project/ }));
     expect(document.title).toBe(
       "Vision-Guided Robotic Arm for Automated Lab Operations — Edward Wang"
     );

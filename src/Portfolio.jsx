@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
   Mail,
-  ExternalLink,
   Phone,
 } from "lucide-react";
 import { socialIcons } from "./components/socialIcons.js";
 import SiteChrome from "./components/SiteChrome.jsx";
 import { profile, projects } from "./data/portfolio.js";
 import HomePage from "./pages/HomePage.jsx";
+import ProjectPage from "./pages/ProjectPage.jsx";
 
 /**
  * Edward Wang — robotics & controls portfolio.
@@ -20,363 +18,6 @@ import HomePage from "./pages/HomePage.jsx";
  *
  * Content data lives in `src/data/portfolio.js`.
  */
-
-/* --------------------------------- helpers -------------------------------- */
-
-function classNames(...c) {
-  return c.filter(Boolean).join(" ");
-}
-
-
-
-/* --------------------------------- Project --------------------------------- */
-
-function ProjectDetail({ id, go }) {
-  const project = projects.find((p) => p.id === id) ?? projects[0];
-  const idx = projects.findIndex((p) => p.id === project.id);
-  const next = projects[(idx + 1) % projects.length];
-
-  return (
-    <main className="max-w-5xl mx-auto px-6 sm:px-10 pb-24">
-      <button
-        onClick={() => go({ page: "home" })}
-        className="mt-10 inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition"
-      >
-        <ArrowLeft className="w-4 h-4" /> All work
-      </button>
-
-      {/* Header */}
-      <header className="pt-12 pb-10 border-b border-neutral-200">
-        <div className="flex items-center gap-3 text-xs text-neutral-500 uppercase tracking-[0.2em]">
-          <span>{project.no}</span>
-          <span>·</span>
-          <span>{project.year}</span>
-          <span>·</span>
-          <span>{project.context}</span>
-        </div>
-        <h1
-          tabIndex="-1"
-          className="mt-4 font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl"
-        >
-          {project.title}
-        </h1>
-        <p className="mt-5 text-neutral-500 max-w-2xl text-base sm:text-lg">
-          {project.summary}
-        </p>
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-          <Meta label="Role" value={project.role} />
-          <Meta label="Year" value={project.year} />
-          <Meta label="Stack" value={project.stack.slice(0, 3).join(", ")} />
-          <div>
-            <div className="text-xs text-neutral-400 uppercase tracking-wider mb-1">
-              Links
-            </div>
-            <div className="flex flex-col gap-1">
-              {project.links.length === 0 && (
-                <span className="text-neutral-400 text-xs">
-                  Available on request
-                </span>
-              )}
-              {project.links.map((l) => (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  className="inline-flex items-center gap-1 text-neutral-900 hover:underline"
-                >
-                  {l.label} <ExternalLink className="w-3 h-3" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Cover */}
-      {project.media?.coverImage ? (
-        <img
-          src={project.media.coverImage}
-          alt="Project cover"
-          className={project.media.type === "pr-reports" ? "mt-12 w-64 h-64 rounded-lg object-contain mx-auto" : "mt-12 aspect-[16/9] w-full rounded-lg object-contain"}
-        />
-      ) : project.media && project.media.type === "images" && project.media.files[0] ? (
-        <img
-          src={project.media.files[0]}
-          alt="Project cover"
-          className="mt-12 aspect-[16/9] w-full rounded-lg object-contain"
-        />
-      ) : project.media && project.media.type === "mixed" ? (
-        (() => {
-          const firstImage = project.media.items?.find(item => item.type === "image");
-          return firstImage ? (
-            <img
-              src={firstImage.src}
-              alt="Project cover"
-              className="mt-12 aspect-[16/9] w-full rounded-lg object-contain"
-            />
-          ) : (
-            <div
-              className={classNames(
-                "mt-12 aspect-[16/9] w-full rounded-lg bg-gradient-to-br",
-                project.cover
-              )}
-            />
-          );
-        })()
-      ) : (
-        <div
-          className={classNames(
-            "mt-12 aspect-[16/9] w-full rounded-lg bg-gradient-to-br",
-            project.cover
-          )}
-        />
-      )}
-
-      {/* Body */}
-      <article className="mt-16 grid grid-cols-1 sm:grid-cols-12 gap-8">
-        <div className="sm:col-span-3">
-          <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Overview
-          </div>
-        </div>
-        <p className="sm:col-span-9 text-neutral-700 leading-relaxed text-base sm:text-lg">
-          {project.overview}
-        </p>
-      </article>
-
-      <article className="mt-16 grid grid-cols-1 sm:grid-cols-12 gap-8">
-        <div className="sm:col-span-3">
-          <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Challenge
-          </div>
-        </div>
-        <p className="sm:col-span-9 text-neutral-700 leading-relaxed">
-          {project.challenge}
-        </p>
-      </article>
-
-      <article className="mt-16 grid grid-cols-1 sm:grid-cols-12 gap-8">
-        <div className="sm:col-span-3">
-          <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Approach
-          </div>
-        </div>
-        <p className="sm:col-span-9 text-neutral-700 leading-relaxed">
-          {project.approach}
-        </p>
-      </article>
-
-      {/* Gallery */}
-      {!project.media && (
-        <section className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {project.gallery?.map((g, i) => (
-            <div
-              key={i}
-              className={classNames(
-                "aspect-[4/5] rounded-md bg-gradient-to-br",
-                g
-              )}
-            />
-          ))}
-        </section>
-      )}
-
-      {/* Media Section */}
-      {project.media && (
-        <section className="mt-16">
-          <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-8">
-            {project.media.type === "pdfs" ? "Research Reports" : "Project Documentation"}
-          </div>
-
-          {project.media.type === "images" && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {project.media.files.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`Project visual ${i + 1}`}
-                  className="w-full rounded-md object-cover aspect-[4/5]"
-                />
-              ))}
-            </div>
-          )}
-
-          {project.media.type === "mixed" && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {project.media.items.map((item, i) => (
-                  <div key={i} className="rounded-md overflow-hidden bg-neutral-100">
-                    {item.type === "video" && (
-                      <video
-                        controls
-                        muted
-                        autoPlay
-                        className="w-full h-full object-cover aspect-video"
-                      >
-                        <source src={item.src} />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                    {item.type === "image" && (
-                      <img
-                        src={item.src}
-                        alt={item.label}
-                        className="w-full h-full object-cover aspect-video"
-                      />
-                    )}
-                    {item.label && (
-                      <div className="p-3 text-xs text-neutral-600 bg-neutral-50">
-                        {item.label}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {project.media.pdfs && (
-                <div className="mt-8 space-y-6">
-                  <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">Research Reports</div>
-                  {project.media.pdfs.map((file, i) => (
-                    <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                        <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                      </div>
-                      <embed
-                        src={file.src + "#toolbar=1&navpanes=0"}
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {project.media.type === "pdfs" && (
-            <div className="space-y-6">
-              {project.media.files.map((file, i) => (
-                <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                  <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                    <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                  </div>
-                  <embed
-                    src={file.src + "#toolbar=1&navpanes=0"}
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {project.media.type === "pr-reports" && (
-            <div className="space-y-16">
-              {project.media.reports.map((report, ri) => (
-                <div key={ri}>
-                  <h3 className="font-serif text-xl text-neutral-900 mb-8">{report.name}</h3>
-
-                  {/* GIF sections */}
-                  {report.sections.map((section, si) => (
-                    <div key={si} className="mb-10">
-                      <div className="text-xs uppercase tracking-[0.15em] text-neutral-400 mb-4">
-                        {section.label}
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {section.gifs.map((gif, gi) => (
-                          <div key={gi} className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
-                            <img
-                              src={gif.src}
-                              alt={gif.label}
-                              className="w-full object-contain"
-                            />
-                            <div className="px-3 py-2 text-xs text-neutral-500 bg-neutral-50">
-                              {gif.label}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Embedded PDF */}
-                  <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                    <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                      <div className="text-sm font-medium text-neutral-900">{report.pdf.name}</div>
-                    </div>
-                    <embed
-                      src={report.pdf.src + "#toolbar=1&navpanes=0&scrollbar=1"}
-                      type="application/pdf"
-                      width="100%"
-                      height="700px"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
-
-      <article className="mt-16 grid grid-cols-1 sm:grid-cols-12 gap-8">
-        <div className="sm:col-span-3">
-          <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Outcome
-          </div>
-        </div>
-        <p className="sm:col-span-9 text-neutral-700 leading-relaxed">
-          {project.outcome}
-        </p>
-      </article>
-
-      {/* Stack */}
-      <section className="mt-16 border-t border-neutral-200 pt-10">
-        <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">
-          Stack
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {project.stack.map((s) => (
-            <span
-              key={s}
-              className="text-sm text-neutral-700 border border-neutral-200 rounded-full px-3 py-1"
-            >
-              {s}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* Next */}
-      <section className="mt-20 border-t border-neutral-200 pt-10">
-        <button
-          onClick={() => go({ page: "project", id: next.id })}
-          className="group w-full flex items-center justify-between text-left"
-        >
-          <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-              Next project
-            </div>
-            <div className="mt-2 font-serif text-2xl sm:text-3xl text-neutral-900 group-hover:text-neutral-600 transition">
-              {next.title}
-            </div>
-          </div>
-          <ArrowRight className="w-6 h-6 text-neutral-400 group-hover:text-neutral-900 group-hover:translate-x-1 transition" />
-        </button>
-      </section>
-    </main>
-  );
-}
-
-function Meta({ label, value }) {
-  return (
-    <div>
-      <div className="text-xs text-neutral-400 uppercase tracking-wider mb-1">
-        {label}
-      </div>
-      <div className="text-neutral-900">{value}</div>
-    </div>
-  );
-}
 
 /* ----------------------------------- About --------------------------------- */
 
@@ -597,6 +238,12 @@ export default function Portfolio() {
   const navigate = (page) => setView({ page });
   const openProject = (project) =>
     setView({ page: "project", id: project.id });
+  const selectedProjectIndex = selectedProject
+    ? projects.findIndex((project) => project.id === selectedProject.id)
+    : -1;
+  const nextProject = selectedProject
+    ? projects[(selectedProjectIndex + 1) % projects.length]
+    : null;
   const viewKey = selectedProject ? `project:${selectedProject.id}` : view.page;
   const previousViewKeyRef = useRef(viewKey);
 
@@ -620,8 +267,13 @@ export default function Portfolio() {
     <div className="min-h-screen bg-white text-neutral-900 font-sans antialiased">
       <SiteChrome view={view.page} onNavigate={navigate}>
         {view.page === "home" && <HomePage onOpenProject={openProject} />}
-        {view.page === "project" && (
-          <ProjectDetail id={view.id} go={setView} />
+        {selectedProject && (
+          <ProjectPage
+            project={selectedProject}
+            nextProject={nextProject}
+            onBack={() => navigate("home")}
+            onOpenProject={openProject}
+          />
         )}
         {view.page === "about" && <About />}
       </SiteChrome>
