@@ -251,6 +251,12 @@ a {
   padding-inline: 16px;
 }
 
+@media (min-width: 640px) {
+  .page-shell {
+    padding-inline: 2.5rem;
+  }
+}
+
 .home-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
