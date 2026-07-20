@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   ArrowLeft,
@@ -8,6 +8,7 @@ import {
   Phone,
 } from "lucide-react";
 import { socialIcons } from "./components/socialIcons.js";
+import SiteChrome from "./components/SiteChrome.jsx";
 import { profile, projects } from "./data/portfolio.js";
 
 /**
@@ -26,57 +27,6 @@ function classNames(...c) {
   return c.filter(Boolean).join(" ");
 }
 
-/* ----------------------------------- UI ----------------------------------- */
-
-function Nav({ view, go }) {
-  return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-neutral-200">
-      <div className="max-w-5xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between">
-        <button
-          onClick={() => go({ page: "home" })}
-          className="flex items-center gap-3 text-sm tracking-tight"
-        >
-          <span className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center text-xs font-medium">
-            {profile.initials}
-          </span>
-          <span className="font-medium">{profile.name}</span>
-        </button>
-        <nav className="flex items-center gap-1 text-sm">
-          <NavLink
-            label="Work"
-            active={view.page === "home" || view.page === "project"}
-            onClick={() => go({ page: "home" })}
-          />
-          <NavLink
-            label="About"
-            active={view.page === "about"}
-            onClick={() => go({ page: "about" })}
-          />
-          <a
-            href={`mailto:${profile.email}`}
-            className="ml-2 hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-neutral-900 text-white text-xs hover:bg-neutral-700 transition"
-          >
-            Get in touch <ArrowUpRight className="w-3 h-3" />
-          </a>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function NavLink({ label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={classNames(
-        "px-3 py-1.5 rounded-full transition",
-        active ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-900"
-      )}
-    >
-      {label}
-    </button>
-  );
-}
 
 /* ----------------------------------- Home ---------------------------------- */
 
@@ -94,7 +44,10 @@ function Home({ go }) {
               </span>
               {profile.location}
             </div>
-            <h1 className="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+            <h1
+              tabIndex="-1"
+              className="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl"
+            >
               {profile.tagline}
             </h1>
             <p className="mt-8 text-neutral-500 max-w-xl text-base sm:text-lg leading-relaxed">
@@ -221,10 +174,6 @@ function ProjectDetail({ id, go }) {
   const idx = projects.findIndex((p) => p.id === project.id);
   const next = projects[(idx + 1) % projects.length];
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [id]);
-
   return (
     <main className="max-w-5xl mx-auto px-6 sm:px-10 pb-24">
       <button
@@ -243,7 +192,10 @@ function ProjectDetail({ id, go }) {
           <span>·</span>
           <span>{project.context}</span>
         </div>
-        <h1 className="mt-4 font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+        <h1
+          tabIndex="-1"
+          className="mt-4 font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl"
+        >
           {project.title}
         </h1>
         <p className="mt-5 text-neutral-500 max-w-2xl text-base sm:text-lg">
@@ -587,7 +539,10 @@ function About() {
             </div>
           </div>
           <div className="sm:col-span-7">
-            <h1 className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl">
+            <h1
+              tabIndex="-1"
+              className="font-serif text-4xl sm:text-5xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl"
+            >
               I'm {profile.name}. I work on robots — from perception to control.
             </h1>
             <div className="mt-8 space-y-5 text-base sm:text-lg text-neutral-700 leading-relaxed">
@@ -768,45 +723,44 @@ function About() {
   );
 }
 
-/* --------------------------------- Footer --------------------------------- */
-
-function Footer() {
-  return (
-    <footer className="border-t border-neutral-200">
-      <div className="max-w-5xl mx-auto px-6 sm:px-10 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-neutral-500">
-        <div>
-          © {new Date().getFullYear()} {profile.name}. Built with care.
-        </div>
-        <div className="flex items-center gap-4">
-          {profile.socials.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              className="hover:text-neutral-900 transition"
-            >
-              {s.label}
-            </a>
-          ))}
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 /* ---------------------------------- Root ---------------------------------- */
 
 export default function Portfolio() {
   const [view, setView] = useState({ page: "home" });
+  const selectedProject =
+    view.page === "project"
+      ? projects.find((project) => project.id === view.id) ?? projects[0]
+      : null;
+  const navigate = (page) => setView({ page });
+  const viewKey = selectedProject ? `project:${selectedProject.id}` : view.page;
+  const previousViewKeyRef = useRef(viewKey);
+
+  useEffect(() => {
+    if (previousViewKeyRef.current === viewKey) return;
+    previousViewKeyRef.current = viewKey;
+
+    document.title = selectedProject
+      ? `${selectedProject.title} — Edward Wang`
+      : view.page === "about"
+        ? "About — Edward Wang"
+        : "Edward Wang — Robotics, Agentic AI & AI for Science";
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    const frame = window.requestAnimationFrame(() => {
+      document.querySelector("#main-content h1")?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [viewKey, view.page, selectedProject]);
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 font-sans antialiased">
-      <Nav view={view} go={setView} />
-      {view.page === "home" && <Home go={setView} />}
-      {view.page === "project" && (
-        <ProjectDetail id={view.id} go={setView} />
-      )}
-      {view.page === "about" && <About />}
-      <Footer />
+      <SiteChrome view={view.page} onNavigate={navigate}>
+        {view.page === "home" && <Home go={setView} />}
+        {view.page === "project" && (
+          <ProjectDetail id={view.id} go={setView} />
+        )}
+        {view.page === "about" && <About />}
+      </SiteChrome>
     </div>
   );
 }
