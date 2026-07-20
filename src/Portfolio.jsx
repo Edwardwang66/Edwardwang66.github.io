@@ -3,12 +3,12 @@ import {
   ArrowUpRight,
   ArrowLeft,
   ArrowRight,
-  Github,
   Mail,
-  Linkedin,
   ExternalLink,
   Phone,
 } from "lucide-react";
+import { socialIcons } from "./components/socialIcons.js";
+import { profile, projects } from "./data/portfolio.js";
 
 /**
  * Edward Wang — robotics & controls portfolio.
@@ -17,337 +17,8 @@ import {
  *   - project    : per-project detail page
  *   - about      : bio, education, experience, skills, contact
  *
- * Data lives in `profile` and `projects` at the top of this file.
+ * Content data lives in `src/data/portfolio.js`.
  */
-
-const profile = {
-  name: "Edward Wang",
-  initials: "EW",
-  role: "Robotics & controls engineer",
-  location: "La Jolla, CA · Open to robotics internships & research collabs",
-  tagline:
-    "ECE student building responsive, expressive robots — from perception and state estimation to control tuning and real-world hardware debugging.",
-  bio: [
-    "I'm an Electrical and Computer Engineering student at UC San Diego focused on robotics, control systems, and intelligent physical systems. I'm continuing into the M.S. program in Intelligent Systems, Robotics & Control in Fall 2026.",
-    "My work sits at the seam between perception and motion: ROS/ROS2, robotic arm operation, sensor fusion, state estimation, and the long tail of bring-up problems that happen when simulation meets hardware — calibration, latency, drift, execution mismatch.",
-    "I like robots that feel considered. Outside of coursework I work in the Liangfang Zhang Lab on machine-learning support for drug-delivery research, and I previously interned at c12.ai building computer-vision-driven robotic-arm workflows for automated laboratory operations.",
-  ],
-  email: "wanghanqing66@gmail.com",
-  phone: "+1 (650) 537-7182",
-  socials: [
-    { label: "GitHub", href: "https://github.com/Edwardwang66", icon: Github },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/edwardwang123/", icon: Linkedin },
-    { label: "Email", href: "mailto:wanghanqing66@gmail.com", icon: Mail },
-  ],
-  education: [
-    {
-      year: "Sep 2026 — Jun 2027 (Expected)",
-      org: "University of California, San Diego",
-      note: "M.S. Electrical and Computer Engineering — Intelligent Systems, Robotics & Control",
-    },
-    {
-      year: "Sep 2024 — Jun 2026",
-      org: "University of California, San Diego",
-      note: "B.S. Electrical and Computer Engineering",
-    },
-    {
-      year: "Sep 2022 — May 2024",
-      org: "Diablo Valley College",
-      note: "A.S. Computer Science",
-    },
-  ],
-  experience: [
-    {
-      year: "Oct 2024 — Present",
-      role: "Undergraduate Researcher",
-      org: "Liangfang Zhang's Lab, UC San Diego",
-      note: "Applying machine-learning methods to support nanoparticle and cell-membrane selection for drug-delivery research, working alongside PhD researchers to reproduce and modify experimental workflows.",
-    },
-    {
-      year: "Jun 2024 — Aug 2024",
-      role: "Engineering Intern",
-      org: "c12.ai · Pudong, Shanghai",
-      note: "Computer-vision-driven liquid measurement, ROS-based robotic-arm motion planning, dual-camera localization, and simulation-to-hardware iteration for automated lab operations.",
-    },
-  ],
-  skills: {
-    "Robotics & Controls": [
-      "ROS / ROS2",
-      "Motion control",
-      "Path planning",
-      "Robotic arm control",
-      "Sensor fusion",
-      "State estimation",
-      "Autonomous systems",
-    ],
-    Programming: ["Python", "C / C++", "MATLAB", "Java", "JavaScript", "Shell", "LaTeX"],
-    "Simulation & Modeling": ["Gazebo", "URDF", "Robotics simulation", "Virtual env. setup"],
-    "Hardware & Embedded": [
-      "Embedded systems",
-      "Digital logic design",
-      "Computer architecture",
-      "FPGA / SystemVerilog",
-      "Sensor integration",
-    ],
-    "AI & Perception": [
-      "Computer vision",
-      "OpenCV",
-      "PyTorch",
-      "TensorFlow",
-      "Scikit-learn",
-      "NumPy",
-      "Pandas",
-    ],
-    Tools: ["Git", "Docker", "Linux / Ubuntu", "REST APIs", "Vim"],
-  },
-  coursework: {
-    "Robotics & AI":
-      "ECE 276A Sensing and Estimation in Robotics · ECE 276B Planning and Learning in Robotics · ECE 148 Introduction to Autonomous Vehicles · ECE 176 Deep Learning and Applications",
-    "Computer Vision": "CSE 152A/B Introduction to Computer Vision",
-    "Systems & Hardware":
-      "ECE 111 Advanced Digital Design · CSE 141 Computer Architecture · CSE 141L Computer Architecture Project · CSE 140 Digital Systems Design",
-    "Software Engineering": "CSE 110 Software Engineering · CSE 100 Advanced Data Structures",
-  },
-  languages: [
-    { name: "Chinese", level: "Native / bilingual" },
-    { name: "English", level: "Native / bilingual" },
-  ],
-};
-
-const projects = [
-  {
-    id: "off-road-vehicle",
-    no: "01",
-    year: "2025",
-    title: "1/5 Scale Autonomous Off-Road Vehicle",
-    role: "Autonomy stack · Sensing, planning & control",
-    tags: ["Autonomous vehicles", "ROS", "Perception"],
-    summary:
-      "Full autonomy stack for a 1/5 scale off-road vehicle — onboard compute, camera perception, GNSS, and actuation — built and tested end-to-end at UCSD.",
-    cover: "from-neutral-900 via-neutral-700 to-neutral-400",
-    context: "UC San Diego · ECE 191 Capstone",
-    overview:
-      "A team build of a 1/5 scale autonomous off-road vehicle. I worked across sensing, planning, and control to bring up the autonomy stack on real hardware and test it on outdoor courses.",
-    challenge:
-      "Stitch camera perception, GNSS, and vehicle actuation into a reliable real-time loop on an off-road platform where surfaces, lighting, and connectivity all vary. Many of the failure modes only appear once the vehicle is moving.",
-    approach:
-      "Built on DonkeyCar and ROS-based workflows for path recording, path following, and live actuation. Isolated integration problems by separating sensing, planning, and control rigs, then re-integrating with consistent message contracts. Iterated quickly between bench tests and field runs to harden the system.",
-    outcome:
-      "Reliable path-following behavior on recorded routes. Documented bring-up procedure and debugging playbook now used by the next team rotation.",
-    stack: ["ROS", "DonkeyCar", "Python", "OpenCV", "GNSS", "Linux"],
-    links: [],
-    gallery: [
-      "from-stone-200 to-stone-50",
-      "from-neutral-300 to-neutral-100",
-      "from-zinc-200 to-zinc-50",
-    ],
-    media: {
-      type: "images",
-      coverImage: "/ece191/1.png",
-      files: [
-        "/ece191/2.png",
-        "/ece191/3.png",
-        "/ece191/4.png",
-      ],
-    },
-  },
-  {
-    id: "lab-robotic-arm",
-    no: "02",
-    year: "2024",
-    title: "Vision-Guided Robotic Arm for Automated Lab Operations",
-    role: "Engineering Intern · Perception + motion integration",
-    tags: ["Robotic arm", "Computer vision", "ROS"],
-    summary:
-      "Computer-vision-based liquid measurement and dual-camera localization, integrated into ROS-based robotic-arm workflows at c12.ai.",
-    cover: "from-stone-700 via-stone-500 to-stone-300",
-    context: "c12.ai · Pudong, Shanghai · Summer 2024",
-    overview:
-      "Three-month internship building the perception-to-motion glue for a lab-automation robotic arm. The goal was to make routine wet-lab operations — liquid handling, plate placement — repeatable without an operator in the loop.",
-    challenge:
-      "Tie noisy real-world perception to precise robotic-arm motion under tight tolerances. Latency between perception and execution, fixed-vs-arm-mounted camera disagreement, and calibration drift all surfaced during hardware testing.",
-    approach:
-      "Built a dual-camera localization pipeline combining a fixed overhead view with an arm-mounted camera for close-range pose refinement. Operated and tested the arm via ROS, debugging perception, planning, and execution stages together rather than in isolation. Recreated the cell in a virtual simulation environment so iteration didn't depend on hardware availability.",
-    outcome:
-      "Improved positioning accuracy on automated lab tasks and a documented sim-to-hardware workflow for new operators. Wrote up failure modes (calibration, localization error, execution mismatch, perception-motion latency) as an internal debugging guide.",
-    stack: ["ROS", "Python", "OpenCV", "URDF", "Gazebo-style sim", "Robotic arm"],
-    links: [],
-    gallery: [
-      "from-amber-100 to-stone-100",
-      "from-neutral-400 to-neutral-200",
-      "from-stone-300 to-stone-100",
-    ],
-    media: {
-      type: "mixed",
-      coverImage: "/c12.ai/1.JPG",
-      items: [
-        { type: "video", src: "/c12.ai/IMG_1671.mov", label: "Lab operations demo" },
-        { type: "video", src: "/c12.ai/IMG_1672.mov", label: "Robotic arm in action" },
-      ],
-    },
-  },
-  {
-    id: "state-estimation",
-    no: "03",
-    year: "2025",
-    title: "Sensing and State Estimation in Robotics",
-    role: "Course project · Estimation algorithms",
-    tags: ["State estimation", "Sensor fusion", "Kalman filtering"],
-    summary:
-      "Implementations of pose estimation, sensor fusion, and Kalman-style filters on noisy IMU and observation data — the math behind robots that know where they are.",
-    cover: "from-zinc-800 via-zinc-600 to-zinc-400",
-    context: "UC San Diego · ECE 276A",
-    overview:
-      "Coursework that pushed me into the probabilistic core of robotics: how a system maintains a belief about its own state when every sensor lies a little.",
-    challenge:
-      "Estimate the pose of a moving system from noisy IMU and observation data, accounting for drift, bias, and uncertainty over long runs.",
-    approach:
-      "Worked with robot motion and observation models to implement filtering pipelines — prediction from motion model, correction from observations — and tuned for stability under realistic noise profiles. Compared filter behavior across synthetic and recorded data.",
-    outcome:
-      "Working implementations of the core estimation routines plus an intuition for when a filter is failing because of modeling, tuning, or data — useful in every hardware project I've touched since.",
-    stack: ["Python", "NumPy", "Probabilistic modeling", "IMU data", "MATLAB"],
-    links: [],
-    gallery: [
-      "from-slate-300 to-slate-100",
-      "from-neutral-300 to-neutral-100",
-      "from-zinc-300 to-zinc-100",
-    ],
-    media: {
-      type: "pdfs",
-      coverImage: "/ece276a/1.png",
-      files: [
-        { name: "PR1 - Pose Estimation", src: "/ece276a/ece276_pr1.pdf" },
-        { name: "PR2 - Sensor Fusion", src: "/ece276a/pr2.pdf" },
-        { name: "PR3 - State Estimation Report", src: "/ece276a/pr3_report.pdf" },
-      ],
-    },
-  },
-  {
-    id: "drug-delivery-ml",
-    no: "04",
-    year: "2024 — Now",
-    title: "ML-Supported Nanoparticle & Cell-Membrane Selection",
-    role: "Undergraduate Researcher",
-    tags: ["Applied ML", "Research", "Drug delivery"],
-    summary:
-      "Machine-learning methods supporting nanoparticle and cell-membrane selection for drug-delivery research in the Liangfang Zhang Lab.",
-    cover: "from-stone-800 via-stone-600 to-stone-400",
-    context: "Liangfang Zhang's Lab · UC San Diego",
-    overview:
-      "Ongoing undergraduate research at the intersection of nanomedicine and applied ML. The lab develops biomimetic nanoparticles; I work on the data-driven side of choosing membrane–particle combinations.",
-    challenge:
-      "Make data-driven recommendations in a domain where datasets are small, experiments are slow, and validation has to round-trip through real lab work.",
-    approach:
-      "Collaborate with PhD researchers to reproduce and adapt experimental workflows so the ML side stays grounded in what the wet-lab can actually validate. Iterate on candidate selection with experimental constraints in the loop rather than as an afterthought.",
-    outcome:
-      "Ongoing project; contributing to a multidisciplinary team across engineering, biology, and data-driven optimization.",
-    stack: ["Python", "Scikit-learn", "PyTorch", "Pandas", "Jupyter"],
-    links: [],
-    gallery: [
-      "from-rose-100 to-stone-50",
-      "from-stone-200 to-stone-50",
-      "from-orange-100 to-amber-50",
-    ],
-  },
-  {
-    id: "planning-control",
-    no: "05",
-    year: "2025",
-    title: "Planning and Learning in Robotics",
-    role: "Course project · MDPs, planning & reinforcement learning",
-    tags: ["Motion planning", "Reinforcement learning", "MDP"],
-    summary:
-      "Discrete and continuous planning across two projects — MDP-based policy learning in grid-world environments and reinforcement learning across diverse physics simulations.",
-    cover: "from-indigo-900 via-violet-700 to-indigo-400",
-    context: "UC San Diego · ECE 276B",
-    overview:
-      "Two-project course spanning the core algorithms behind robot planning. PR1 covered discrete MDPs and value iteration in the MiniGrid DoorKey environment; PR2 applied policy-gradient reinforcement learning to a set of continuous, physics-based simulation environments.",
-    challenge:
-      "Bridge the gap between clean algorithmic definitions — Bellman equations, policy gradients — and environments that are stochastic, partially observable, or physically complex enough to expose implementation subtleties.",
-    approach:
-      "PR1: Implemented value iteration and policy extraction over the full MDP, then tested across DoorKey maps of increasing size (5×5 through 10×10) and varying key-door configurations including shortcut and direct-route variants. PR2: Applied a policy-gradient method to seven benchmark environments ranging from 2D games (Flappy Bird, Maze, Monza) to 3D manipulation tasks (Single Cube, Tower, Window, Room), tuning hyper-parameters per environment.",
-    outcome:
-      "Solid intuition for when discrete planning is tractable and when it isn't, and direct experience debugging RL policies across environments with very different reward structures and dynamics.",
-    stack: ["Python", "NumPy", "MiniGrid", "Reinforcement learning", "Policy gradient", "MDP"],
-    links: [],
-    gallery: [],
-    media: {
-      type: "pr-reports",
-      coverImage: "/ece276b/pr1/gif/partA/doorkey.gif",
-      reports: [
-        {
-          name: "PR1 — Discrete Planning & MDPs",
-          pdf: { name: "PR1 Report", src: "/ece276b/pr1/report.pdf" },
-          sections: [
-            {
-              label: "Part A — DoorKey Environments",
-              gifs: [
-                { src: "/ece276b/pr1/gif/partA/doorkey.gif", label: "DoorKey overview" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-5x5-normal.gif", label: "5×5 Normal" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-shortcut.gif", label: "6×6 Shortcut" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-direct.gif", label: "8×8 Direct" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-shortcut.gif", label: "8×8 Shortcut" },
-              ],
-            },
-            {
-              label: "Part B — 10×10 DoorKey",
-              gifs: [
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-1.gif", label: "Episode 1" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-5.gif", label: "Episode 5" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-15.gif", label: "Episode 15" },
-              ],
-            },
-          ],
-        },
-        {
-          name: "PR2 — Reinforcement Learning Across Environments",
-          pdf: { name: "PR2 Report", src: "/ece276b/pr2/ECE276B_PR2_report.pdf" },
-          sections: [
-            {
-              label: "All Environments",
-              gifs: [
-                { src: "/ece276b/pr2/gifs/E1_Flappy_Bird.gif", label: "E1 Flappy Bird" },
-                { src: "/ece276b/pr2/gifs/E2_Maze.gif", label: "E2 Maze" },
-                { src: "/ece276b/pr2/gifs/E3_Monza.gif", label: "E3 Monza" },
-                { src: "/ece276b/pr2/gifs/E4_Single_Cube.gif", label: "E4 Single Cube" },
-                { src: "/ece276b/pr2/gifs/E5_Tower.gif", label: "E5 Tower" },
-                { src: "/ece276b/pr2/gifs/E6_Window.gif", label: "E6 Window" },
-                { src: "/ece276b/pr2/gifs/E7_Room.gif", label: "E7 Room" },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: "embedded-digital",
-    no: "06",
-    year: "2024 — 2025",
-    title: "Embedded & Digital Control Systems",
-    role: "Course projects · Hardware design",
-    tags: ["SystemVerilog", "FPGA", "Embedded"],
-    summary:
-      "Hardware-oriented systems in SystemVerilog — FSMs, datapaths, memory modules, and verification — the low-level layer underneath every robot I work on.",
-    cover: "from-neutral-700 via-neutral-500 to-neutral-300",
-    context: "UC San Diego · ECE / CSE Coursework",
-    overview:
-      "A series of projects across ECE 111, CSE 140, and CSE 141L covering digital design, computer architecture, and verification — building the low-level intuition I lean on when robotics work touches actuator control logic or real-time behavior.",
-    challenge:
-      "Move from clean spec to working hardware: handle timing, state, and edge cases in a way that survives waveform-level inspection.",
-    approach:
-      "Designed and tested systems with finite state machines, datapaths, and memory modules in SystemVerilog. Built debugging workflows around waveform inspection, timing analysis, and iterative verification using simulation testbenches.",
-    outcome:
-      "Low-level systems experience that transfers directly to embedded robotics work — knowing where a bug is most likely to live when the simulation says one thing and the board says another.",
-    stack: ["SystemVerilog", "FPGA", "Testbenches", "Waveform analysis"],
-    links: [],
-    gallery: [
-      "from-slate-300 to-slate-100",
-      "from-stone-300 to-stone-100",
-      "from-neutral-300 to-neutral-100",
-    ],
-  },
-];
 
 /* --------------------------------- helpers -------------------------------- */
 
@@ -451,14 +122,14 @@ function Home({ go }) {
             </div>
             <div className="mt-8 flex gap-4">
               {profile.socials.map((s) => {
-                const Icon = s.icon;
+                const Icon = socialIcons[s.icon];
                 return (
                   <a
                     key={s.label}
                     href={s.href}
                     className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition"
                   >
-                    <Icon className="w-5 h-5" />
+                    {Icon ? <Icon className="w-5 h-5" /> : null}
                     {s.label}
                   </a>
                 );
@@ -683,7 +354,7 @@ function ProjectDetail({ id, go }) {
       {/* Gallery */}
       {!project.media && (
         <section className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {project.gallery.map((g, i) => (
+          {project.gallery?.map((g, i) => (
             <div
               key={i}
               className={classNames(
@@ -1076,16 +747,19 @@ function About() {
               </span>
             </div>
             <div className="mt-8 flex gap-4">
-              {profile.socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition"
-                >
-                  <s.icon className="w-4 h-4" />
-                  {s.label}
-                </a>
-              ))}
+              {profile.socials.map((s) => {
+                const Icon = socialIcons[s.icon];
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 transition"
+                  >
+                    {Icon ? <Icon className="w-4 h-4" /> : null}
+                    {s.label}
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
