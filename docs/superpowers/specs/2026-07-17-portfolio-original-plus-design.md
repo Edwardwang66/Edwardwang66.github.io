@@ -1,6 +1,6 @@
 # Edward Wang Portfolio — Original+ Design Specification
 
-Status: approved visual direction and Apple craft revision; awaiting specification review
+Status: approved for implementation
 
 Date: 2026-07-17
 
