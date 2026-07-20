@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { createDisclosureSpring } from "../motion/disclosureSpring.js";
 
 function setPanelVisibility(panel, hidden) {
@@ -56,7 +56,7 @@ export function useDisclosureSpring({ ids, activeId, reducedMotion }) {
     return contentCallbacksRef.current.get(id);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const controller = controllerRecordRef.current.controller;
 
     const cancelFrame = () => {

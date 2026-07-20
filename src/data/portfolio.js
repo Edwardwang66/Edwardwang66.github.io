@@ -24,6 +24,12 @@ export const profile = {
   ],
   email: "wanghanqing66@gmail.com",
   phone: "+1 (650) 537-7182",
+  portrait: {
+    src: "/IMG_9036.JPG",
+    alt: "Portrait of Edward Wang",
+    width: 1080,
+    height: 1080,
+  },
   socials: [
     { label: "GitHub", href: "https://github.com/Edwardwang66", icon: "github" },
     {

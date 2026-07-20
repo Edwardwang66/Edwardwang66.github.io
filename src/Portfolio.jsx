@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowUpRight,
   ArrowLeft,
   ArrowRight,
   Mail,
@@ -10,6 +9,7 @@ import {
 import { socialIcons } from "./components/socialIcons.js";
 import SiteChrome from "./components/SiteChrome.jsx";
 import { profile, projects } from "./data/portfolio.js";
+import HomePage from "./pages/HomePage.jsx";
 
 /**
  * Edward Wang — robotics & controls portfolio.
@@ -28,144 +28,6 @@ function classNames(...c) {
 }
 
 
-/* ----------------------------------- Home ---------------------------------- */
-
-function Home({ go }) {
-  return (
-    <main className="max-w-5xl mx-auto px-6 sm:px-10">
-      {/* Hero */}
-      <section className="pt-24 sm:pt-32 pb-20 sm:pb-28">
-        <div className="grid grid-cols-1 min-[520px]:grid-cols-[minmax(0,1fr)_10rem] sm:grid-cols-3 gap-8 sm:gap-12 items-start">
-          <div className="sm:col-span-2">
-            <div className="flex items-center gap-2 text-xs text-neutral-500 mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              {profile.location}
-            </div>
-            <h1
-              tabIndex="-1"
-              className="font-serif text-4xl sm:text-6xl leading-[1.05] tracking-tight text-neutral-900 max-w-3xl"
-            >
-              {profile.tagline}
-            </h1>
-            <p className="mt-8 text-neutral-500 max-w-xl text-base sm:text-lg leading-relaxed">
-              {profile.role}. Hands-on with ROS/ROS2, perception-to-motion
-              integration, sensor fusion, and the messy parts of moving from
-              simulation to hardware.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => {
-                  const el = document.getElementById("work");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-900 text-white text-sm hover:bg-neutral-700 transition"
-              >
-                Selected work
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => go({ page: "about" })}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-300 text-neutral-900 text-sm hover:border-neutral-900 transition"
-              >
-                About me
-              </button>
-            </div>
-            <div className="mt-8 flex gap-4">
-              {profile.socials.map((s) => {
-                const Icon = socialIcons[s.icon];
-                return (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition"
-                  >
-                    {Icon ? <Icon className="w-5 h-5" /> : null}
-                    {s.label}
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-          <div className="sm:col-span-1 flex items-start justify-center min-[520px]:justify-end pt-2 sm:pt-8">
-            <img
-              src="/IMG_9036.JPG"
-              alt="Edward Wang"
-              className="w-40 h-40 sm:w-64 sm:h-64 object-cover rounded-2xl shadow-xl"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Work index */}
-      <section id="work" className="border-t border-neutral-200 pt-12 pb-24">
-        <div className="flex items-baseline justify-between mb-10">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Selected work
-          </h2>
-          <span className="text-xs text-neutral-400">
-            {projects.length} projects · Robotics, controls, perception
-          </span>
-        </div>
-        <ul className="divide-y divide-neutral-200">
-          {projects.map((p) => (
-            <li key={p.id}>
-              <button
-                onClick={() => go({ page: "project", id: p.id })}
-                className="group w-full text-left py-6 grid grid-cols-12 gap-4 items-center hover:bg-neutral-50/60 transition rounded-md px-2 -mx-2"
-              >
-                <span className="col-span-1 text-xs text-neutral-400 tabular-nums">
-                  {p.no}
-                </span>
-                <div className="col-span-7 sm:col-span-6">
-                  <div className="font-serif text-lg sm:text-xl text-neutral-900 leading-snug">
-                    {p.title}
-                  </div>
-                  <div className="mt-1 text-sm text-neutral-500">{p.role}</div>
-                </div>
-                <div className="col-span-3 hidden sm:flex flex-wrap gap-1.5">
-                  {p.tags.slice(0, 2).map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs text-neutral-500 border border-neutral-200 rounded-full px-2 py-0.5"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <span className="col-span-3 sm:col-span-1 text-right text-xs text-neutral-400 tabular-nums">
-                  {p.year}
-                </span>
-                <span className="col-span-1 flex justify-end">
-                  <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition" />
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Footer CTA */}
-      <section className="border-t border-neutral-200 py-20">
-        <div className="max-w-2xl">
-          <h3 className="font-serif text-2xl sm:text-3xl text-neutral-900 leading-tight">
-            Looking for a robotics or controls intern who can take a system from
-            simulation to hardware? Let's talk.
-          </h3>
-          <a
-            href={`mailto:${profile.email}`}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-neutral-900 underline underline-offset-4 decoration-neutral-300 hover:decoration-neutral-900 transition"
-          >
-            {profile.email}
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
-        </div>
-      </section>
-    </main>
-  );
-}
 
 /* --------------------------------- Project --------------------------------- */
 
@@ -733,6 +595,8 @@ export default function Portfolio() {
       ? projects.find((project) => project.id === view.id) ?? projects[0]
       : null;
   const navigate = (page) => setView({ page });
+  const openProject = (project) =>
+    setView({ page: "project", id: project.id });
   const viewKey = selectedProject ? `project:${selectedProject.id}` : view.page;
   const previousViewKeyRef = useRef(viewKey);
 
@@ -755,7 +619,7 @@ export default function Portfolio() {
   return (
     <div className="min-h-screen bg-white text-neutral-900 font-sans antialiased">
       <SiteChrome view={view.page} onNavigate={navigate}>
-        {view.page === "home" && <Home go={setView} />}
+        {view.page === "home" && <HomePage onOpenProject={openProject} />}
         {view.page === "project" && (
           <ProjectDetail id={view.id} go={setView} />
         )}
