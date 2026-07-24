@@ -69,6 +69,7 @@ describe("Original+ portfolio content", () => {
     );
     const planningCopy = JSON.stringify(planning).toLowerCase();
 
+    expect(planning.title).toBe("Dynamic Programming & 3D Motion Planning");
     expect(planningCopy).toContain("dijkstra");
     expect(planningCopy).toContain("weighted a*");
     expect(planningCopy).not.toContain("reinforcement learning");

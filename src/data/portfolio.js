@@ -346,7 +346,7 @@ const projectRecords = [
     id: "planning-control",
     no: "05",
     year: "Spring 2026",
-    title: "Dynamic Programming & 3-D Motion Planning",
+    title: "Dynamic Programming & 3D Motion Planning",
     role: "Course sequence · Discrete and geometric planning",
     tags: ["Dynamic programming", "Weighted A*", "Motion planning"],
     summary:
