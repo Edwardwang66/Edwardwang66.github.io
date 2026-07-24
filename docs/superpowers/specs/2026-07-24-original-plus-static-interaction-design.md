@@ -1,6 +1,6 @@
 # Original+ Static Interaction Refinement
 
-Status: approved direction, awaiting written-spec review
+Status: approved, revised with original responsive measurements
 
 Date: 2026-07-24
 
@@ -21,6 +21,7 @@ Use the selected **Original return+** direction:
 - Restore the original wide, editorial navigation and hero composition.
 - Retain the current blue and gold accents only as small details.
 - Restore a clear `Get in touch` action in the desktop navigation.
+- Restore `GitHub`, `LinkedIn`, and `Email` links inside the hero.
 - Keep the current content model and project detail pages.
 - Remove continuous and scroll-driven motion from the homepage.
 - Preserve only immediate hover, focus, and short state feedback.
@@ -51,23 +52,32 @@ Use the selected **Original return+** direction:
 - The copy occupies the dominant left column.
 - The portrait is anchored to the top of the right column and remains visually
   subordinate to the heading.
+- At widths of 640px and above, render the portrait at `256×256px`, matching
+  the published original.
 - Keep the updated positioning:
   `Robotics · Agentic AI · AI for Science`.
 - Keep the updated heading:
   `I build intelligent systems that carry intent into reliable execution.`
 - Keep the updated supporting copy and the `Selected work` and
   `Current practice` actions.
+- Place `GitHub`, `LinkedIn`, and `Email` directly below the hero actions,
+  using the existing social destinations and 20px line icons.
 - Remove the continuous status-dot pulse; retain one static green dot.
 
 ### Mobile
 
-- Use a stable single-column reading order:
-  status, positioning, heading, supporting copy, actions, portrait.
-- Place the portrait in normal document flow, left-aligned with the copy.
-- Limit the portrait to approximately 112–128px so it does not dominate the
-  first viewport.
-- Do not position the portrait independently at the lower-right corner.
-- Do not animate or relocate hero elements at a breakpoint or during scroll.
+- Between 520px and 639px, preserve the published original's two-column
+  composition: flexible copy on the left and a `160×160px` portrait on the
+  right.
+- At 519px and below, use a stable single-column reading order:
+  status, positioning, heading, supporting copy, actions, social links,
+  portrait.
+- At 519px and below, render the portrait at `160×160px` in normal document
+  flow and center it below the social links, matching the published original.
+- Do not position the portrait independently at the lower-right corner or
+  reduce it below 160px.
+- Apply the breakpoint change immediately; do not animate it or relocate hero
+  elements in response to scrolling.
 
 ## 5. Project archive interaction
 
@@ -107,13 +117,16 @@ Validate at minimum:
 
 - Desktop: 1440×900 and 1280×800.
 - Tablet/narrow browser: 768×1024 and 632×661.
+- Responsive boundary: 520×844 and 519×844.
 - Mobile: 390×844 and 375×667.
 
 At every width:
 
 - No horizontal overflow.
 - Navigation remains on one line.
-- Hero elements remain in the specified reading order.
+- The hero social row contains `GitHub`, `LinkedIn`, and `Email`.
+- At 520px the portrait remains beside the copy; at 519px it moves below the
+  social links and centers.
 - Portrait never overlaps or becomes visually detached from the hero.
 - Scrolling alone never changes the active project.
 - Clicking each project produces exactly one expanded panel.
