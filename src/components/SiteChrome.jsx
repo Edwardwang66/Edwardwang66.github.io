@@ -1,37 +1,16 @@
-import { useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { profile } from "../data/portfolio.js";
-import { useMediaPreference } from "../hooks/useMediaPreference.js";
 import { socialIcons } from "./socialIcons.js";
 
 export default function SiteChrome({ view, onNavigate, children }) {
-  const [scrolled, setScrolled] = useState(() => window.scrollY > 4);
-  const reducedTransparency = useMediaPreference(
-    "(prefers-reduced-transparency: reduce)"
-  );
-  const increasedContrast = useMediaPreference("(prefers-contrast: more)");
   const workIsCurrent = view === "home" || view === "project";
-
-  useEffect(() => {
-    const update = () => {
-      const next = window.scrollY > 4;
-      setScrolled((current) => (current === next ? current : next));
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
-  }, []);
 
   return (
     <>
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <header
-        className="site-nav"
-        data-scrolled={scrolled}
-        data-reduced-transparency={reducedTransparency}
-        data-increased-contrast={increasedContrast}
-      >
+      <header className="site-nav">
         <div className="site-nav-inner">
           <button
             type="button"
@@ -61,6 +40,9 @@ export default function SiteChrome({ view, onNavigate, children }) {
             >
               About
             </button>
+            <a className="contact-control" href={`mailto:${profile.email}`}>
+              Get in touch <ArrowUpRight aria-hidden="true" />
+            </a>
           </nav>
         </div>
       </header>

@@ -35,7 +35,10 @@ describe("SiteChrome", () => {
     expect(screen.getByRole("button", { name: "About" })).not.toHaveAttribute(
       "aria-current"
     );
-    expect(screen.queryByText("Get in touch")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Get in touch/ })).toHaveAttribute(
+      "href",
+      "mailto:wanghanqing66@gmail.com"
+    );
     expect(screen.getByText("EW")).toBeInTheDocument();
     expect(screen.getByText("Edward Wang")).toBeInTheDocument();
 
@@ -53,18 +56,15 @@ describe("SiteChrome", () => {
     );
   });
 
-  it("adds the nav edge only after four pixels of scroll", () => {
-    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+  it("keeps a stable navigation shell independent of scroll position", () => {
     renderChrome();
     const header = screen.getByRole("banner");
-    expect(header).toHaveAttribute("data-scrolled", "false");
+    expect(header).not.toHaveAttribute("data-scrolled");
 
-    Object.defineProperty(window, "scrollY", { configurable: true, value: 4 });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 200 });
     fireEvent.scroll(window);
-    expect(header).toHaveAttribute("data-scrolled", "false");
 
-    Object.defineProperty(window, "scrollY", { configurable: true, value: 5 });
-    fireEvent.scroll(window);
-    expect(header).toHaveAttribute("data-scrolled", "true");
+    expect(header).not.toHaveAttribute("data-scrolled");
+    expect(header).toHaveClass("site-nav");
   });
 });

@@ -44,62 +44,14 @@ test("reduced motion keeps disclosure immediate and the status dot static", asyn
   await expect(page.locator(".status-dot")).toHaveCSS("animation-name", "none");
 });
 
-test("reduced transparency removes blur without borrowing reduced motion", async ({ browser }) => {
-  let context = await browser.newContext();
-  let page = await context.newPage();
-  let path = "cdp";
-  try {
-    const session = await context.newCDPSession(page);
-    await session.send("Emulation.setEmulatedMedia", {
-      features: [
-        { name: "prefers-reduced-transparency", value: "reduce" },
-      ],
-    });
-  } catch {
-    path = "matchMedia-init";
-    await context.close();
-    context = await browser.newContext();
-    await context.addInitScript(() => {
-      const nativeMatchMedia = window.matchMedia.bind(window);
-      window.matchMedia = (query) => {
-        if (query !== "(prefers-reduced-transparency: reduce)") {
-          return nativeMatchMedia(query);
-        }
-        return {
-          media: query,
-          matches: true,
-          onchange: null,
-          addEventListener() {},
-          removeEventListener() {},
-          addListener() {},
-          removeListener() {},
-          dispatchEvent: () => true,
-        };
-      };
-    });
-    page = await context.newPage();
-  }
-  await page.goto("http://127.0.0.1:4173/");
-  const nav = page.locator(".site-nav");
-  await expect(nav).toHaveAttribute("data-reduced-transparency", "true");
-  const material = await nav.evaluate((node) => ({
+test("navigation remains opaque and unblurred", async ({ page }) => {
+  await page.goto("/");
+  const material = await page.locator(".site-nav").evaluate((node) => ({
     backdrop: getComputedStyle(node).backdropFilter,
     background: getComputedStyle(node).backgroundColor,
+    border: getComputedStyle(node).borderBottomStyle,
   }));
   expect(material.backdrop).toBe("none");
-  expect(material.background).toContain("0.96");
-  await expect(nav).toHaveAttribute("data-increased-contrast", "false");
-  console.log(`reduced-transparency-path=${path}`);
-  await context.close();
-});
-
-test("increased contrast adds a defined edge independently", async ({ page }) => {
-  await page.emulateMedia({ contrast: "more" });
-  await page.goto("/");
-  const nav = page.locator(".site-nav");
-  await expect(nav).toHaveAttribute("data-increased-contrast", "true");
-  await expect(nav).toHaveAttribute("data-reduced-transparency", "false");
-  expect(
-    await nav.evaluate((node) => getComputedStyle(node).borderBottomStyle)
-  ).toBe("solid");
+  expect(material.background).toBe("rgb(255, 255, 255)");
+  expect(material.border).toBe("solid");
 });
