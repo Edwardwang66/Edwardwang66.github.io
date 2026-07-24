@@ -7,12 +7,16 @@ import {
   openProject,
 } from "./helpers.js";
 
-for (const viewport of [
-  { width: 1440, height: 1000 },
-  { width: 1024, height: 900 },
+const viewports = [
+  { width: 1440, height: 900 },
+  { width: 1280, height: 800 },
+  { width: 768, height: 1024 },
+  { width: 632, height: 661 },
   { width: 390, height: 844 },
-  { width: 320, height: 700 },
-]) {
+  { width: 375, height: 667 },
+];
+
+for (const viewport of viewports) {
   test(`responsive contract at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
@@ -29,7 +33,28 @@ for (const viewport of [
       expect(box.height).toBeGreaterThanOrEqual(44);
     }
 
-    const portrait = await mediaBox(page.locator('.portrait[data-size="hero"]'));
+    const portrait = await page
+      .locator('.portrait[data-size="hero"]')
+      .boundingBox();
+    const heroCopy = await page.locator(".hero-copy").boundingBox();
+    const actions = await page.locator(".hero-actions").boundingBox();
+    const brand = await page.locator(".brand-control").boundingBox();
+    const primaryNav = await page.locator(".primary-nav").boundingBox();
+
+    expect(Math.abs(brand.y - primaryNav.y)).toBeLessThan(12);
+    await expect(page.locator(".brand-name")).toBeVisible();
+
+    if (viewport.width >= 900) {
+      expect(portrait.x).toBeGreaterThan(heroCopy.x + heroCopy.width);
+      await expect(page.locator(".contact-control")).toBeVisible();
+    } else {
+      expect(portrait.y).toBeGreaterThan(actions.y + actions.height);
+      expect(Math.abs(portrait.x - heroCopy.x)).toBeLessThan(4);
+      if (viewport.width < 768) {
+        await expect(page.locator(".contact-control")).toBeHidden();
+      }
+    }
+
     if (viewport.width < 640) {
       expect(portrait.width).toBeLessThanOrEqual(144);
       const evidence = await mediaBox(
@@ -42,7 +67,7 @@ for (const viewport of [
       );
       expect(aboutPortrait.width).toBeLessThanOrEqual(160);
       await expectNoHorizontalOverflow(page);
-    } else {
+    } else if (viewport.width >= 1024) {
       const shell = await page.locator(".page-shell").evaluate((node) => {
         const style = getComputedStyle(node);
         return {

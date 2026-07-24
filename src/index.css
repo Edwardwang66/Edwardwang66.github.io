@@ -264,9 +264,9 @@ a {
 
 .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(48px, 8vw, 104px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) clamp(184px, 18vw, 220px);
+  gap: clamp(56px, 8vw, 104px);
+  align-items: start;
   padding-block: clamp(88px, 10vw, 124px) clamp(96px, 11vw, 128px);
 }
 
@@ -335,7 +335,46 @@ a {
   margin-top: 34px;
 }
 
-.hero-actions a,
+.hero-actions a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  padding: 0 18px;
+  font-size: 14px;
+  transition:
+    border-color 90ms ease-out,
+    background-color 90ms ease-out,
+    color 90ms ease-out,
+    transform 90ms ease-out;
+}
+
+.hero-actions a:first-child {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.hero-actions a:hover,
+.hero-actions a:focus-visible {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.hero-actions a:first-child:hover,
+.hero-actions a:first-child:focus-visible {
+  border-color: #30302e;
+  background: #30302e;
+  color: #fff;
+}
+
+.hero-actions a:active {
+  transform: scale(0.985);
+}
+
 .project-panel-copy a {
   display: inline-flex;
   min-height: 44px;
@@ -351,8 +390,6 @@ a {
     text-decoration-color 90ms ease-out;
 }
 
-.hero-actions a:hover,
-.hero-actions a:focus-visible,
 .project-panel-copy a:hover,
 .project-panel-copy a:focus-visible {
   color: var(--blue);
@@ -385,7 +422,8 @@ a {
 }
 
 .portrait[data-size="hero"] {
-  width: clamp(184px, 18vw, 220px);
+  width: 100%;
+  margin-top: 42px;
 }
 
 .portrait-image {
@@ -612,39 +650,16 @@ a {
   margin-top: 18px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .status-dot::after {
-    position: absolute;
-    inset: -4px;
-    border: 1px solid rgba(88, 114, 93, 0.35);
-    border-radius: 50%;
-    content: "";
-    animation: status-pulse 2.4s ease-out infinite;
-  }
-}
-
-@keyframes status-pulse {
-  0%,
-  45% {
-    opacity: 0.7;
-    transform: scale(0.75);
-  }
-  80%,
-  100% {
-    opacity: 0;
-    transform: scale(1.55);
-  }
-}
-
-@media (max-width: 767px) {
+@media (max-width: 899px) {
   .home-hero {
-    grid-template-columns: minmax(0, 1fr) 128px;
-    gap: 28px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
     padding-block: 72px 96px;
   }
 
   .home-hero h1 {
-    font-size: clamp(2.6rem, 8.5vw, 3rem);
+    max-width: 700px;
+    font-size: clamp(2.6rem, 7vw, 3.35rem);
   }
 
   .hero-supporting {
@@ -653,6 +668,8 @@ a {
 
   .portrait[data-size="hero"] {
     width: 128px;
+    margin-top: 0;
+    justify-self: start;
   }
 
   .practice-record,
@@ -682,10 +699,8 @@ a {
 
 @media (max-width: 639px) {
   .home-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-    align-items: start;
-    padding-block: 64px 88px;
+    gap: 30px;
+    padding-block: 56px 84px;
   }
 
   .home-hero h1 {
@@ -699,7 +714,7 @@ a {
 
   .portrait[data-size="hero"] {
     width: 112px;
-    justify-self: end;
+    justify-self: start;
   }
 
   .current-practice,
