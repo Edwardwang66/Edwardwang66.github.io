@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
 import { projects } from "../data/portfolio.js";
 import { setMediaQuery } from "../test/setup.js";
 import HomePage from "./HomePage.jsx";
 
 describe("HomePage", () => {
-  it("renders the approved positioning and current-practice hierarchy", () => {
+  it("renders the approved positioning and selected-experience hierarchy", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const { container } = render(<HomePage onOpenProject={vi.fn()} />);
 
@@ -37,18 +37,37 @@ describe("HomePage", () => {
       "href",
       "#selected-work"
     );
-    expect(screen.getByRole("link", { name: "Current practice" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Experience" })).toHaveAttribute(
       "href",
-      "#current-practice"
+      "#selected-experience"
     );
     expect(
-      container.querySelector("#current-practice").compareDocumentPosition(
+      container.querySelector("#selected-experience").compareDocumentPosition(
         container.querySelector("#selected-work")
       ) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
   });
 
-  it("embeds the portrait naturally and opens a complete project record", () => {
+  it("features the two internships with exact timestamps and official links", () => {
+    const { container } = render(<HomePage onOpenProject={vi.fn()} />);
+    const experience = container.querySelector("#selected-experience");
+    const records = experience.querySelectorAll(".featured-experience-record");
+
+    expect(records).toHaveLength(2);
+    expect(records[0]).toHaveTextContent("Bioyond Robotics");
+    expect(records[0]).toHaveTextContent("Jul 2026 — Present");
+    expect(records[1]).toHaveTextContent("c12.ai");
+    expect(records[1]).toHaveTextContent("Jun 2024 — Aug 2024");
+    expect(
+      within(experience).getByRole("link", { name: /Bioyond Robotics/ })
+    ).toHaveAttribute("href", "https://www.bioyond.com/en/");
+    expect(within(experience).getByRole("link", { name: /c12.ai/ })).toHaveAttribute(
+      "href",
+      "https://www.c12.ai/en"
+    );
+  });
+
+  it("embeds the portrait naturally and opens the first project record", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const onOpenProject = vi.fn();
     const { container } = render(
@@ -59,24 +78,7 @@ describe("HomePage", () => {
     expect(portrait.closest("[data-size='hero']")).toBeInTheDocument();
     expect(portrait.closest(".card, .identity-panel")).toBeNull();
 
-    const practice = container.querySelector("#current-practice");
-    for (const text of [
-      "Jul 2026 — Present",
-      "Pudong, Shanghai, China · On-site",
-      "Bioyond Robotics",
-      "Agentic AI Engineer Intern · AI for Science",
-      "Designing and developing an agentic AI platform for scientific workflow automation. Building modular planning, orchestration, validation and feedback mechanisms for executable, adaptive and auditable laboratory processes.",
-    ]) {
-      expect(withinSection(practice, text)).toBeInTheDocument();
-    }
-
     fireEvent.click(screen.getByRole("link", { name: /Open project/ }));
     expect(onOpenProject).toHaveBeenCalledWith(projects[0]);
   });
 });
-
-function withinSection(section, text) {
-  return [...section.querySelectorAll("*")].find(
-    (node) => node.children.length === 0 && node.textContent === text
-  );
-}

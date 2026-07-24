@@ -35,10 +35,17 @@ describe("AboutPage", () => {
       "Agentic AI Engineer Intern · AI for Science",
       "Jul 2026 — Present",
       "Pudong, Shanghai, China · On-site",
-      "Designing and developing an agentic AI platform for scientific workflow automation. Building modular planning, orchestration, validation and feedback workflows that translate scientific intent into executable, verifiable and adaptive laboratory processes—with emphasis on reliability, traceability and human oversight.",
+      profile.experience[0].note,
     ]) {
       expect(screen.getByText(value)).toBeInTheDocument();
     }
+    expect(
+      screen.getByRole("link", { name: /Bioyond Robotics/ })
+    ).toHaveAttribute("href", "https://www.bioyond.com/en/");
+    expect(screen.getByRole("link", { name: /c12.ai/ })).toHaveAttribute(
+      "href",
+      "https://www.c12.ai/en"
+    );
 
     for (const record of profile.education) {
       expect(screen.getByText(record.note)).toBeInTheDocument();

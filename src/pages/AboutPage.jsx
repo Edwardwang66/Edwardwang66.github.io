@@ -1,6 +1,7 @@
 import Portrait from "../components/Portrait.jsx";
 import { socialIcons } from "../components/socialIcons.js";
 import { profile } from "../data/portfolio.js";
+import { ArrowUpRight } from "lucide-react";
 
 function SectionHeading({ id, children }) {
   return (
@@ -56,7 +57,19 @@ export default function AboutPage() {
             <article className="about-record experience-record" key={`${record.org}:${record.year}`}>
               <p className="about-record-date">{record.year}</p>
               <div>
-                <h3 className="font-serif">{record.org}</h3>
+                <h3 className="font-serif">
+                  {record.website ? (
+                    <a
+                      href={record.website}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {record.org} <ArrowUpRight aria-hidden="true" />
+                    </a>
+                  ) : (
+                    record.org
+                  )}
+                </h3>
                 <p className="about-record-role">{record.role}</p>
                 {record.location ? (
                   <p className="about-record-location">{record.location}</p>

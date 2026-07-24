@@ -1,10 +1,12 @@
-import { ArrowDownRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import Portrait from "../components/Portrait.jsx";
 import ProjectArchive from "../components/ProjectArchive.jsx";
 import { profile, projects } from "../data/portfolio.js";
 
 export default function HomePage({ onOpenProject }) {
-  const practice = profile.currentPractice;
+  const featuredExperience = profile.experience.filter(
+    (record) => record.featured
+  );
 
   return (
     <main className="page-shell home-page" aria-labelledby="home-title">
@@ -23,30 +25,44 @@ export default function HomePage({ onOpenProject }) {
             <a href="#selected-work">
               Selected work <ArrowDownRight aria-hidden="true" />
             </a>
-            <a href="#current-practice">Current practice</a>
+            <a href="#selected-experience">Experience</a>
           </div>
         </div>
         <Portrait size="hero" />
       </section>
 
       <section
-        id="current-practice"
-        className="current-practice"
-        aria-labelledby="current-practice-title"
+        id="selected-experience"
+        className="selected-experience"
+        aria-labelledby="selected-experience-title"
       >
         <div className="section-heading-row">
-          <p>Current practice</p>
-          <p>{practice.year}</p>
+          <h2 id="selected-experience-title">Selected experience</h2>
+          <p>{featuredExperience.length} internships</p>
         </div>
-        <div className="practice-record">
-          <div>
-            <h2 id="current-practice-title" className="font-serif">
-              {practice.org}
-            </h2>
-            <p className="practice-role">{practice.role}</p>
-            <p className="practice-location">{practice.location}</p>
-          </div>
-          <p className="practice-note">{practice.note}</p>
+        <div className="featured-experience-list">
+          {featuredExperience.map((record) => (
+            <article
+              className="featured-experience-record"
+              key={`${record.org}:${record.year}`}
+            >
+              <p className="featured-experience-date">{record.year}</p>
+              <div className="featured-experience-identity">
+                <h3 className="font-serif">
+                  <a
+                    href={record.website}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {record.org} <ArrowUpRight aria-hidden="true" />
+                  </a>
+                </h3>
+                <p className="featured-experience-role">{record.role}</p>
+                <p className="featured-experience-location">{record.location}</p>
+              </div>
+              <p className="featured-experience-note">{record.note}</p>
+            </article>
+          ))}
         </div>
       </section>
 
