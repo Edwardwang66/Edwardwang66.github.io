@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import { projects } from "../data/portfolio.js";
 import { setMediaQuery } from "../test/setup.js";
-import { createRafClock } from "../test/rafClock.js";
 import ProjectArchive from "./ProjectArchive.jsx";
 
 describe("ProjectArchive", () => {
@@ -55,24 +54,24 @@ describe("ProjectArchive", () => {
     ).toHaveLength(1);
   });
 
-  it("keeps a closing panel mounted until the shared spring settles", () => {
-    const clock = createRafClock();
-    clock.install();
+  it("hides the previous panel immediately without scheduling animation frames", () => {
+    const raf = vi.spyOn(window, "requestAnimationFrame");
     const { container } = render(
       <ProjectArchive projects={projects} onOpenProject={vi.fn()} />
     );
-    const trigger02 = container.querySelector('[data-project-id="lab-robotic-arm"][data-project-trigger]');
+    const trigger02 = container.querySelector(
+      '[data-project-id="lab-robotic-arm"][data-project-trigger]'
+    );
     const panel01 = container.querySelector("#project-panel-off-road-vehicle");
-    fireEvent.click(trigger02);
-    expect(panel01).not.toHaveAttribute("hidden");
+    const panel02 = container.querySelector("#project-panel-lab-robotic-arm");
 
-    for (let frame = 0; frame < 120 && clock.pending(); frame += 1) {
-      clock.advance(16);
-    }
+    fireEvent.click(trigger02);
+
     expect(panel01).toHaveAttribute("hidden");
     expect(panel01).toHaveAttribute("aria-hidden", "true");
-    expect(panel01).toHaveAttribute("inert");
-    clock.restore();
+    expect(panel02).not.toHaveAttribute("hidden");
+    expect(raf).not.toHaveBeenCalled();
+    raf.mockRestore();
   });
 
   it("keeps text-only projects intentional and names failed evidence", () => {

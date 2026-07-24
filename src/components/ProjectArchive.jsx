@@ -1,42 +1,15 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { useDisclosureSpring } from "../hooks/useDisclosureSpring.js";
-import { useMediaPreference } from "../hooks/useMediaPreference.js";
-import { useMobileProjectActivation } from "../hooks/useMobileProjectActivation.js";
 import SafeImage from "./SafeImage.jsx";
 
 export default function ProjectArchive({ projects, onOpenProject }) {
-  const ids = useMemo(() => projects.map((project) => project.id), [projects]);
   const [activeId, setActiveId] = useState(projects[0].id);
-  const reducedMotion = useMediaPreference("(prefers-reduced-motion: reduce)");
-  const triggerNodes = useRef(new Map());
-  const panelNodes = useRef(new Map());
-  const { registerPanel, registerPanelContent } = useDisclosureSpring({
-    ids,
-    activeId,
-    reducedMotion,
-  });
-
-  const activateFromObserver = useCallback((id) => {
+  const activate = useCallback((id) => {
     setActiveId((current) => (current === id ? current : id));
   }, []);
-  const { noteManualActivation } = useMobileProjectActivation({
-    ids,
-    activeId,
-    onActivate: activateFromObserver,
-    triggerNodes,
-    panelNodes,
-  });
-  const activateFromTrigger = useCallback(
-    (id) => {
-      noteManualActivation();
-      setActiveId((current) => (current === id ? current : id));
-    },
-    [noteManualActivation]
-  );
 
   return (
-    <div className="project-archive" data-reduced-motion={reducedMotion}>
+    <div className="project-archive">
       {projects.map((project) => {
         const expanded = activeId === project.id;
         const lowResolution = project.homeEvidence?.role === "low-resolution";
@@ -54,11 +27,7 @@ export default function ProjectArchive({ projects, onOpenProject }) {
               data-project-id={project.id}
               aria-expanded={expanded}
               aria-controls={`project-panel-${project.id}`}
-              ref={(node) => {
-                if (node) triggerNodes.current.set(project.id, node);
-                else triggerNodes.current.delete(project.id);
-              }}
-              onClick={() => activateFromTrigger(project.id)}
+              onClick={() => activate(project.id)}
             >
               <span className="project-index">{project.no}</span>
               <span className="project-trigger-copy">
@@ -73,16 +42,10 @@ export default function ProjectArchive({ projects, onOpenProject }) {
               className="project-archive-panel"
               role="region"
               aria-labelledby={`project-trigger-${project.id}`}
-              ref={(node) => {
-                if (node) panelNodes.current.set(project.id, node);
-                else panelNodes.current.delete(project.id);
-                registerPanel(project.id)(node);
-              }}
+              aria-hidden={expanded ? undefined : "true"}
+              hidden={!expanded}
             >
-              <div
-                className="project-panel-content"
-                ref={registerPanelContent(project.id)}
-              >
+              <div className="project-panel-content">
                 {project.homeEvidence ? (
                   <figure
                     className="archive-evidence"

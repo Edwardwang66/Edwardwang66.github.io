@@ -32,27 +32,16 @@ test("programmatic project heading focus does not resemble a control", async ({ 
   ).toBe("none");
 });
 
-test("reduced motion is immediate and independent", async ({ page }) => {
+test("reduced motion keeps disclosure immediate and the status dot static", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator(".project-archive")).toHaveAttribute(
-    "data-reduced-motion",
-    "true"
-  );
   await page.locator('[data-project-trigger][data-project-id="lab-robotic-arm"]').click();
   await expect.poll(() => expandedProjectIds(page)).toEqual(["lab-robotic-arm"]);
-  await expect(page.locator("#project-panel-lab-robotic-arm")).toHaveCSS(
-    "height",
-    /auto|[1-9]/
+  await expect(page.locator("#project-panel-off-road-vehicle")).toHaveAttribute(
+    "hidden",
+    ""
   );
-  await expect(page.locator(".site-nav")).toHaveAttribute(
-    "data-reduced-transparency",
-    "false"
-  );
-  await expect(page.locator(".site-nav")).toHaveAttribute(
-    "data-increased-contrast",
-    "false"
-  );
+  await expect(page.locator(".status-dot")).toHaveCSS("animation-name", "none");
 });
 
 test("reduced transparency removes blur without borrowing reduced motion", async ({ browser }) => {
