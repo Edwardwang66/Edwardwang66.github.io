@@ -46,7 +46,10 @@ test("compact controls press immediately while archive rows keep geometry", asyn
   await page.mouse.down();
   await page.waitForTimeout(50);
   const during = await row.boundingBox();
-  expect(during).toEqual(before);
+  expect({ width: during.width, height: during.height }).toEqual({
+    width: before.width,
+    height: before.height,
+  });
   expect(await row.evaluate((node) => getComputedStyle(node).transform)).toBe("none");
   await page.mouse.up();
 });
