@@ -4,9 +4,10 @@ import ProjectMedia, { MoreEvidence } from "./ProjectMedia.jsx";
 
 describe("ProjectMedia", () => {
   it("renders intrinsic image evidence with an authored caption and fallback", () => {
-    const evidence = projects[0].selectedEvidence[0];
+    const project = projects.find((item) => item.id === "off-road-vehicle");
+    const evidence = project.selectedEvidence[0];
     const { container } = render(
-      <ProjectMedia evidence={evidence} projectTitle={projects[0].title} />
+      <ProjectMedia evidence={evidence} projectTitle={project.title} />
     );
     const image = screen.getByRole("img", { name: evidence.alt });
     expect(image).toHaveAttribute("width", String(evidence.width));
@@ -19,15 +20,16 @@ describe("ProjectMedia", () => {
     fireEvent.error(image);
     expect(
       screen.getByRole("img", {
-        name: `${evidence.alt} — ${projects[0].title} image unavailable`,
+        name: `${evidence.alt} — ${project.title} image unavailable`,
       })
     ).toBeInTheDocument();
   });
 
   it("keeps video native, stable, and paused by default", () => {
-    const evidence = projects[1].selectedEvidence[0];
+    const project = projects.find((item) => item.id === "lab-robotic-arm");
+    const evidence = project.selectedEvidence[0];
     const { container } = render(
-      <ProjectMedia evidence={evidence} projectTitle={projects[1].title} />
+      <ProjectMedia evidence={evidence} projectTitle={project.title} />
     );
     const video = container.querySelector("video");
     expect(video).toHaveAttribute("controls");
@@ -40,9 +42,10 @@ describe("ProjectMedia", () => {
   });
 
   it("mounts and unmounts GIF animation only after user action", () => {
-    const evidence = projects[4].selectedEvidence[0];
+    const project = projects.find((item) => item.id === "planning-control");
+    const evidence = project.selectedEvidence[0];
     const { container } = render(
-      <ProjectMedia evidence={evidence} projectTitle={projects[4].title} />
+      <ProjectMedia evidence={evidence} projectTitle={project.title} />
     );
     expect(container.querySelector(`img[src="${evidence.src}"]`)).toBeNull();
     expect(container.querySelector(`img[src="${evidence.poster}"]`)).not.toBeNull();
@@ -53,9 +56,14 @@ describe("ProjectMedia", () => {
   });
 
   it("keeps PDF links normal and previews lazy", () => {
-    const evidence = projects[2].moreEvidence[0];
+    const evidence = {
+      kind: "pdf",
+      src: "/example-report.pdf",
+      name: "Example report",
+      caption: "A test-only report fixture for the reusable PDF renderer.",
+    };
     const { container } = render(
-      <ProjectMedia evidence={evidence} projectTitle={projects[2].title} />
+      <ProjectMedia evidence={evidence} projectTitle="Example project" />
     );
     expect(screen.getByRole("link", { name: evidence.name })).toHaveAttribute(
       "target",
@@ -72,28 +80,45 @@ describe("ProjectMedia", () => {
   });
 
   it("indexes all-PDF evidence immediately and lazily mounts mixed archives", () => {
+    const reports = [
+      {
+        kind: "pdf",
+        src: "/report-1.pdf",
+        name: "Report one",
+        caption: "The first test-only report fixture.",
+      },
+      {
+        kind: "pdf",
+        src: "/report-2.pdf",
+        name: "Report two",
+        caption: "The second test-only report fixture.",
+      },
+    ];
+    const planning = projects.find((item) => item.id === "planning-control");
     const { container, rerender } = render(
       <MoreEvidence
-        evidence={projects[2].moreEvidence}
-        projectTitle={projects[2].title}
+        evidence={reports}
+        projectTitle="Example project"
       />
     );
-    expect(screen.getAllByRole("link")).toHaveLength(3);
+    expect(screen.getAllByRole("link")).toHaveLength(2);
     expect(container.querySelector("iframe")).toBeNull();
 
     rerender(
       <MoreEvidence
-        evidence={projects[4].moreEvidence}
-        projectTitle={projects[4].title}
+        evidence={planning.moreEvidence}
+        projectTitle={planning.title}
       />
     );
     expect(container.querySelector("img, iframe, video")).toBeNull();
     const toggle = screen.getByRole("button", {
-      name: `More evidence (${projects[4].moreEvidence.length})`,
+      name: `More evidence (${planning.moreEvidence.length})`,
     });
     fireEvent.click(toggle);
     const archive = container.querySelector(".more-evidence-body");
-    expect(within(archive).getAllByRole("link").length).toBeGreaterThan(0);
+    expect(within(archive).getAllByRole("button", { name: "Play animation" })).toHaveLength(
+      planning.moreEvidence.length
+    );
     fireEvent.click(toggle);
     expect(container.querySelector(".more-evidence-body")).toBeNull();
   });

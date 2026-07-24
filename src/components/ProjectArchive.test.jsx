@@ -62,7 +62,7 @@ describe("ProjectArchive", () => {
     const trigger02 = container.querySelector(
       '[data-project-id="lab-robotic-arm"][data-project-trigger]'
     );
-    const panel01 = container.querySelector("#project-panel-off-road-vehicle");
+    const panel01 = container.querySelector("#project-panel-planning-control");
     const panel02 = container.querySelector("#project-panel-lab-robotic-arm");
 
     fireEvent.click(trigger02);

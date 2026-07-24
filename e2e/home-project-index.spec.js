@@ -7,7 +7,7 @@ import {
 test("desktop archive stays single-open for pointer and keyboard", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
-  await expect.poll(() => expandedProjectIds(page)).toEqual(["off-road-vehicle"]);
+  await expect.poll(() => expandedProjectIds(page)).toEqual(["planning-control"]);
 
   const trigger02 = page.locator('[data-project-trigger][data-project-id="lab-robotic-arm"]');
   await trigger02.click();
@@ -58,9 +58,9 @@ test("rapid project selection remains immediate and single-open", async ({ page 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await page.locator('[data-project-trigger][data-project-id="lab-robotic-arm"]').click();
-  await page.locator('[data-project-trigger][data-project-id="off-road-vehicle"]').click();
-  await expect.poll(() => expandedProjectIds(page)).toEqual(["off-road-vehicle"]);
-  await expect(page.locator("#project-panel-off-road-vehicle")).not.toHaveAttribute(
+  await page.locator('[data-project-trigger][data-project-id="planning-control"]').click();
+  await expect.poll(() => expandedProjectIds(page)).toEqual(["planning-control"]);
+  await expect(page.locator("#project-panel-planning-control")).not.toHaveAttribute(
     "hidden",
     ""
   );
@@ -75,12 +75,12 @@ test("mobile scrolling preserves the selected project and remains native", async
   await page.goto("/");
   await page.locator("#selected-work").scrollIntoViewIfNeeded();
   await installProgrammaticScrollSpy(page);
-  expect(await expandedProjectIds(page)).toEqual(["off-road-vehicle"]);
+  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
   await page.mouse.wheel(0, 900);
   await page.waitForTimeout(150);
-  expect(await expandedProjectIds(page)).toEqual(["off-road-vehicle"]);
+  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
   await page.mouse.wheel(0, -400);
   await page.waitForTimeout(150);
-  expect(await expandedProjectIds(page)).toEqual(["off-road-vehicle"]);
+  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
   expect(await page.evaluate(() => window.__programmaticScrollCalls)).toEqual([]);
 });

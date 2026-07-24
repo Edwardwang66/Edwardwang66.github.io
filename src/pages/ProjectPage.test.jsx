@@ -19,6 +19,10 @@ function renderProject(index) {
   return { ...result, onBack, onOpenProject, project, nextProject };
 }
 
+function renderProjectById(id) {
+  return renderProject(projects.findIndex((project) => project.id === id));
+}
+
 describe("ProjectPage", () => {
   it("uses the approved technical-journal order and complete stack", () => {
     const { container, onBack, onOpenProject, nextProject, project } =
@@ -40,15 +44,19 @@ describe("ProjectPage", () => {
     expect(onOpenProject).toHaveBeenCalledWith(nextProject);
   });
 
-  it("shows report links without eagerly mounting previews", () => {
-    const { container } = renderProject(2);
-    expect(screen.getAllByRole("link", { name: /PR[123] —/ })).toHaveLength(3);
-    expect(container.querySelector("iframe")).toBeNull();
+  it("keeps both course projects report-free", () => {
+    for (const id of ["planning-control", "state-estimation"]) {
+      const { container, unmount } = renderProjectById(id);
+      expect(screen.queryByRole("link", { name: /PR[123] —/ })).toBeNull();
+      expect(container.querySelector("iframe")).toBeNull();
+      expect(container.querySelector('[data-media-kind="pdf"]')).toBeNull();
+      unmount();
+    }
   });
 
   it("omits every media surface for intentionally text-only projects", () => {
-    for (const index of [3, 5]) {
-      const { container, unmount } = renderProject(index);
+    for (const id of ["drug-delivery-ml", "embedded-digital"]) {
+      const { container, unmount } = renderProjectById(id);
       expect(
         container.querySelector(
           "[data-media-kind], .selected-evidence, .more-evidence, .media-fallback, img, video, iframe"
@@ -59,12 +67,20 @@ describe("ProjectPage", () => {
     }
   });
 
-  it("caps selected planning evidence and leaves the remainder collapsed", () => {
-    const { container } = renderProject(4);
+  it("shows only controlled GIF evidence for ECE 276B", () => {
+    const planning = projects.find(
+      (project) => project.id === "planning-control"
+    );
+    const { container } = renderProjectById("planning-control");
     expect(container.querySelectorAll(".selected-evidence > figure")).toHaveLength(3);
+    expect(container.querySelectorAll('[data-media-kind="gif"]')).toHaveLength(4);
+    expect(screen.getAllByRole("button", { name: "Play animation" })).toHaveLength(
+      4
+    );
+    expect(container.querySelector('[data-media-kind="pdf"]')).toBeNull();
     expect(
       screen.getByRole("button", {
-        name: `More evidence (${projects[4].moreEvidence.length})`,
+        name: `More evidence (${planning.moreEvidence.length})`,
       })
     ).toBeInTheDocument();
     expect(container.querySelector(".more-evidence-body")).toBeNull();

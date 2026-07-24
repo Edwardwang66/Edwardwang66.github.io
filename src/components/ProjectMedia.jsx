@@ -3,7 +3,11 @@ import SafeImage from "./SafeImage.jsx";
 
 function mediaStyle(evidence) {
   return evidence.role === "low-resolution"
-    ? { "--media-max": `${Math.round(evidence.width * 1.25)}px` }
+    ? {
+        "--media-max": `${
+          evidence.displayWidth ?? Math.round(evidence.width * 1.25)
+        }px`,
+      }
     : undefined;
 }
 
