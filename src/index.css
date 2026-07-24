@@ -264,7 +264,7 @@ a {
 
 .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(184px, 18vw, 220px);
+  grid-template-columns: minmax(0, 1fr) 256px;
   gap: clamp(56px, 8vw, 104px);
   align-items: start;
   padding-block: clamp(88px, 10vw, 124px) clamp(96px, 11vw, 128px);
@@ -375,6 +375,35 @@ a {
   transform: scale(0.985);
 }
 
+.hero-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-socials a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  color: #62645f;
+  font-size: 13px;
+  transition: color 90ms ease-out;
+}
+
+.hero-socials svg {
+  width: 20px;
+  height: 20px;
+}
+
+.hero-socials a:hover,
+.hero-socials a:focus-visible {
+  color: var(--blue);
+}
+
 .project-panel-copy a {
   display: inline-flex;
   min-height: 44px;
@@ -422,7 +451,7 @@ a {
 }
 
 .portrait[data-size="hero"] {
-  width: 100%;
+  width: 256px;
   margin-top: 42px;
 }
 
@@ -685,8 +714,8 @@ a {
 
 @media (max-width: 899px) {
   .home-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 34px;
+    grid-template-columns: minmax(0, 1fr) 256px;
+    gap: 40px;
     padding-block: 72px 96px;
   }
 
@@ -700,9 +729,9 @@ a {
   }
 
   .portrait[data-size="hero"] {
-    width: 128px;
+    width: 256px;
     margin-top: 0;
-    justify-self: start;
+    justify-self: end;
   }
 
   .featured-experience-record,
@@ -736,7 +765,8 @@ a {
 
 @media (max-width: 639px) {
   .home-hero {
-    gap: 30px;
+    grid-template-columns: minmax(0, 1fr) 160px;
+    gap: 24px;
     padding-block: 56px 84px;
   }
 
@@ -750,8 +780,8 @@ a {
   }
 
   .portrait[data-size="hero"] {
-    width: 112px;
-    justify-self: start;
+    width: 160px;
+    justify-self: end;
   }
 
   .selected-experience,
@@ -800,6 +830,18 @@ a {
   .archive-evidence img,
   .media-fallback {
     max-height: 220px;
+  }
+}
+
+@media (max-width: 519px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .portrait[data-size="hero"] {
+    width: 160px;
+    justify-self: center;
   }
 }
 

@@ -41,6 +41,10 @@ describe("HomePage", () => {
       "href",
       "#selected-experience"
     );
+    const heroSocials = container.querySelector(".hero-socials");
+    expect(
+      within(heroSocials).getAllByRole("link").map((link) => link.textContent)
+    ).toEqual(["GitHub", "LinkedIn", "Email"]);
     expect(
       container.querySelector("#selected-experience").compareDocumentPosition(
         container.querySelector("#selected-work")

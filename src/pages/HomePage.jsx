@@ -1,6 +1,7 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import Portrait from "../components/Portrait.jsx";
 import ProjectArchive from "../components/ProjectArchive.jsx";
+import { socialIcons } from "../components/socialIcons.js";
 import { profile, projects } from "../data/portfolio.js";
 
 export default function HomePage({ onOpenProject }) {
@@ -27,6 +28,24 @@ export default function HomePage({ onOpenProject }) {
             </a>
             <a href="#selected-experience">Experience</a>
           </div>
+          <ul className="hero-socials" aria-label="Profile links">
+            {profile.socials.map((social) => {
+              const Icon = socialIcons[social.icon];
+              const external = social.href.startsWith("http");
+              return (
+                <li key={social.label}>
+                  <a
+                    href={social.href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noreferrer" : undefined}
+                  >
+                    {Icon ? <Icon aria-hidden="true" /> : null}
+                    <span>{social.label}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
         <Portrait size="hero" />
       </section>
