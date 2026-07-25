@@ -13,6 +13,23 @@ function overlaps(a, b) {
   );
 }
 
+function watchBrowserErrors(page) {
+  const errors = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      errors.push({
+        source: "console",
+        text: message.text(),
+        url: message.location().url,
+      });
+    }
+  });
+  page.on("pageerror", (error) => {
+    errors.push({ source: "pageerror", text: error.message });
+  });
+  return errors;
+}
+
 test("desktop Curry stays fixed, quiet, and waves only once", async ({
   page,
 }) => {
@@ -34,23 +51,38 @@ test("desktop Curry stays fixed, quiet, and waves only once", async ({
   expect(overlaps(before, socials)).toBe(false);
   await expectNoHorizontalOverflow(page);
 
+  const beforeScrollY = await page.evaluate(() => window.scrollY);
   await page.mouse.wheel(0, 900);
-  const afterScroll = await curry.boundingBox();
-  expect(afterScroll.x).toBeCloseTo(before.x, 1);
-  expect(afterScroll.y).toBeCloseTo(before.y, 1);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(beforeScrollY + 500);
+  const preWave = await curry.boundingBox();
+  expect(preWave.x).toBeCloseTo(before.x, 1);
+  expect(preWave.y).toBeCloseTo(before.y, 1);
 
   await curry.hover();
   await expect(curry).toHaveAttribute("data-state", "wave");
-  const waveSamples = await curry.evaluate(
+  const waveEvidence = await curry.evaluate(
     (node) =>
       new Promise((resolve, reject) => {
-        const samples = [];
-        const startedAt = performance.now();
-
-        function sample() {
-          const style = getComputedStyle(node);
-          const state = node.dataset.state;
-          if (state === "wave") {
+        const run = async () => {
+          const animation = node
+            .getAnimations()
+            .find((candidate) => candidate.animationName === "curry-wave");
+          if (!animation) {
+            reject(new Error("Curry Wave animation was not found"));
+            return;
+          }
+          await animation.ready;
+          animation.pause();
+          const duration = Number(
+            animation.effect.getComputedTiming().duration
+          );
+          const samples = [];
+          for (const currentTime of [1, 221, 441, 661]) {
+            animation.currentTime = currentTime;
+            await new Promise(requestAnimationFrame);
+            const style = getComputedStyle(node);
             const rect = node.getBoundingClientRect();
             samples.push({
               backgroundX: Number.parseFloat(style.backgroundPositionX),
@@ -59,31 +91,55 @@ test("desktop Curry stays fixed, quiet, and waves only once", async ({
               opacity: Number.parseFloat(style.opacity),
               visibility: style.visibility,
               width: rect.width,
+              x: rect.x,
+              y: rect.y,
             });
-          } else if (samples.length) {
-            resolve(samples);
-            return;
           }
-
-          if (performance.now() - startedAt > 2_000) {
-            reject(new Error("Curry Wave did not settle within 2 seconds"));
-            return;
-          }
-          requestAnimationFrame(sample);
-        }
-
-        sample();
+          animation.currentTime = 0;
+          const settled = new Promise((settle, fail) => {
+            let timeout;
+            const observer = new MutationObserver(() => {
+              if (node.dataset.state !== "wave") {
+                window.clearTimeout(timeout);
+                observer.disconnect();
+                settle();
+              }
+            });
+            observer.observe(node, {
+              attributes: true,
+              attributeFilter: ["data-state"],
+            });
+            timeout = window.setTimeout(() => {
+              observer.disconnect();
+              fail(new Error("Curry Wave did not settle within 2 seconds"));
+            }, 2_000);
+          });
+          const startedAt = performance.now();
+          animation.play();
+          await settled;
+          resolve({
+            duration,
+            elapsed: performance.now() - startedAt,
+            samples,
+          });
+        };
+        run().catch(reject);
       })
   );
-  expect(waveSamples.length).toBeGreaterThan(20);
-  for (const sample of waveSamples) {
-    expect(sample.backgroundX).toBeGreaterThanOrEqual(-228.1);
-    expect(sample.backgroundX).toBeLessThanOrEqual(0.1);
+  expect(waveEvidence.duration).toBe(880);
+  expect(waveEvidence.elapsed).toBeGreaterThanOrEqual(840);
+  expect(waveEvidence.elapsed).toBeLessThanOrEqual(1050);
+  expect(waveEvidence.samples.map(({ backgroundX }) => backgroundX)).toEqual([
+    0, -76, -152, -228,
+  ]);
+  for (const sample of waveEvidence.samples) {
     expect(sample.display).not.toBe("none");
     expect(sample.visibility).toBe("visible");
     expect(sample.opacity).toBe(1);
-    expect(sample.width).toBeCloseTo(76, 1);
-    expect(sample.height).toBeCloseTo(82.333, 1);
+    expect(sample.x).toBeCloseTo(preWave.x, 1);
+    expect(sample.y).toBeCloseTo(preWave.y, 1);
+    expect(sample.width).toBeCloseTo(preWave.width, 1);
+    expect(sample.height).toBeCloseTo(preWave.height, 1);
   }
   await expect
     .poll(() => curry.getAttribute("data-state"))
@@ -127,9 +183,20 @@ test("mobile Curry is smaller and fully static", async ({ page }) => {
   expect(
     await curry.evaluate((node) => ({
       animation: getComputedStyle(node).animationName,
+      backgroundX: Number.parseFloat(
+        getComputedStyle(node).backgroundPositionX
+      ),
+      backgroundY: Number.parseFloat(
+        getComputedStyle(node).backgroundPositionY
+      ),
       pointerEvents: getComputedStyle(node).pointerEvents,
     }))
-  ).toEqual({ animation: "none", pointerEvents: "none" });
+  ).toEqual({
+    animation: "none",
+    backgroundX: 0,
+    backgroundY: 0,
+    pointerEvents: "none",
+  });
   await expectNoHorizontalOverflow(page);
 });
 
@@ -145,9 +212,37 @@ test("reduced motion keeps desktop Curry on a static Idle frame", async ({
   expect(
     await curry.evaluate((node) => ({
       animation: getComputedStyle(node).animationName,
+      backgroundX: Number.parseFloat(
+        getComputedStyle(node).backgroundPositionX
+      ),
+      backgroundY: Number.parseFloat(
+        getComputedStyle(node).backgroundPositionY
+      ),
       pointerEvents: getComputedStyle(node).pointerEvents,
     }))
-  ).toEqual({ animation: "none", pointerEvents: "none" });
+  ).toEqual({
+    animation: "none",
+    backgroundX: 0,
+    backgroundY: 0,
+    pointerEvents: "none",
+  });
+});
+
+test("normal navigation stays free of console and page errors", async ({
+  page,
+}) => {
+  const errors = watchBrowserErrors(page);
+  await page.goto("/", { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "About" }).click();
+  await expect(page.locator("#about-title")).toBeVisible();
+  await page.getByRole("button", { name: "Work", exact: true }).click();
+  const firstId = await page
+    .locator("[data-project-trigger]")
+    .first()
+    .evaluate((node) => node.dataset.projectId);
+  await openProject(page, firstId);
+  await page.waitForLoadState("networkidle");
+  expect(errors).toEqual([]);
 });
 
 test("failed Curry media disappears without affecting the hero", async ({
