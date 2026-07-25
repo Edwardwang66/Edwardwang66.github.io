@@ -23,24 +23,11 @@ function countMatches(source, pattern) {
   return [...source.matchAll(pattern)].length;
 }
 
-test("ECE276A media assets have valid signatures and bounded size", async () => {
-  for (const [path, kind, maxBytes] of assets) {
-    const bytes = await readFile(path);
-    const metadata = await stat(path);
-    if (kind === "GIF") {
-      assert.match(bytes.subarray(0, 6).toString("ascii"), /^GIF8[79]a$/);
-    } else {
-      assert.deepEqual(
-        [...bytes.subarray(0, 8)],
-        [137, 80, 78, 71, 13, 10, 26, 10]
-      );
-    }
-    assert.ok(metadata.size <= maxBytes, `${path} exceeds ${maxBytes}`);
-  }
-});
+function countLiteral(source, token) {
+  return source.split(token).length - 1;
+}
 
-test("state-estimation declares exactly three GIFs and three retained PDFs", async () => {
-  const source = await readFile("src/Portfolio.jsx", "utf8");
+function validateStateEstimationMedia(source) {
   const project = extractBetween(
     source,
     'id: "state-estimation"',
@@ -75,12 +62,8 @@ test("state-estimation declares exactly three GIFs and three retained PDFs", asy
     ],
   ];
   for (const [src, poster] of expectedGifPairs) {
-    assert.equal(countMatches(gifs, new RegExp(src.replaceAll("/", "\\/"), "g")), 1, src);
-    assert.equal(
-      countMatches(gifs, new RegExp(poster.replaceAll("/", "\\/"), "g")),
-      1,
-      poster
-    );
+    assert.equal(countLiteral(gifs, `src: "${src}"`), 1, src);
+    assert.equal(countLiteral(gifs, `poster: "${poster}"`), 1, poster);
   }
 
   const expectedPdfs = [
@@ -96,10 +79,9 @@ test("state-estimation declares exactly three GIFs and three retained PDFs", asy
   for (const [name, src] of expectedPdfs) {
     assert.ok(files.includes(`{ name: "${name}", src: "${src}" }`), src);
   }
-});
+}
 
-test("course-gifs rendering preserves GIF, PDF, and reduced-motion wiring", async () => {
-  const source = await readFile("src/Portfolio.jsx", "utf8");
+function validateCourseGifsRendering(source) {
   const motionAwareGif = extractBetween(
     source,
     "function MotionAwareGif",
@@ -128,4 +110,50 @@ test("course-gifs rendering preserves GIF, PDF, and reduced-motion wiring", asyn
   assert.match(courseGifsBranch, /project\.media\.files\.map\(\(file\) => \(/);
   assert.match(courseGifsBranch, /<embed[\s\S]*src=\{`\$\{file\.src\}#toolbar=1&navpanes=0&scrollbar=1`\}/);
   assert.match(courseGifsBranch, /title=\{file\.name\}/);
+}
+
+function validatePortfolioSource(source) {
+  validateStateEstimationMedia(source);
+  validateCourseGifsRendering(source);
+}
+
+test("ECE276A media assets have valid signatures and bounded size", async () => {
+  for (const [path, kind, maxBytes] of assets) {
+    const bytes = await readFile(path);
+    const metadata = await stat(path);
+    if (kind === "GIF") {
+      assert.match(bytes.subarray(0, 6).toString("ascii"), /^GIF8[79]a$/);
+    } else {
+      assert.deepEqual(
+        [...bytes.subarray(0, 8)],
+        [137, 80, 78, 71, 13, 10, 26, 10]
+      );
+    }
+    assert.ok(metadata.size <= maxBytes, `${path} exceeds ${maxBytes}`);
+  }
+});
+
+test("Portfolio source satisfies the complete ECE276A media contract", async () => {
+  const source = await readFile("src/Portfolio.jsx", "utf8");
+  validatePortfolioSource(source);
+});
+
+test("Portfolio contract rejects a GIF URL with the expected path as a prefix", async () => {
+  const source = await readFile("src/Portfolio.jsx", "utf8");
+  const mutated = source.replace(
+    'src: "/ece276a/gifs/pr2-lidar-slam.gif"',
+    'src: "/ece276a/gifs/pr2-lidar-slam.gif.bak"'
+  );
+  assert.notEqual(mutated, source, "GIF mutation was not applied");
+  assert.throws(() => validatePortfolioSource(mutated), /pr2-lidar-slam\.gif/);
+});
+
+test("Portfolio contract rejects a poster URL with a near-match extension", async () => {
+  const source = await readFile("src/Portfolio.jsx", "utf8");
+  const mutated = source.replace(
+    'poster: "/ece276a/posters/pr2-lidar-slam.png"',
+    'poster: "/ece276a/posters/pr2-lidar-slamXpng"'
+  );
+  assert.notEqual(mutated, source, "poster mutation was not applied");
+  assert.throws(() => validatePortfolioSource(mutated), /pr2-lidar-slam\.png/);
 });
