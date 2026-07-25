@@ -213,8 +213,34 @@ const projects = [
       "from-zinc-300 to-zinc-100",
     ],
     media: {
-      type: "pdfs",
+      type: "course-gifs",
       coverImage: "/ece276a/1.png",
+      gifs: [
+        {
+          title: "PR1 · IMU Orientation Estimation",
+          description:
+            "Quaternion propagation from calibrated IMU angular velocity, compared against VICON roll, pitch, and yaw.",
+          src: "/ece276a/gifs/pr1-orientation.gif",
+          poster: "/ece276a/posters/pr1-orientation.png",
+          alt: "Animated IMU body orientation beside estimated and VICON roll, pitch, and yaw traces",
+        },
+        {
+          title: "PR2 · LiDAR SLAM",
+          description:
+            "Submap ICP trajectory correction replayed while sampled LiDAR scans build the occupancy grid.",
+          src: "/ece276a/gifs/pr2-lidar-slam.gif",
+          poster: "/ece276a/posters/pr2-lidar-slam.png",
+          alt: "Animated occupancy-grid construction with corrected LiDAR SLAM trajectory and current robot pose",
+        },
+        {
+          title: "PR3 · Visual–Inertial SLAM",
+          description:
+            "Visual–inertial trajectory and mapped landmarks revealed over time against the IMU-only baseline.",
+          src: "/ece276a/gifs/pr3-visual-inertial-slam.gif",
+          poster: "/ece276a/posters/pr3-visual-inertial-slam.png",
+          alt: "Animated visual-inertial SLAM trajectory, IMU-only comparison, and mapped landmarks",
+        },
+      ],
       files: [
         { name: "PR1 - Pose Estimation", src: "/ece276a/ece276_pr1.pdf" },
         { name: "PR2 - Sensor Fusion", src: "/ece276a/pr2.pdf" },
@@ -545,6 +571,34 @@ function Home({ go }) {
 
 /* --------------------------------- Project --------------------------------- */
 
+function MotionAwareGif({ item }) {
+  return (
+    <figure className="overflow-hidden rounded-md border border-neutral-200 bg-neutral-50">
+      <div className="aspect-video bg-[#f5f3ed]">
+        <img
+          src={item.src}
+          alt={item.alt}
+          className="h-full w-full object-contain motion-reduce:hidden"
+          loading="lazy"
+        />
+        <img
+          src={item.poster}
+          alt=""
+          aria-hidden="true"
+          className="hidden h-full w-full object-contain motion-reduce:block"
+          loading="lazy"
+        />
+      </div>
+      <figcaption className="border-t border-neutral-200 px-4 py-4">
+        <div className="font-serif text-lg text-neutral-900">{item.title}</div>
+        <p className="mt-1 text-sm leading-relaxed text-neutral-600">
+          {item.description}
+        </p>
+      </figcaption>
+    </figure>
+  );
+}
+
 function ProjectDetail({ id, go }) {
   const project = projects.find((p) => p.id === id) ?? projects[0];
   const idx = projects.findIndex((p) => p.id === project.id);
@@ -699,7 +753,11 @@ function ProjectDetail({ id, go }) {
       {project.media && (
         <section className="mt-16">
           <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-8">
-            {project.media.type === "pdfs" ? "Research Reports" : "Project Documentation"}
+            {project.media.type === "pdfs"
+              ? "Research Reports"
+              : project.media.type === "course-gifs"
+                ? "Project Visualizations"
+                : "Project Documentation"}
           </div>
 
           {project.media.type === "images" && (
@@ -765,6 +823,44 @@ function ProjectDetail({ id, go }) {
                 </div>
               )}
             </>
+          )}
+
+          {project.media.type === "course-gifs" && (
+            <div className="space-y-12">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {project.media.gifs.map((item, index) => (
+                  <div
+                    key={item.src}
+                    className={index === 0 ? "lg:col-span-2" : undefined}
+                  >
+                    <MotionAwareGif item={item} />
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-6">
+                <div className="text-xs uppercase tracking-[0.2em] text-neutral-500">
+                  Project reports
+                </div>
+                {project.media.files.map((file) => (
+                  <div
+                    key={file.src}
+                    className="overflow-hidden rounded-md border border-neutral-200 bg-neutral-50"
+                  >
+                    <div className="border-b border-neutral-200 bg-neutral-100 px-4 py-3">
+                      <div className="text-sm font-medium text-neutral-900">
+                        {file.name}
+                      </div>
+                    </div>
+                    <embed
+                      src={`${file.src}#toolbar=1&navpanes=0&scrollbar=1`}
+                      type="application/pdf"
+                      width="100%"
+                      height="600px"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {project.media.type === "pdfs" && (
