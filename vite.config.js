@@ -11,6 +11,6 @@ export default defineConfig({
     setupFiles: "./src/test/setup.js",
     css: true,
     globals: true,
-    exclude: [...configDefaults.exclude, "e2e/**"],
+    exclude: [...configDefaults.exclude, "e2e/**", ".worktrees/**"],
   },
 });
