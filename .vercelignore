@@ -8,9 +8,14 @@ playwright-report/
 test-results/
 
 # Legacy GitHub Pages output and root-level media duplicates.
-assets/
-c12.ai/
-ece191/
-ece276a/
-IMG_9036.JPG
-.nojekyll
+/assets/
+/c12.ai/
+/ece191/
+/ece276a/
+/IMG_9036.JPG
+/.nojekyll
+
+# Course reports are source material, not public portfolio surfaces.
+/public/ece276a/*.pdf
+/public/ece276b/pr1/report.pdf
+/public/ece276b/pr2/ECE276B_PR2_report.pdf
