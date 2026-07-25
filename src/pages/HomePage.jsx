@@ -1,4 +1,5 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import CurryCompanion from "../components/CurryCompanion.jsx";
 import Portrait from "../components/Portrait.jsx";
 import ProjectArchive from "../components/ProjectArchive.jsx";
 import { socialIcons } from "../components/socialIcons.js";
@@ -96,6 +97,7 @@ export default function HomePage({ onOpenProject }) {
         </div>
         <ProjectArchive projects={projects} onOpenProject={onOpenProject} />
       </section>
+      <CurryCompanion />
     </main>
   );
 }

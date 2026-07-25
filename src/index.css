@@ -845,6 +845,87 @@ a {
   }
 }
 
+.curry-companion {
+  position: fixed;
+  z-index: 20;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  width: 76px;
+  height: 82.333px;
+  contain: layout paint size style;
+  background-image: url("/pet/curry-companion.webp");
+  background-repeat: no-repeat;
+  background-size: 608px 329.333px;
+  cursor: default;
+  pointer-events: auto;
+  visibility: hidden;
+}
+
+.curry-companion[data-asset-status="loaded"] {
+  visibility: visible;
+}
+
+.curry-companion-preload {
+  display: none;
+}
+
+.curry-companion[data-state="idle"] {
+  background-position: 0 0;
+  animation: curry-idle 1040ms steps(8, end) infinite;
+}
+
+.curry-companion[data-state="wave"] {
+  background-position: 0 -82.333px;
+  animation: curry-wave 880ms steps(4, end) 1;
+}
+
+.curry-companion[data-state="look-right"] {
+  background-position: 0 -164.666px;
+  animation: curry-look-right 1120ms steps(8, end) 1;
+}
+
+.curry-companion[data-state="look-left"] {
+  background-position: 0 -246.999px;
+  animation: curry-look-left 1120ms steps(8, end) 1;
+}
+
+@keyframes curry-idle {
+  to { background-position-x: -608px; }
+}
+
+@keyframes curry-wave {
+  to { background-position-x: -304px; }
+}
+
+@keyframes curry-look-right {
+  to { background-position-x: -608px; }
+}
+
+@keyframes curry-look-left {
+  to { background-position-x: -608px; }
+}
+
+@media (max-width: 639px) {
+  .curry-companion {
+    right: calc(12px + env(safe-area-inset-right, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: 52px;
+    height: 56.333px;
+    background-position: 0 0;
+    background-size: 416px 225.333px;
+    animation: none !important;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curry-companion {
+    background-position: 0 0;
+    animation: none !important;
+    pointer-events: none;
+  }
+}
+
 .project-page {
   padding-bottom: clamp(96px, 12vw, 136px);
 }

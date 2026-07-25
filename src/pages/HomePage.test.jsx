@@ -5,6 +5,15 @@ import { setMediaQuery } from "../test/setup.js";
 import HomePage from "./HomePage.jsx";
 
 describe("HomePage", () => {
+  it("mounts one Curry companion inside the homepage boundary", () => {
+    const { container } = render(<HomePage onOpenProject={vi.fn()} />);
+
+    expect(container.querySelectorAll(".curry-companion")).toHaveLength(1);
+    expect(
+      container.querySelector(".curry-companion-preload")
+    ).toHaveAttribute("src", "/pet/curry-companion.webp");
+  });
+
   it("renders the approved positioning and selected-experience hierarchy", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const { container } = render(<HomePage onOpenProject={vi.fn()} />);

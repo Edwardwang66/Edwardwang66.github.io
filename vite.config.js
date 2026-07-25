@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     environmentOptions: { jsdom: { pretendToBeVisual: true } },
-    setupFiles: "./src/test/setup.js",
+    setupFiles: ["./src/test/domPolyfills.js", "./src/test/setup.js"],
     css: true,
     globals: true,
     exclude: [...configDefaults.exclude, "e2e/**", ".worktrees/**"],
