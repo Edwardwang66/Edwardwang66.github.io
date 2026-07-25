@@ -132,6 +132,49 @@ describe("useCurryCompanion", () => {
     expect(result.current.state).toBe("idle");
   });
 
+  it("returns an active Wave to Idle when motion becomes ineligible", () => {
+    const { result, rerender } = renderHook(
+      ({ motionEligible }) =>
+        useCurryCompanion({
+          motionEligible,
+          random: () => 0,
+        }),
+      { initialProps: { motionEligible: true } }
+    );
+
+    act(() => result.current.onPointerEnter());
+    expect(result.current.state).toBe("wave");
+    expect(vi.getTimerCount()).toBe(0);
+
+    rerender({ motionEligible: false });
+
+    expect(result.current.state).toBe("idle");
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("cancels an active Wave while hidden and schedules once when visible", () => {
+    const { result } = renderHook(() =>
+      useCurryCompanion({
+        motionEligible: true,
+        random: () => 0,
+      })
+    );
+
+    act(() => result.current.onPointerEnter());
+    expect(result.current.state).toBe("wave");
+    expect(vi.getTimerCount()).toBe(0);
+
+    visibility = "hidden";
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    expect(result.current.state).toBe("idle");
+    expect(vi.getTimerCount()).toBe(0);
+
+    visibility = "visible";
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    expect(result.current.state).toBe("idle");
+    expect(vi.getTimerCount()).toBe(1);
+  });
+
   it("clears timers and listeners on unmount", () => {
     const remove = vi.spyOn(document, "removeEventListener");
     const { unmount } = renderHook(() =>

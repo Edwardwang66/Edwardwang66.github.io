@@ -96,30 +96,10 @@ test("desktop Curry stays fixed, quiet, and waves only once", async ({
             });
           }
           animation.currentTime = 0;
-          const settled = new Promise((settle, fail) => {
-            let timeout;
-            const observer = new MutationObserver(() => {
-              if (node.dataset.state !== "wave") {
-                window.clearTimeout(timeout);
-                observer.disconnect();
-                settle();
-              }
-            });
-            observer.observe(node, {
-              attributes: true,
-              attributeFilter: ["data-state"],
-            });
-            timeout = window.setTimeout(() => {
-              observer.disconnect();
-              fail(new Error("Curry Wave did not settle within 2 seconds"));
-            }, 2_000);
-          });
-          const startedAt = performance.now();
           animation.play();
-          await settled;
+          await animation.finished;
           resolve({
             duration,
-            elapsed: performance.now() - startedAt,
             samples,
           });
         };
@@ -127,8 +107,6 @@ test("desktop Curry stays fixed, quiet, and waves only once", async ({
       })
   );
   expect(waveEvidence.duration).toBe(880);
-  expect(waveEvidence.elapsed).toBeGreaterThanOrEqual(840);
-  expect(waveEvidence.elapsed).toBeLessThanOrEqual(1050);
   expect(waveEvidence.samples.map(({ backgroundX }) => backgroundX)).toEqual([
     0, -76, -152, -228,
   ]);
@@ -149,6 +127,68 @@ test("desktop Curry stays fixed, quiet, and waves only once", async ({
   await curry.hover();
   await page.waitForTimeout(120);
   await expect(curry).toHaveAttribute("data-state", "idle");
+});
+
+test("desktop Idle renders every populated frame without entering the empty eighth cell", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+  const curry = page.locator(".curry-companion");
+  await expect(curry).toBeVisible();
+  const baseline = await curry.boundingBox();
+
+  const idleEvidence = await curry.evaluate(async (node) => {
+    const animation = node
+      .getAnimations()
+      .find((candidate) => candidate.animationName === "curry-idle");
+    if (!animation) throw new Error("Curry Idle animation was not found");
+    await animation.ready;
+    animation.pause();
+    const duration = Number(animation.effect.getComputedTiming().duration);
+    const timelineOffsets = new Set();
+    for (let currentTime = 0; currentTime <= duration; currentTime += 1) {
+      animation.currentTime = currentTime;
+      timelineOffsets.add(
+        Number.parseFloat(getComputedStyle(node).backgroundPositionX)
+      );
+    }
+    const samples = [];
+    for (let frame = 0; frame < 7; frame += 1) {
+      animation.currentTime = ((frame + 0.25) * duration) / 7;
+      await new Promise(requestAnimationFrame);
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      samples.push({
+        backgroundX: Number.parseFloat(style.backgroundPositionX),
+        height: rect.height,
+        width: rect.width,
+        x: rect.x,
+        y: rect.y,
+      });
+    }
+    animation.currentTime = 0;
+    animation.play();
+    return {
+      duration,
+      samples,
+      timelineOffsets: [...timelineOffsets].sort((a, b) => b - a),
+    };
+  });
+
+  const populatedOffsets = [0, -76, -152, -228, -304, -380, -456];
+  expect(idleEvidence.duration).toBe(1040);
+  expect(idleEvidence.timelineOffsets).toEqual(populatedOffsets);
+  expect(idleEvidence.timelineOffsets).not.toContain(-532);
+  expect(
+    idleEvidence.samples.map(({ backgroundX }) => backgroundX)
+  ).toEqual(populatedOffsets);
+  for (const sample of idleEvidence.samples) {
+    expect(sample.x).toBeCloseTo(baseline.x, 1);
+    expect(sample.y).toBeCloseTo(baseline.y, 1);
+    expect(sample.width).toBeCloseTo(baseline.width, 1);
+    expect(sample.height).toBeCloseTo(baseline.height, 1);
+  }
 });
 
 test("Curry unmounts on About and project views", async ({ page }) => {

@@ -871,7 +871,7 @@ a {
 
 .curry-companion[data-state="idle"] {
   background-position: 0 0;
-  animation: curry-idle 1040ms steps(8, end) infinite;
+  animation: curry-idle 1040ms steps(7, end) infinite;
 }
 
 .curry-companion[data-state="wave"] {
@@ -890,7 +890,7 @@ a {
 }
 
 @keyframes curry-idle {
-  to { background-position-x: -608px; }
+  to { background-position-x: -532px; }
 }
 
 @keyframes curry-wave {

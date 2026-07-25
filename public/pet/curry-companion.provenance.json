@@ -13,7 +13,13 @@
     "columns": 8,
     "rows": 11,
     "cellWidth": 192,
-    "cellHeight": 208
+    "cellHeight": 208,
+    "populatedFrames": {
+      "idle": 7,
+      "wave": 4,
+      "look-right": 8,
+      "look-left": 8
+    }
   },
   "derivative": {
     "path": "/pet/curry-companion.webp",
@@ -30,6 +36,12 @@
       "wave",
       "look-right",
       "look-left"
-    ]
+    ],
+    "populatedFrames": {
+      "idle": 7,
+      "wave": 4,
+      "look-right": 8,
+      "look-left": 8
+    }
   }
 }

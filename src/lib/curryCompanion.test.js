@@ -8,10 +8,30 @@ import {
 describe("Curry companion state helpers", () => {
   it("locks derivative rows and fallback durations", () => {
     expect(CURRY_STATE_CONFIG).toEqual({
-      idle: { row: 0, durationMs: 1040, iterations: "infinite" },
-      wave: { row: 1, durationMs: 880, iterations: 1 },
-      "look-right": { row: 2, durationMs: 1120, iterations: 1 },
-      "look-left": { row: 3, durationMs: 1120, iterations: 1 },
+      idle: {
+        row: 0,
+        populatedFrames: 7,
+        durationMs: 1040,
+        iterations: "infinite",
+      },
+      wave: {
+        row: 1,
+        populatedFrames: 4,
+        durationMs: 880,
+        iterations: 1,
+      },
+      "look-right": {
+        row: 2,
+        populatedFrames: 8,
+        durationMs: 1120,
+        iterations: 1,
+      },
+      "look-left": {
+        row: 3,
+        populatedFrames: 8,
+        durationMs: 1120,
+        iterations: 1,
+      },
     });
   });
 

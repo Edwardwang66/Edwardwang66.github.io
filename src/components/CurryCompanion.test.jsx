@@ -81,4 +81,13 @@ describe("CurryCompanion", () => {
       /@keyframes curry-wave\s*\{\s*to\s*\{\s*background-position-x:\s*-304px;\s*\}\s*\}/s
     );
   });
+
+  it("loops Idle through only its seven populated frames", () => {
+    expect(stylesheet).toMatch(
+      /\.curry-companion\[data-state="idle"\]\s*\{[^}]*animation:\s*curry-idle 1040ms steps\(7, end\) infinite;/s
+    );
+    expect(stylesheet).toMatch(
+      /@keyframes curry-idle\s*\{\s*to\s*\{\s*background-position-x:\s*-532px;\s*\}\s*\}/s
+    );
+  });
 });

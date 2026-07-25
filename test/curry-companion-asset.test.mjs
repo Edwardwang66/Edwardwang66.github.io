@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
 const assetPath = "public/pet/curry-companion.webp";
@@ -52,6 +53,49 @@ function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+async function populatedFramesByState(asset) {
+  const cellWidth = 96;
+  const cellHeight = 104;
+  const states = ["idle", "wave", "look-right", "look-left"];
+  const { data, info } = await sharp(asset)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  return Object.fromEntries(
+    states.map((state, row) => {
+      const populated = Array.from({ length: 8 }, (_, column) => {
+        for (
+          let y = row * cellHeight;
+          y < (row + 1) * cellHeight;
+          y += 1
+        ) {
+          for (
+            let x = column * cellWidth;
+            x < (column + 1) * cellWidth;
+            x += 1
+          ) {
+            if (data[(y * info.width + x) * info.channels + 3] > 0) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+
+      expect(populated).toEqual(
+        Array.from(
+          { length: 8 },
+          (_, column) =>
+            column <
+            { idle: 7, wave: 4, "look-right": 8, "look-left": 8 }[state]
+        )
+      );
+      return [state, populated.filter(Boolean).length];
+    })
+  );
+}
+
 describe("Curry companion asset contract", () => {
   it("ships one bounded RGBA WebP with exact geometry and provenance", async () => {
     const [asset, provenanceText] = await Promise.all([
@@ -84,6 +128,12 @@ describe("Curry companion asset contract", () => {
         rows: 11,
         cellWidth: 192,
         cellHeight: 208,
+        populatedFrames: {
+          idle: 7,
+          wave: 4,
+          "look-right": 8,
+          "look-left": 8,
+        },
       },
       derivative: {
         path: "/pet/curry-companion.webp",
@@ -96,7 +146,25 @@ describe("Curry companion asset contract", () => {
         cellWidth: 96,
         cellHeight: 104,
         states: ["idle", "wave", "look-right", "look-left"],
+        populatedFrames: {
+          idle: 7,
+          wave: 4,
+          "look-right": 8,
+          "look-left": 8,
+        },
       },
     });
+  });
+
+  it("matches declared populated-frame counts to real per-cell alpha", async () => {
+    const [asset, provenanceText] = await Promise.all([
+      readFile(assetPath),
+      readFile(provenancePath, "utf8"),
+    ]);
+    const provenance = JSON.parse(provenanceText);
+
+    expect(await populatedFramesByState(asset)).toEqual(
+      provenance.derivative.populatedFrames
+    );
   });
 });

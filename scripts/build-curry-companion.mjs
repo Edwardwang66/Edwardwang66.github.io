@@ -7,6 +7,18 @@ import {
 import { dirname, resolve } from "node:path";
 import sharp from "sharp";
 
+const POPULATED_FRAMES = Object.freeze({
+  idle: 7,
+  wave: 4,
+  "look-right": 8,
+  "look-left": 8,
+});
+const SOURCE_STATE_ROWS = Object.freeze({
+  idle: 0,
+  wave: 3,
+  "look-right": 9,
+  "look-left": 10,
+});
 const SOURCE = {
   width: 1536,
   height: 2288,
@@ -14,6 +26,7 @@ const SOURCE = {
   rows: 11,
   cellWidth: 192,
   cellHeight: 208,
+  populatedFrames: POPULATED_FRAMES,
 };
 const DERIVATIVE = {
   width: 768,
@@ -23,6 +36,7 @@ const DERIVATIVE = {
   cellWidth: 96,
   cellHeight: 104,
   states: ["idle", "wave", "look-right", "look-left"],
+  populatedFrames: POPULATED_FRAMES,
 };
 const MAX_BYTES = 400 * 1024;
 
@@ -56,6 +70,45 @@ function sha256(path) {
     .digest("hex");
 }
 
+async function validatePopulatedFrames(path, geometry, stateRows, label) {
+  const { data, info } = await sharp(path)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (const state of DERIVATIVE.states) {
+    const row = stateRows[state];
+    const actual = Array.from({ length: geometry.columns }, (_, column) => {
+      for (
+        let y = row * geometry.cellHeight;
+        y < (row + 1) * geometry.cellHeight;
+        y += 1
+      ) {
+        for (
+          let x = column * geometry.cellWidth;
+          x < (column + 1) * geometry.cellWidth;
+          x += 1
+        ) {
+          if (data[(y * info.width + x) * info.channels + 3] > 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+    const expected = Array.from(
+      { length: geometry.columns },
+      (_, column) => column < POPULATED_FRAMES[state]
+    );
+    if (actual.some((populated, column) => populated !== expected[column])) {
+      throw new Error(
+        `${label} ${state} alpha occupancy mismatch: ` +
+          `expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`
+      );
+    }
+  }
+}
+
 const args = parseArgs(process.argv.slice(2));
 const sourcePath = resolve(args.source);
 const manifestPath = resolve(args.manifest);
@@ -85,16 +138,22 @@ if (
   );
 }
 
+await validatePopulatedFrames(
+  sourcePath,
+  SOURCE,
+  SOURCE_STATE_ROWS,
+  "Source"
+);
+
 mkdirSync(dirname(outputPath), { recursive: true });
 mkdirSync(dirname(provenancePath), { recursive: true });
 
-const rowOffsets = [0, 624, 1872, 2080];
 const strips = await Promise.all(
-  rowOffsets.map((top) =>
+  DERIVATIVE.states.map((state) =>
     sharp(sourcePath)
       .extract({
         left: 0,
-        top,
+        top: SOURCE_STATE_ROWS[state] * SOURCE.cellHeight,
         width: SOURCE.width,
         height: SOURCE.cellHeight,
       })
@@ -136,6 +195,13 @@ if (
       `${outputProbe.hasAlpha}`
   );
 }
+
+await validatePopulatedFrames(
+  outputPath,
+  DERIVATIVE,
+  Object.fromEntries(DERIVATIVE.states.map((state, row) => [state, row])),
+  "Derivative"
+);
 
 const outputBytes = readFileSync(outputPath).length;
 if (outputBytes > MAX_BYTES) {
