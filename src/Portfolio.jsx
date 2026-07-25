@@ -8,6 +8,8 @@ import {
   Linkedin,
   ExternalLink,
   Phone,
+  FileText,
+  Download,
 } from "lucide-react";
 
 /**
@@ -181,8 +183,8 @@ const projects = [
       type: "mixed",
       coverImage: "/c12.ai/1.JPG",
       items: [
-        { type: "video", src: "/c12.ai/IMG_1671.mov", label: "Lab operations demo" },
-        { type: "video", src: "/c12.ai/IMG_1672.mov", label: "Robotic arm in action" },
+        { type: "video", src: "/c12.ai/IMG_1671.mp4", label: "Lab operations demo" },
+        { type: "video", src: "/c12.ai/IMG_1672.mp4", label: "Robotic arm in action" },
       ],
     },
   },
@@ -308,19 +310,19 @@ const projects = [
             {
               label: "Part A — DoorKey Environments",
               gifs: [
-                { src: "/ece276b/pr1/gif/partA/doorkey.gif", label: "DoorKey overview" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-5x5-normal.gif", label: "5×5 Normal" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-6x6-shortcut.gif", label: "6×6 Shortcut" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-direct.gif", label: "8×8 Direct" },
-                { src: "/ece276b/pr1/gif/partA/doorkey-8x8-shortcut.gif", label: "8×8 Shortcut" },
+                {
+                  src: "/ece276b/pr1/gif/partA-all.gif",
+                  label: "All 9 DoorKey environments — plays each run end to end, then the next",
+                },
               ],
             },
             {
-              label: "Part B — 10×10 DoorKey",
+              label: "Part B — 10×10 DoorKey (Random Maps)",
               gifs: [
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-1.gif", label: "Episode 1" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-5.gif", label: "Episode 5" },
-                { src: "/ece276b/pr1/gif/partB/DoorKey-10x10-15.gif", label: "Episode 15" },
+                {
+                  src: "/ece276b/pr1/gif/partB-all.gif",
+                  label: "All 36 random 10×10 maps — plays each run end to end, then the next",
+                },
               ],
             },
           ],
@@ -783,9 +785,12 @@ function ProjectDetail({ id, go }) {
                         controls
                         muted
                         autoPlay
-                        className="w-full h-full object-cover aspect-video"
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="w-full aspect-video object-contain bg-black"
                       >
-                        <source src={item.src} />
+                        <source src={item.src} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                     )}
@@ -808,17 +813,7 @@ function ProjectDetail({ id, go }) {
                 <div className="mt-8 space-y-6">
                   <div className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">Research Reports</div>
                   {project.media.pdfs.map((file, i) => (
-                    <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                      <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                        <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                      </div>
-                      <embed
-                        src={file.src + "#toolbar=1&navpanes=0"}
-                        type="application/pdf"
-                        width="100%"
-                        height="600px"
-                      />
-                    </div>
+                    <PdfViewer key={i} name={file.name} src={file.src} />
                   ))}
                 </div>
               )}
@@ -867,17 +862,7 @@ function ProjectDetail({ id, go }) {
           {project.media.type === "pdfs" && (
             <div className="space-y-6">
               {project.media.files.map((file, i) => (
-                <div key={i} className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                  <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                    <div className="text-sm font-medium text-neutral-900">{file.name}</div>
-                  </div>
-                  <embed
-                    src={file.src + "#toolbar=1&navpanes=0"}
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                  />
-                </div>
+                <PdfViewer key={i} name={file.name} src={file.src} />
               ))}
             </div>
           )}
@@ -894,6 +879,20 @@ function ProjectDetail({ id, go }) {
                       <div className="text-xs uppercase tracking-[0.15em] text-neutral-400 mb-4">
                         {section.label}
                       </div>
+                      {section.gifs.length === 1 ? (
+                        <figure className="max-w-sm mx-auto">
+                          <div className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
+                            <img
+                              src={section.gifs[0].src}
+                              alt={section.gifs[0].label}
+                              className="w-full object-contain [image-rendering:pixelated]"
+                            />
+                          </div>
+                          <figcaption className="mt-2 text-center text-xs text-neutral-500">
+                            {section.gifs[0].label}
+                          </figcaption>
+                        </figure>
+                      ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {section.gifs.map((gif, gi) => (
                           <div key={gi} className="rounded-md overflow-hidden bg-neutral-100 border border-neutral-200">
@@ -908,21 +907,12 @@ function ProjectDetail({ id, go }) {
                           </div>
                         ))}
                       </div>
+                      )}
                     </div>
                   ))}
 
-                  {/* Embedded PDF */}
-                  <div className="border border-neutral-200 rounded-md overflow-hidden bg-neutral-50">
-                    <div className="px-4 py-3 border-b border-neutral-200 bg-neutral-100">
-                      <div className="text-sm font-medium text-neutral-900">{report.pdf.name}</div>
-                    </div>
-                    <embed
-                      src={report.pdf.src + "#toolbar=1&navpanes=0&scrollbar=1"}
-                      type="application/pdf"
-                      width="100%"
-                      height="700px"
-                    />
-                  </div>
+                  {/* Report PDF */}
+                  <PdfViewer name={report.pdf.name} src={report.pdf.src} />
                 </div>
               ))}
             </div>
@@ -986,6 +976,43 @@ function Meta({ label, value }) {
         {label}
       </div>
       <div className="text-neutral-900">{value}</div>
+    </div>
+  );
+}
+
+/**
+ * PDF as a clean document card. Inline <embed>/<object> PDFs render as a blank
+ * box on any browser/device without a built-in PDF plugin (common on mobile and
+ * locked-down desktops) and force-download large files on page load. This card
+ * always renders, loads instantly, and gives clear Open / Download actions.
+ */
+function PdfViewer({ name, src }) {
+  return (
+    <div className="border border-neutral-200 rounded-lg bg-neutral-50 p-5 flex items-center gap-4">
+      <div className="shrink-0 w-12 h-12 rounded-md bg-neutral-900 text-white flex items-center justify-center">
+        <FileText className="w-6 h-6" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-neutral-900 truncate">{name}</div>
+        <div className="text-xs text-neutral-500 mt-0.5">PDF document</div>
+      </div>
+      <div className="shrink-0 flex items-center gap-2">
+        <a
+          href={src}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-900 text-white text-xs hover:bg-neutral-700 transition whitespace-nowrap"
+        >
+          Open <ArrowUpRight className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href={src}
+          download
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-300 text-neutral-900 text-xs hover:border-neutral-900 transition whitespace-nowrap"
+        >
+          <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Download</span>
+        </a>
+      </div>
     </div>
   );
 }
