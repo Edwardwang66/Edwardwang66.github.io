@@ -31,13 +31,56 @@ export const profile = {
     height: 1080,
   },
   socials: [
-    { label: "GitHub", href: "https://github.com/Edwardwang66", icon: "github" },
     {
+      kind: "link",
+      label: "GitHub",
+      href: "https://github.com/Edwardwang66",
+      icon: "github",
+    },
+    {
+      kind: "link",
       label: "LinkedIn",
       href: "https://www.linkedin.com/in/edwardwang123/",
       icon: "linkedin",
     },
-    { label: "Email", href: "mailto:wanghanqing66@gmail.com", icon: "mail" },
+    {
+      kind: "link",
+      label: "Email",
+      href: "mailto:wanghanqing66@gmail.com",
+      icon: "mail",
+    },
+    {
+      kind: "link",
+      label: "Instagram",
+      href: "https://www.instagram.com/edwardwang15/",
+      icon: "instagram",
+    },
+    {
+      kind: "profile-card",
+      label: "Douyin",
+      icon: "douyin",
+      displayName: "@Edward",
+      accountId: "891461075",
+      image: {
+        src: "/social/douyin-profile.jpg",
+        alt: "Edward's Douyin profile card",
+        width: 1125,
+        height: 1680,
+      },
+    },
+    {
+      kind: "profile-card",
+      label: "RedNote",
+      icon: "rednote",
+      displayName: "Edward",
+      accountId: "943036106",
+      image: {
+        src: "/social/rednote-profile.jpg",
+        alt: "Edward's RedNote profile card",
+        width: 987,
+        height: 1347,
+      },
+    },
   ],
   education: [
     {

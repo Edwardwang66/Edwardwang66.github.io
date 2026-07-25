@@ -32,10 +32,53 @@ describe("Original+ portfolio content", () => {
         website: "https://www.c12.ai/en",
       },
     ]);
-    expect(profile.socials.map((social) => social.icon)).toEqual([
-      "github",
-      "linkedin",
-      "mail",
+    expect(profile.socials.map(({ label, kind, icon }) => ({
+      label,
+      kind,
+      icon,
+    }))).toEqual([
+      { label: "GitHub", kind: "link", icon: "github" },
+      { label: "LinkedIn", kind: "link", icon: "linkedin" },
+      { label: "Email", kind: "link", icon: "mail" },
+      { label: "Instagram", kind: "link", icon: "instagram" },
+      { label: "Douyin", kind: "profile-card", icon: "douyin" },
+      { label: "RedNote", kind: "profile-card", icon: "rednote" },
+    ]);
+
+    expect(profile.socials.find(({ label }) => label === "Instagram")).toEqual({
+      kind: "link",
+      label: "Instagram",
+      href: "https://www.instagram.com/edwardwang15/",
+      icon: "instagram",
+    });
+
+    expect(profile.socials.filter(({ kind }) => kind === "profile-card")).toEqual([
+      {
+        kind: "profile-card",
+        label: "Douyin",
+        icon: "douyin",
+        displayName: "@Edward",
+        accountId: "891461075",
+        image: {
+          src: "/social/douyin-profile.jpg",
+          alt: "Edward's Douyin profile card",
+          width: 1125,
+          height: 1680,
+        },
+      },
+      {
+        kind: "profile-card",
+        label: "RedNote",
+        icon: "rednote",
+        displayName: "Edward",
+        accountId: "943036106",
+        image: {
+          src: "/social/rednote-profile.jpg",
+          alt: "Edward's RedNote profile card",
+          width: 987,
+          height: 1347,
+        },
+      },
     ]);
   });
 
