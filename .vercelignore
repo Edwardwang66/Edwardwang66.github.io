@@ -1,0 +1,16 @@
+.github/
+.worktrees/
+.superpowers/
+docs/
+e2e/
+test/
+playwright-report/
+test-results/
+
+# Legacy GitHub Pages output and root-level media duplicates.
+assets/
+c12.ai/
+ece191/
+ece276a/
+IMG_9036.JPG
+.nojekyll

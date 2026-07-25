@@ -18,3 +18,8 @@ node_modules/
 .superpowers/
 playwright-report/
 test-results/
+
+# Vercel local state and environment files
+.vercel/
+.env.local
+.env.*.local
