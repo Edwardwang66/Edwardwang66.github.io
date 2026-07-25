@@ -853,6 +853,7 @@ function ProjectDetail({ id, go }) {
                     </div>
                     <embed
                       src={`${file.src}#toolbar=1&navpanes=0&scrollbar=1`}
+                      title={file.name}
                       type="application/pdf"
                       width="100%"
                       height="600px"
