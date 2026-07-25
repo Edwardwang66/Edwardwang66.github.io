@@ -29,6 +29,7 @@
     "autoprefixer": "^10.4.19",
     "jsdom": "^29.1.1",
     "postcss": "^8.4.39",
+    "sharp": "0.35.3",
     "tailwindcss": "^3.4.7",
     "vite": "^7.3.6",
     "vitest": "^4.1.10"
