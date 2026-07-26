@@ -23,6 +23,12 @@ const expectedMedia = [
 
 const triptychPath = "public/ece276a/ece276a-editorial-triptych.png";
 const triptychMaxBytes = 2 * 1024 * 1024;
+const formerTopStripGlyphs = [
+  [46, 53],
+  [563, 79],
+  [1003, 76],
+  [1035, 156],
+];
 
 describe("ECE 276A visualization contract", () => {
   it("keeps all authored assets valid and bounded", async () => {
@@ -55,6 +61,20 @@ describe("ECE 276A visualization contract", () => {
       height: 840,
     });
     expect(file.size).toBeLessThanOrEqual(triptychMaxBytes);
+  });
+
+  it("removes source text strips from all three triptych panels", async () => {
+    const { data, info } = await sharp(triptychPath)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    for (const [x, y] of formerTopStripGlyphs) {
+      const offset = (y * info.width + x) * info.channels;
+      expect(Math.min(...data.subarray(offset, offset + 3))).toBeGreaterThan(
+        80
+      );
+    }
   });
 
   it("shows exactly three GIFs with exact poster pairs and no reports", () => {

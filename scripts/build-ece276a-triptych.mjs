@@ -23,18 +23,21 @@ const panels = [
   {
     source: "public/ece276a/posters/pr1-orientation.png",
     label: "01",
+    titleCropTop: 48,
     focalX: 0.32,
     focalY: 0.55,
   },
   {
     source: "public/ece276a/posters/pr2-lidar-slam.png",
     label: "02",
+    titleCropTop: 100,
     focalX: 0.5,
     focalY: 0.48,
   },
   {
     source: "public/ece276a/posters/pr3-visual-inertial-slam.png",
     label: "03",
+    titleCropTop: 104,
     focalX: 0.48,
     focalY: 0.5,
   },
@@ -65,15 +68,16 @@ function sequenceMark(label) {
   `);
 }
 
-async function cropPanel({ source, focalX, focalY }) {
+async function cropPanel({ source, titleCropTop, focalX, focalY }) {
   const sourcePath = path.join(root, source);
   const metadata = await sharp(sourcePath).metadata();
+  const titleFreeHeight = metadata.height - titleCropTop;
   const scale = Math.max(
     panelWidth / metadata.width,
-    panelHeight / metadata.height
+    panelHeight / titleFreeHeight
   );
   const resizedWidth = Math.ceil(metadata.width * scale);
-  const resizedHeight = Math.ceil(metadata.height * scale);
+  const resizedHeight = Math.ceil(titleFreeHeight * scale);
   const left = clamp(
     Math.round((resizedWidth - panelWidth) * focalX),
     0,
@@ -86,6 +90,12 @@ async function cropPanel({ source, focalX, focalY }) {
   );
 
   return sharp(sourcePath)
+    .extract({
+      left: 0,
+      top: titleCropTop,
+      width: metadata.width,
+      height: titleFreeHeight,
+    })
     .resize(resizedWidth, resizedHeight, { fit: "fill" })
     .extract({
       left,
