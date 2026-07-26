@@ -10,6 +10,9 @@ import { useMediaPreference } from "../hooks/useMediaPreference.js";
 import SafeImage from "./SafeImage.jsx";
 import { socialIcons } from "./socialIcons.js";
 
+const CARD_GAP = 8;
+const VISIBLE_TOP_GAP = 8;
+
 function cardId(label) {
   return `social-profile-card-${label.toLowerCase()}`;
 }
@@ -30,7 +33,7 @@ export default function SocialLinks({
     "(hover: hover) and (pointer: fine)"
   );
   const [activeLabel, setActiveLabel] = useState(null);
-  const [cardLeft, setCardLeft] = useState({});
+  const [cardLayouts, setCardLayouts] = useState({});
   const rootRef = useRef(null);
   const triggerRefs = useRef(new Map());
   const cardRefs = useRef(new Map());
@@ -66,7 +69,19 @@ export default function SocialLinks({
         triggerRect.width / 2 -
         width / 2;
       const left = Math.max(0, Math.min(ideal, rootRect.width - width));
-      setCardLeft((current) => ({ ...current, [activeLabel]: left }));
+      const headerBottom =
+        root.ownerDocument
+          .querySelector(".site-nav")
+          ?.getBoundingClientRect().bottom ?? 0;
+      const visualViewportTop = window.visualViewport?.offsetTop ?? 0;
+      const visibleTop =
+        Math.max(0, headerBottom, visualViewportTop) + VISIBLE_TOP_GAP;
+      const aboveTop = rootRect.top - CARD_GAP - card.offsetHeight;
+      const placement = aboveTop >= visibleTop ? "above" : "below";
+      setCardLayouts((current) => ({
+        ...current,
+        [activeLabel]: { left, placement },
+      }));
     };
 
     measure();
@@ -195,6 +210,7 @@ export default function SocialLinks({
 
       {profiles.map((social) => {
         const open = activeLabel === social.label;
+        const layout = cardLayouts[social.label];
         return (
           <section
             ref={(node) => setCardRef(social.label, node)}
@@ -205,8 +221,9 @@ export default function SocialLinks({
             aria-labelledby={triggerId(social.label)}
             aria-hidden={!open}
             data-state={open ? "open" : "closed"}
+            data-placement={layout?.placement ?? "above"}
             style={{
-              "--social-card-left": `${cardLeft[social.label] ?? 0}px`,
+              "--social-card-left": `${layout?.left ?? 0}px`,
             }}
           >
             <SafeImage

@@ -281,3 +281,29 @@ it("clamps the active card within the measured social container", async () => {
   expect(card.style.getPropertyValue("--social-card-left")).toBe("20px");
   expect(within(card).getByText("943036106")).toBeInTheDocument();
 });
+
+it("places a tall card below when it cannot clear the visible top inset", async () => {
+  setMediaQuery("(hover: hover) and (pointer: fine)", false);
+  const user = userEvent.setup();
+  const { container } = renderSocials();
+  const root = container.querySelector(".social-links");
+  const douyin = screen.getByRole("button", { name: "Douyin" });
+  const card = container.querySelector("#social-profile-card-douyin");
+
+  vi.spyOn(root, "getBoundingClientRect").mockReturnValue({
+    x: 40, left: 40, right: 304, width: 264,
+    y: 120, top: 120, bottom: 164, height: 44, toJSON() {},
+  });
+  vi.spyOn(douyin, "getBoundingClientRect").mockReturnValue({
+    x: 184, left: 184, right: 252, width: 68,
+    y: 120, top: 120, bottom: 164, height: 44, toJSON() {},
+  });
+  Object.defineProperties(card, {
+    offsetHeight: { configurable: true, value: 500 },
+    offsetWidth: { configurable: true, value: 264 },
+  });
+
+  await user.click(douyin);
+  expect(card).toHaveAttribute("data-placement", "below");
+  expect(card.style.getPropertyValue("--social-card-left")).toBe("0px");
+});
