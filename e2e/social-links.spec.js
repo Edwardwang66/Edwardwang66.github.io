@@ -66,6 +66,53 @@ async function footerSocialLayout(page) {
   });
 }
 
+async function centerHitOwner(locator) {
+  return locator.evaluate((control) => {
+    const rect = control.getBoundingClientRect();
+    const hit = document.elementFromPoint(
+      rect.left + rect.width / 2,
+      rect.top + rect.height / 2
+    );
+
+    return {
+      hitClass:
+        typeof hit?.className === "string" ? hit.className : hit?.tagName,
+      owned: Boolean(hit && (hit === control || control.contains(hit))),
+    };
+  });
+}
+
+async function visibleBox(locator) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node);
+    if (
+      style.display === "none" ||
+      style.visibility !== "visible" ||
+      Number.parseFloat(style.opacity) === 0
+    ) {
+      return null;
+    }
+
+    const rect = node.getBoundingClientRect();
+    return {
+      height: rect.height,
+      width: rect.width,
+      x: rect.x,
+      y: rect.y,
+    };
+  });
+}
+
+async function focusWithKeyboard(page, locator) {
+  for (let index = 0; index < 20; index += 1) {
+    if (await locator.evaluate((node) => node === document.activeElement)) {
+      return;
+    }
+    await page.keyboard.press("Tab");
+  }
+  throw new Error("Keyboard focus did not reach the requested social control");
+}
+
 function heroSocialRoot(page) {
   return page.locator(".hero-socials").locator("..");
 }
@@ -142,6 +189,8 @@ test("phone footer socials use an aligned three-column grid", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  const curry = page.locator(".curry-companion");
+  await expect(curry).toBeVisible();
   await page.locator(".site-footer").scrollIntoViewIfNeeded();
 
   const layout = await footerSocialLayout(page);
@@ -155,8 +204,56 @@ test("phone footer socials use an aligned three-column grid", async ({
     ).toBeLessThan(1);
   }
   expect(new Set(layout.controlTops.map(Math.round)).size).toBe(2);
+  await expect(curry).toBeHidden();
+  expect(await visibleBox(curry)).toBeNull();
   await expectNoHorizontalOverflow(page);
 });
+
+for (const width of [768, 1024]) {
+  test(`${width}px footer clears Curry and transfers keyboard ownership to pointer hover`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+
+    const curry = page.locator(".curry-companion");
+    const heroDouyin = heroSocialRoot(page).getByRole("button", {
+      name: "Douyin",
+    });
+    await expect(curry).toBeVisible();
+    await focusWithKeyboard(page, heroDouyin);
+    await expect(heroDouyin).toHaveAttribute("aria-expanded", "true");
+
+    const footer = page.locator(".site-footer");
+    const footerRedNote = footer.getByRole("button", { name: "RedNote" });
+    const footerCard = footer.getByRole("region", { name: "RedNote" });
+    await footer.scrollIntoViewIfNeeded();
+
+    await expect(curry).toBeHidden();
+    expect(await visibleBox(curry)).toBeNull();
+    expect(await centerHitOwner(footerRedNote)).toMatchObject({ owned: true });
+
+    await footerRedNote.hover();
+    await expect(heroDouyin).toHaveAttribute("aria-expanded", "false");
+    await expect(footerRedNote).toHaveAttribute("aria-expanded", "true");
+    await expect(
+      page.locator('.social-profile-card[data-state="open"]')
+    ).toHaveCount(1);
+
+    await footerRedNote.click();
+    await expect(footerRedNote).toHaveAttribute("aria-expanded", "true");
+    await expect(footerCard).toBeVisible();
+    const [controlBox, cardBox] = await Promise.all([
+      footerRedNote.boundingBox(),
+      footerCard.boundingBox(),
+    ]);
+    expect(overlaps(controlBox, cardBox)).toBe(false);
+    expect((await centerHitOwner(footerCard)).owned).toBe(true);
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(curry).toBeVisible();
+  });
+}
 
 for (const viewport of [
   { width: 375, height: 667 },

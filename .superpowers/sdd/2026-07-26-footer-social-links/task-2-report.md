@@ -65,3 +65,27 @@
   this report.
 - The work remains local on `codex/social-profile-links`; it has not been
   pushed, merged, or deployed.
+
+## Final-review correction — 2026-07-27
+
+The earlier visual-inspection statement that Curry remained visible without
+overlap was inaccurate. Read-only hit testing after Task 2 showed the fixed
+`.curry-companion` intercepting the footer RedNote control at 640, 768, and
+1024px, with visible phone overlap and potential overlap with an open card.
+
+The final fix keeps Curry's ordinary homepage behavior but observes the footer
+with `IntersectionObserver`; while any part of the footer intersects the
+viewport, Curry receives `data-footer-in-view="true"` and becomes hidden with
+pointer events disabled. It becomes visible again after the footer leaves the
+viewport. `SocialLinks` also now emits a bubbling instance-open event so a
+profile opened by focus, pointer hover, or touch closes any card owned by the
+other homepage/footer instance.
+
+Final browser coverage verifies real RedNote hit ownership and activation,
+card/control separation, one open card across instances, Curry hiding and
+restoration at 768 and 1024px, and phone footer visibility without Curry
+overlap. Fresh inspected previews:
+
+- `/private/tmp/footer-social-final-desktop-1440x1000.png`
+- `/private/tmp/footer-social-final-tablet-768x900.png`
+- `/private/tmp/footer-social-final-phone-390x844.png`

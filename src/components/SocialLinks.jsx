@@ -12,6 +12,7 @@ import { socialIcons } from "./socialIcons.js";
 
 const CARD_GAP = 8;
 const VISIBLE_TOP_GAP = 8;
+const INSTANCE_OPEN_EVENT = "social-links:profile-open";
 
 function cardId(label, idPrefix) {
   return `${idPrefix}social-profile-card-${label.toLowerCase()}`;
@@ -42,6 +43,13 @@ export default function SocialLinks({
   const pointerFocusLabel = useRef(null);
   const focusOwnedLabel = useRef(null);
   const restoredFocusLabel = useRef(null);
+
+  const openProfile = useCallback((label) => {
+    rootRef.current?.dispatchEvent(
+      new CustomEvent(INSTANCE_OPEN_EVENT, { bubbles: true })
+    );
+    setActiveLabel(label);
+  }, []);
 
   const setTriggerRef = useCallback((label, node) => {
     if (node) triggerRefs.current.set(label, node);
@@ -94,6 +102,19 @@ export default function SocialLinks({
   }, [activeLabel, profileCardPlacement]);
 
   useEffect(() => {
+    const closeForOtherInstance = (event) => {
+      if (event.target === rootRef.current) return;
+      pointerFocusLabel.current = null;
+      focusOwnedLabel.current = null;
+      restoredFocusLabel.current = null;
+      setActiveLabel(null);
+    };
+    document.addEventListener(INSTANCE_OPEN_EVENT, closeForOtherInstance);
+    return () =>
+      document.removeEventListener(INSTANCE_OPEN_EVENT, closeForOtherInstance);
+  }, []);
+
+  useEffect(() => {
     if (!activeLabel) return undefined;
     const closeOutside = (event) => {
       if (!rootRef.current?.contains(event.target)) {
@@ -137,7 +158,11 @@ export default function SocialLinks({
             event.currentTarget.contains(nextTarget)
           )
         ) {
-          setActiveLabel(focusOwnedLabel.current);
+          if (focusOwnedLabel.current) {
+            openProfile(focusOwnedLabel.current);
+          } else {
+            setActiveLabel(null);
+          }
         }
       }}
     >
@@ -190,17 +215,19 @@ export default function SocialLinks({
                     return;
                   }
                   focusOwnedLabel.current = social.label;
-                  setActiveLabel(social.label);
+                  openProfile(social.label);
                 }}
                 onPointerEnter={() => {
-                  if (hoverCapable) setActiveLabel(social.label);
+                  if (hoverCapable) openProfile(social.label);
                 }}
                 onClick={() => {
                   pointerFocusLabel.current = null;
                   if (!hoverCapable) {
-                    setActiveLabel((current) =>
-                      current === social.label ? null : social.label
-                    );
+                    if (activeLabel === social.label) {
+                      setActiveLabel(null);
+                    } else {
+                      openProfile(social.label);
+                    }
                   }
                 }}
               >

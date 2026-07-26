@@ -86,6 +86,37 @@ it("toggles touch cards and leaves only one expanded", async () => {
   );
 });
 
+it("closes an open profile card when another component instance opens one", () => {
+  setMediaQuery("(hover: hover) and (pointer: fine)", true);
+  const { container } = render(
+    <>
+      <SocialLinks socials={profile.socials} />
+      <SocialLinks socials={profile.socials} idPrefix="footer-" />
+    </>
+  );
+  const [heroSocials, footerSocials] = container.querySelectorAll(
+    ".social-links"
+  );
+  const heroDouyin = within(heroSocials).getByRole("button", {
+    name: "Douyin",
+  });
+  const footerRedNote = within(footerSocials).getByRole("button", {
+    name: "RedNote",
+  });
+
+  fireEvent.focus(heroDouyin);
+  expect(heroDouyin).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.pointerEnter(footerRedNote);
+  expect(heroDouyin).toHaveAttribute("aria-expanded", "false");
+  expect(footerRedNote).toHaveAttribute("aria-expanded", "true");
+  expect(
+    container.querySelectorAll(
+      '.social-profile-card[data-state="open"]'
+    )
+  ).toHaveLength(1);
+});
+
 it("lets a repeated touch on one profile control close its card", async () => {
   setMediaQuery("(hover: hover) and (pointer: fine)", false);
   const user = userEvent.setup();

@@ -1078,6 +1078,11 @@ a {
   visibility: visible;
 }
 
+.curry-companion[data-footer-in-view="true"] {
+  pointer-events: none;
+  visibility: hidden;
+}
+
 .curry-companion-preload {
   display: none;
 }
