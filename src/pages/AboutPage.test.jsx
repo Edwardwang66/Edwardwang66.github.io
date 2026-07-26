@@ -80,12 +80,17 @@ describe("AboutPage", () => {
       "href",
       "tel:+16505377182"
     );
-    for (const social of profile.socials) {
+    for (const label of ["GitHub", "LinkedIn", "Email"]) {
+      const social = profile.socials.find((record) => record.label === label);
       const link = screen.getByRole("link", { name: social.label });
       expect(link).toHaveAttribute("href", social.href);
       if (social.href.startsWith("http")) {
+        expect(link).toHaveAttribute("target", "_blank");
         expect(link).toHaveAttribute("rel", "noreferrer");
       }
     }
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Douyin" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "RedNote" })).toBeNull();
   });
 });

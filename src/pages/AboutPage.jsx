@@ -3,6 +3,8 @@ import { socialIcons } from "../components/socialIcons.js";
 import { profile } from "../data/portfolio.js";
 import { ArrowUpRight } from "lucide-react";
 
+const existingSocialLabels = new Set(["GitHub", "LinkedIn", "Email"]);
+
 function SectionHeading({ id, children }) {
   return (
     <h2 id={id} className="about-section-title">
@@ -12,6 +14,9 @@ function SectionHeading({ id, children }) {
 }
 
 export default function AboutPage() {
+  const existingSocials = profile.socials.filter(({ label }) =>
+    existingSocialLabels.has(label)
+  );
   const telephoneHref = `tel:${profile.phone.replace(/[^\d+]/g, "")}`;
 
   return (
@@ -131,7 +136,7 @@ export default function AboutPage() {
           <a href={`mailto:${profile.email}`}>{profile.email}</a>
           <a href={telephoneHref}>{profile.phone}</a>
           <ul aria-label="Profile links">
-            {profile.socials.map((social) => {
+            {existingSocials.map((social) => {
               const Icon = socialIcons[social.icon];
               const external = social.href.startsWith("http");
               return (

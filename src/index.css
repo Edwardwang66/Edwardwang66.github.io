@@ -375,6 +375,11 @@ a {
   transform: scale(0.985);
 }
 
+.social-links {
+  position: relative;
+  width: 100%;
+}
+
 .hero-socials {
   display: flex;
   flex-wrap: wrap;
@@ -384,7 +389,7 @@ a {
   list-style: none;
 }
 
-.hero-socials a {
+.hero-socials :is(a, button) {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -397,11 +402,101 @@ a {
 .hero-socials svg {
   width: 20px;
   height: 20px;
+  flex: none;
 }
 
-.hero-socials a:hover,
-.hero-socials a:focus-visible {
+.hero-socials :is(a, button):hover,
+.hero-socials :is(a, button):focus-visible,
+.hero-socials button[aria-expanded="true"] {
   color: var(--blue);
+}
+
+.social-profile-card {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(100% + 8px);
+  left: var(--social-card-left);
+  display: grid;
+  width: min(280px, calc(100vw - 32px));
+  overflow: hidden;
+  border: 1px solid rgba(39, 77, 102, 0.28);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(25, 28, 30, 0.09);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out,
+    visibility 0s linear 120ms;
+  visibility: hidden;
+}
+
+.social-profile-card[data-state="open"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out;
+  visibility: visible;
+}
+
+.social-profile-card img,
+.social-profile-card .media-fallback {
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  background: #f2f2ef;
+  object-fit: contain;
+}
+
+.social-profile-card .media-fallback {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.social-profile-copy {
+  display: grid;
+  gap: 3px;
+  padding: 14px 16px 16px;
+}
+
+.social-profile-copy p,
+.social-profile-copy strong,
+.social-profile-copy span {
+  margin: 0;
+}
+
+.social-profile-copy p {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.social-profile-copy strong {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.social-profile-copy span {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-profile-card,
+  .social-profile-card[data-state="open"] {
+    transform: none;
+    transition: none;
+  }
 }
 
 .project-panel-copy a {
