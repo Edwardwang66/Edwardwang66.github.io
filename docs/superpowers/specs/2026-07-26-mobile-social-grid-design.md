@@ -10,7 +10,7 @@ their approved order, content, interactions, or restrained editorial treatment.
 
 ## Approved layout
 
-At viewport widths up to `639px`, the social rail becomes an equal-width
+At viewport widths up to `519px`, the social rail becomes an equal-width
 three-column grid with two rows:
 
 | Column 1 | Column 2 | Column 3 |
@@ -22,18 +22,20 @@ Both rows share the same three column starts. Each control remains left-aligned
 inside its cell. Icons keep the existing `20px` visual box, and icon-to-label
 spacing, text size, color, focus styling, and active styling remain unchanged.
 
-Above `639px`, the current flexible desktop/tablet layout remains unchanged.
+At `520px` and above, the current flexible tablet and desktop layout remains
+unchanged.
 
 ## Implementation boundary
 
-The change is limited to the mobile `.hero-socials` layout in
-`src/index.css`. It must not modify:
+The change is limited to `.hero-socials` inside the existing `max-width: 519px`
+single-column mobile breakpoint in `src/index.css`. It must not modify:
 
 - social order, labels, URLs, identities, or icon choices;
 - link/button semantics;
 - Douyin and RedNote profile-card positioning or interaction ownership;
 - the hero copy, portrait, navigation, projects, About page, or footer;
 - Curry sizing, placement, or animation.
+- any layout or styling at `520px` and above.
 
 ## Responsive behavior
 
@@ -55,5 +57,7 @@ Browser coverage will verify at `390px` and `375px` that:
 - Douyin and RedNote still open, close, and remain viewport-safe;
 - Curry does not overlap the social controls or an open profile card.
 
-The full unit, production-build, and system-Chrome E2E suites must remain green.
+Regression coverage at `520px`, `640px`, and `1440px` will confirm that the
+current non-mobile social layout is unchanged.
 
+The full unit, production-build, and system-Chrome E2E suites must remain green.
