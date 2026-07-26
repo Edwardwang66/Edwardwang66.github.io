@@ -116,10 +116,9 @@ export default function SocialLinks({
           !(
             nextTarget instanceof Node &&
             event.currentTarget.contains(nextTarget)
-          ) &&
-          focusOwnedLabel.current !== activeLabel
+          )
         ) {
-          setActiveLabel(null);
+          setActiveLabel(focusOwnedLabel.current);
         }
       }}
     >

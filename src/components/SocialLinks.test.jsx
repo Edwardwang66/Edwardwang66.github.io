@@ -151,6 +151,57 @@ it("preserves a keyboard-owned disclosure across fine-pointer leave", async () =
   expect(redNote).toHaveAttribute("aria-expanded", "true");
 });
 
+it("restores the keyboard-owned disclosure after hovering another profile", async () => {
+  setMediaQuery("(hover: hover) and (pointer: fine)", true);
+  const user = userEvent.setup();
+  const { container } = renderSocials();
+  const root = container.querySelector(".social-links");
+  const douyin = screen.getByRole("button", { name: "Douyin" });
+  const redNote = screen.getByRole("button", { name: "RedNote" });
+
+  for (const label of ["GitHub", "LinkedIn", "Email", "Instagram"]) {
+    await user.tab();
+    expect(screen.getByRole("link", { name: label })).toHaveFocus();
+  }
+  await user.tab();
+  expect(douyin).toHaveFocus();
+  expect(douyin).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.pointerEnter(redNote);
+  expect(douyin).toHaveFocus();
+  expect(redNote).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.pointerLeave(root, { relatedTarget: document.body });
+  expect(douyin).toHaveFocus();
+  expect(douyin).toHaveAttribute("aria-expanded", "true");
+  expect(redNote).toHaveAttribute("aria-expanded", "false");
+});
+
+it("restores the keyboard-owned disclosure after hovering a direct link", async () => {
+  setMediaQuery("(hover: hover) and (pointer: fine)", true);
+  const user = userEvent.setup();
+  const { container } = renderSocials();
+  const root = container.querySelector(".social-links");
+  const github = screen.getByRole("link", { name: "GitHub" });
+  const douyin = screen.getByRole("button", { name: "Douyin" });
+
+  for (const label of ["GitHub", "LinkedIn", "Email", "Instagram"]) {
+    await user.tab();
+    expect(screen.getByRole("link", { name: label })).toHaveFocus();
+  }
+  await user.tab();
+  expect(douyin).toHaveFocus();
+  expect(douyin).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.pointerEnter(github);
+  expect(douyin).toHaveFocus();
+  expect(douyin).toHaveAttribute("aria-expanded", "false");
+
+  fireEvent.pointerLeave(root, { relatedTarget: document.body });
+  expect(douyin).toHaveFocus();
+  expect(douyin).toHaveAttribute("aria-expanded", "true");
+});
+
 it("opens on focus, switches on the other profile control, and closes outside", async () => {
   const user = userEvent.setup();
   renderSocials();
