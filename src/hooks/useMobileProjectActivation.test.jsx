@@ -137,7 +137,7 @@ describe("useMobileProjectActivation", () => {
     clock.restore();
   });
 
-  it("rebases an archive-entry jump and advances no farther than the adjacent project", () => {
+  it("rebases only the first archive-entry jump before a later large swipe advances adjacent", () => {
     setMediaQuery("(max-width: 639px)", true);
     Object.defineProperty(window, "innerHeight", {
       configurable: true,
@@ -166,11 +166,61 @@ describe("useMobileProjectActivation", () => {
     clock.advance(16);
     expect(onActivate).not.toHaveBeenCalled();
 
-    Object.defineProperty(window, "scrollY", { configurable: true, value: 920 });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1600 });
     fireEvent.scroll(window);
     clock.advance(16);
     expect(onActivate).toHaveBeenCalledTimes(1);
     expect(onActivate).toHaveBeenCalledWith("02");
+
+    clock.restore();
+  });
+
+  it("moves from Stock to Robotic Arm and reverses by one adjacent project", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+
+    const forward = render(
+      <Harness
+        activeId="02"
+        onActivate={onActivate}
+        triggers={new Map([
+          ["01", nodeAt(1000)],
+          ["02", nodeAt(700)],
+          ["03", nodeAt(421)],
+        ])}
+        panels={new Map()}
+      />
+    );
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledWith("03");
+    forward.unmount();
+
+    onActivate.mockClear();
+    const reverse = render(
+      <Harness
+        activeId="03"
+        onActivate={onActivate}
+        triggers={new Map([
+          ["01", nodeAt(421)],
+          ["02", nodeAt(700)],
+          ["03", nodeAt(1000)],
+        ])}
+        panels={new Map()}
+      />
+    );
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledWith("02");
+    reverse.unmount();
 
     clock.restore();
   });

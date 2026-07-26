@@ -23,6 +23,7 @@ export function useMobileProjectActivation({
     typeof window === "undefined" ? 0 : window.scrollY
   );
   const directionRef = useRef(0);
+  const hasRebasedEntryRef = useRef(false);
   const lockRef = useRef(null);
   const frameRef = useRef(null);
 
@@ -37,17 +38,23 @@ export function useMobileProjectActivation({
   }, []);
 
   useEffect(() => {
-    if (!mobile) return undefined;
+    if (!mobile) {
+      hasRebasedEntryRef.current = false;
+      return undefined;
+    }
 
     const measure = () => {
       frameRef.current = null;
       const scrollY = window.scrollY;
       const delta = scrollY - lastScrollYRef.current;
-      const enteringArchive = Math.abs(delta) > window.innerHeight / 2;
+      const enteringArchive =
+        !hasRebasedEntryRef.current &&
+        Math.abs(delta) > window.innerHeight / 2;
       if (delta !== 0) directionRef.current = delta > 0 ? 1 : -1;
       lastScrollYRef.current = scrollY;
 
       if (enteringArchive) {
+        hasRebasedEntryRef.current = true;
         directionRef.current = 0;
         return;
       }
