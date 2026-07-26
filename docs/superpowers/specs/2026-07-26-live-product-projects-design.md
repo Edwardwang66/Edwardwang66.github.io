@@ -38,10 +38,10 @@ The Selected Work order is:
 
 1. Easy-A Radar
 2. Multi-Market Stock Research Dashboard
-3. ECE 276B
-4. ECE 276A
-5. Autonomous Off-Road Vehicle
-6. Laboratory Robotic Arm
+3. Laboratory Robotic Arm
+4. ECE 276B
+5. ECE 276A
+6. Autonomous Off-Road Vehicle
 7. AI-Assisted Drug Delivery
 8. Embedded and Digital Systems
 
@@ -323,8 +323,8 @@ data-coverage guarantees.
 - Project data contains both approved stable IDs, timestamps, live URLs, and
   GitHub URLs.
 - The first four project IDs are exactly:
-  `easy-a-radar`, `stock-research-dashboard`, `planning-control`,
-  `state-estimation`.
+  `easy-a-radar`, `stock-research-dashboard`, `lab-robotic-arm`,
+  `planning-control`.
 - Numbering remains contiguous after the two insertions.
 - Both complete project pages render the approved section sequence and boundary
   statements.
