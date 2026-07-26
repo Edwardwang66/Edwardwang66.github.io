@@ -91,7 +91,7 @@ describe("HomePage", () => {
     );
   });
 
-  it("embeds the portrait naturally and opens the first project record", () => {
+  it("embeds the portrait naturally and opens Easy-A Radar as the first project record", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const onOpenProject = vi.fn();
     const { container } = render(

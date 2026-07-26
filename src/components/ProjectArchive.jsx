@@ -34,7 +34,15 @@ export default function ProjectArchive({ projects, onOpenProject }) {
                 <span className="project-title font-serif">{project.title}</span>
                 <span className="project-role">{project.role}</span>
               </span>
-              <span className="project-year">{project.year}</span>
+              <span className="project-meta">
+                {project.status ? (
+                  <span className="project-live-status">
+                    <span aria-hidden="true" />
+                    {project.status}
+                  </span>
+                ) : null}
+                <span className="project-year">{project.year}</span>
+              </span>
               <ArrowRight className="project-state-arrow" aria-hidden="true" />
             </button>
             <div
@@ -83,6 +91,23 @@ export default function ProjectArchive({ projects, onOpenProject }) {
                     {project.homeEvidence?.heading ?? project.outcome}
                   </h3>
                   <p>{project.summary}</p>
+                  {project.links.length ? (
+                    <div
+                      className="project-panel-actions"
+                      aria-label={`${project.title} links`}
+                    >
+                      {project.links.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {link.label} <ArrowUpRight aria-hidden="true" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                   <a
                     href={`#project-${project.id}`}
                     onClick={(event) => {
