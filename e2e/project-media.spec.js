@@ -44,6 +44,20 @@ test("videos, GIFs, and low-resolution evidence obey their lifecycle", async ({ 
   expect(doorKey.width).toBeLessThanOrEqual(520);
 });
 
+test("live-product evidence fills the mobile archive column before its copy", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const frame = page.locator(
+    '#project-panel-easy-a-radar .archive-evidence[data-media-role="live-product"]'
+  );
+  const copy = page.locator("#project-panel-easy-a-radar .project-panel-copy");
+  const [frameBox, copyBox] = await Promise.all([frame.boundingBox(), copy.boundingBox()]);
+
+  expect(frameBox.width).toBeGreaterThan(300);
+  expect(copyBox.y).toBeGreaterThan(frameBox.y + frameBox.height);
+});
+
 test("course reports stay hidden while additional GIF evidence mounts on request", async ({ page }) => {
   await page.goto("/");
   await openProject(page, "state-estimation");

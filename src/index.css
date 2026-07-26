@@ -988,6 +988,7 @@ a {
   }
 
   .project-panel-content {
+    grid-template-columns: minmax(0, 1fr);
     padding: 10px 2px 44px 38px;
   }
 
