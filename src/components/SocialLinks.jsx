@@ -35,6 +35,8 @@ export default function SocialLinks({
   const triggerRefs = useRef(new Map());
   const cardRefs = useRef(new Map());
   const pointerFocusLabel = useRef(null);
+  const focusOwnedLabel = useRef(null);
+  const restoredFocusLabel = useRef(null);
 
   const setTriggerRef = useCallback((label, node) => {
     if (node) triggerRefs.current.set(label, node);
@@ -75,11 +77,17 @@ export default function SocialLinks({
   useEffect(() => {
     if (!activeLabel) return undefined;
     const closeOutside = (event) => {
-      if (!rootRef.current?.contains(event.target)) setActiveLabel(null);
+      if (!rootRef.current?.contains(event.target)) {
+        focusOwnedLabel.current = null;
+        setActiveLabel(null);
+      }
     };
     const closeOnEscape = (event) => {
       if (event.key !== "Escape") return;
       const trigger = triggerRefs.current.get(activeLabel);
+      restoredFocusLabel.current =
+        trigger && document.activeElement !== trigger ? activeLabel : null;
+      focusOwnedLabel.current = null;
       setActiveLabel(null);
       trigger?.focus();
     };
@@ -97,6 +105,7 @@ export default function SocialLinks({
       className="social-links"
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
+          focusOwnedLabel.current = null;
           setActiveLabel(null);
         }
       }}
@@ -107,7 +116,8 @@ export default function SocialLinks({
           !(
             nextTarget instanceof Node &&
             event.currentTarget.contains(nextTarget)
-          )
+          ) &&
+          focusOwnedLabel.current !== activeLabel
         ) {
           setActiveLabel(null);
         }
@@ -124,7 +134,10 @@ export default function SocialLinks({
                   href={social.href}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noreferrer" : undefined}
-                  onFocus={() => setActiveLabel(null)}
+                  onFocus={() => {
+                    focusOwnedLabel.current = null;
+                    setActiveLabel(null);
+                  }}
                   onPointerEnter={() => {
                     if (hoverCapable) setActiveLabel(null);
                   }}
@@ -147,12 +160,18 @@ export default function SocialLinks({
                 aria-controls={cardId(social.label)}
                 onPointerDown={() => {
                   pointerFocusLabel.current = social.label;
+                  focusOwnedLabel.current = null;
                 }}
                 onFocus={() => {
+                  if (restoredFocusLabel.current === social.label) {
+                    restoredFocusLabel.current = null;
+                    return;
+                  }
                   if (pointerFocusLabel.current === social.label) {
                     pointerFocusLabel.current = null;
                     return;
                   }
+                  focusOwnedLabel.current = social.label;
                   setActiveLabel(social.label);
                 }}
                 onPointerEnter={() => {
