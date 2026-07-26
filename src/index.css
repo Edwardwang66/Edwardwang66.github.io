@@ -90,7 +90,7 @@ a {
 .primary-nav,
 .nav-control,
 .site-footer ul,
-.site-footer a {
+.site-footer :is(a, button) {
   display: flex;
   align-items: center;
 }
@@ -203,7 +203,7 @@ a {
   list-style: none;
 }
 
-.site-footer a {
+.site-footer :is(a, button) {
   min-height: 44px;
   gap: 6px;
   color: inherit;
@@ -214,9 +214,19 @@ a {
   height: 14px;
 }
 
-.site-footer a:hover,
-.site-footer a:focus-visible {
+.site-footer :is(a, button):hover,
+.site-footer :is(a, button):focus-visible,
+.site-footer button[aria-expanded="true"] {
   color: var(--blue);
+}
+
+.footer-socials {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.footer-socials > li {
+  min-width: 0;
 }
 
 @media (max-width: 639px) {
@@ -228,6 +238,28 @@ a {
   .site-footer-inner {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .site-footer .social-links {
+    width: 100%;
+  }
+}
+
+@media (max-width: 519px) {
+  .site-footer .footer-socials {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 12px;
+  }
+
+  .footer-socials > li,
+  .footer-socials :is(a, button) {
+    width: 100%;
+  }
+
+  .footer-socials :is(a, button) {
+    justify-content: flex-start;
   }
 }
 
