@@ -86,7 +86,7 @@ describe("ProjectArchive", () => {
     ).toHaveLength(1);
   });
 
-  it("registers every trigger and panel while reduced motion stays immediate", async () => {
+  it("keeps mobile selection single-open across sequential taps", async () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     setMediaQuery("(max-width: 639px)", true);
     const user = userEvent.setup();
@@ -105,6 +105,25 @@ describe("ProjectArchive", () => {
     );
     expect(
       container.querySelector("#project-panel-stock-research-dashboard")
+    ).not.toHaveAttribute("hidden");
+
+    const roboticArm = container.querySelector(
+      '[data-project-trigger][data-project-id="lab-robotic-arm"]'
+    );
+    await user.click(roboticArm);
+
+    expect(roboticArm).toHaveAttribute("aria-expanded", "true");
+    expect(stock).toHaveAttribute("aria-expanded", "false");
+    expect(
+      [...container.querySelectorAll("[data-project-trigger]")].filter(
+        (trigger) => trigger.getAttribute("aria-expanded") === "true"
+      )
+    ).toHaveLength(1);
+    expect(
+      container.querySelector("#project-panel-stock-research-dashboard")
+    ).toHaveAttribute("hidden");
+    expect(
+      container.querySelector("#project-panel-lab-robotic-arm")
     ).not.toHaveAttribute("hidden");
   });
 

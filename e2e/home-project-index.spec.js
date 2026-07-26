@@ -116,7 +116,7 @@ test("rapid project selection remains immediate and single-open", async ({ page 
   );
 });
 
-test("mobile scrolling advances one project at a time without programmatic scroll", async ({ page }) => {
+test("mobile scrolling is inert while taps switch exactly one project", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.locator("#selected-work").scrollIntoViewIfNeeded();
@@ -124,20 +124,28 @@ test("mobile scrolling advances one project at a time without programmatic scrol
   await expect.poll(() => expandedProjectIds(page)).toEqual(["easy-a-radar"]);
 
   for (let attempt = 0; attempt < 12; attempt += 1) {
-    if (
-      (await expandedProjectIds(page)).includes(
-        "stock-research-dashboard"
-      )
-    ) {
-      break;
-    }
     await page.mouse.wheel(0, 120);
     await page.waitForTimeout(50);
   }
 
+  await expect.poll(() => expandedProjectIds(page)).toEqual(["easy-a-radar"]);
+
+  await page
+    .locator(
+      '[data-project-trigger][data-project-id="stock-research-dashboard"]'
+    )
+    .click();
   await expect
     .poll(() => expandedProjectIds(page))
     .toEqual(["stock-research-dashboard"]);
+
+  await page
+    .locator('[data-project-trigger][data-project-id="lab-robotic-arm"]')
+    .click();
+  await expect
+    .poll(() => expandedProjectIds(page))
+    .toEqual(["lab-robotic-arm"]);
+
   expect(await page.evaluate(() => window.__programmaticScrollCalls)).toEqual(
     []
   );

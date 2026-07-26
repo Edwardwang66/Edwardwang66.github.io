@@ -1,64 +1,23 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useDisclosureSpring } from "../hooks/useDisclosureSpring.js";
 import { useMediaPreference } from "../hooks/useMediaPreference.js";
-import { useMobileProjectActivation } from "../hooks/useMobileProjectActivation.js";
 import SafeImage from "./SafeImage.jsx";
 
 export default function ProjectArchive({ projects, onOpenProject }) {
   const [activeId, setActiveId] = useState(projects[0].id);
   const ids = useMemo(() => projects.map((project) => project.id), [projects]);
   const reducedMotion = useMediaPreference("(prefers-reduced-motion: reduce)");
-  const triggerNodes = useRef(new Map());
-  const panelNodes = useRef(new Map());
-  const triggerCallbacks = useRef(new Map());
-  const archivePanelCallbacks = useRef(new Map());
 
   const { registerPanel, registerPanelContent } = useDisclosureSpring({
     ids,
     activeId,
     reducedMotion,
   });
-  const { noteManualActivation } = useMobileProjectActivation({
-    ids,
-    activeId,
-    onActivate: setActiveId,
-    triggerNodes,
-    panelNodes,
-  });
 
-  const registerTrigger = useCallback((id) => {
-    if (!triggerCallbacks.current.has(id)) {
-      triggerCallbacks.current.set(id, (node) => {
-        if (node) triggerNodes.current.set(id, node);
-        else triggerNodes.current.delete(id);
-      });
-    }
-    return triggerCallbacks.current.get(id);
+  const activate = useCallback((id) => {
+    setActiveId((current) => (current === id ? current : id));
   }, []);
-
-  const registerArchivePanel = useCallback(
-    (id) => {
-      if (!archivePanelCallbacks.current.has(id)) {
-        const registerDisclosurePanel = registerPanel(id);
-        archivePanelCallbacks.current.set(id, (node) => {
-          registerDisclosurePanel(node);
-          if (node) panelNodes.current.set(id, node);
-          else panelNodes.current.delete(id);
-        });
-      }
-      return archivePanelCallbacks.current.get(id);
-    },
-    [registerPanel]
-  );
-
-  const activate = useCallback(
-    (id) => {
-      noteManualActivation();
-      setActiveId((current) => (current === id ? current : id));
-    },
-    [noteManualActivation]
-  );
 
   return (
     <div className="project-archive">
@@ -80,7 +39,6 @@ export default function ProjectArchive({ projects, onOpenProject }) {
               aria-expanded={expanded}
               aria-controls={`project-panel-${project.id}`}
               onClick={() => activate(project.id)}
-              ref={registerTrigger(project.id)}
             >
               <span className="project-index">{project.no}</span>
               <span className="project-trigger-copy">
@@ -103,7 +61,7 @@ export default function ProjectArchive({ projects, onOpenProject }) {
               className="project-archive-panel"
               role="region"
               aria-labelledby={`project-trigger-${project.id}`}
-              ref={registerArchivePanel(project.id)}
+              ref={registerPanel(project.id)}
             >
               <div
                 className="project-panel-content"
