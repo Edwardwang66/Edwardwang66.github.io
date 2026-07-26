@@ -151,9 +151,20 @@ describe("Original+ portfolio content", () => {
     expect(
       projects.find(({ id }) => id === "planning-control").homeEvidence.src
     ).toBe("/ece276b/pr1/doorkey-poster.png");
-    expect(
-      projects.find(({ id }) => id === "state-estimation").homeEvidence.src
-    ).toBe("/ece276a/1.png");
+    const estimation = projects.find(({ id }) => id === "state-estimation");
+    for (const evidence of [estimation.homeEvidence, estimation.leadEvidence]) {
+      expect(evidence).toMatchObject({
+        kind: "image",
+        src: "/ece276a/ece276a-editorial-triptych.png",
+        width: 1560,
+        height: 840,
+        role: "technical",
+        fit: "contain",
+      });
+      expect(evidence.alt).toMatch(
+        /orientation.*LiDAR mapping.*visual-inertial SLAM/i
+      );
+    }
     expect(
       projects.find(({ id }) => id === "drug-delivery-ml").homeEvidence
     ).toBeNull();

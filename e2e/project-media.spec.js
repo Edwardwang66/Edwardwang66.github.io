@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mediaBox, openProject } from "./helpers.js";
+import { expectNoHorizontalOverflow, mediaBox, openProject } from "./helpers.js";
 
 test("failed archived DoorKey evidence is named and can recover", async ({ page }) => {
   await page.route("**/ece276b/pr1/doorkey-poster.png", (route) => route.abort());
@@ -230,4 +230,78 @@ test("text-only projects have no fabricated media surface", async ({ page }) => 
     ).toHaveCount(0);
     await page.getByRole("button", { name: "Work", exact: true }).click();
   }
+});
+
+for (const viewport of [
+  { name: "desktop", width: 1440, height: 900 },
+  { name: "mobile", width: 390, height: 844 },
+]) {
+  test(`ECE 276A triptych stays complete in archive and detail on ${viewport.name}`, async ({
+    page,
+  }) => {
+    const consoleErrors = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(message.text());
+    });
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page
+      .locator('[data-project-trigger][data-project-id="state-estimation"]')
+      .click();
+
+    const archiveImage = page.locator(
+      '#project-panel-state-estimation img[src="/ece276a/ece276a-editorial-triptych.png"]'
+    );
+    await expect(archiveImage).toBeVisible();
+    expect(
+      await archiveImage.evaluate((image) => ({
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+        objectFit: getComputedStyle(image).objectFit,
+      }))
+    ).toEqual({
+      naturalWidth: 1560,
+      naturalHeight: 840,
+      objectFit: "contain",
+    });
+    const archiveBox = await mediaBox(archiveImage);
+    expect(archiveBox.width / archiveBox.height).toBeCloseTo(13 / 7, 2);
+    await expectNoHorizontalOverflow(page);
+
+    await openProject(page, "state-estimation");
+    const leadImage = page.locator(
+      '.lead-evidence img[src="/ece276a/ece276a-editorial-triptych.png"]'
+    );
+    await expect(leadImage).toBeVisible();
+    expect(
+      await leadImage.evaluate((image) => ({
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+        objectFit: getComputedStyle(image).objectFit,
+      }))
+    ).toEqual({
+      naturalWidth: 1560,
+      naturalHeight: 840,
+      objectFit: "contain",
+    });
+    const leadBox = await mediaBox(leadImage);
+    expect(leadBox.width / leadBox.height).toBeCloseTo(13 / 7, 2);
+    await expectNoHorizontalOverflow(page);
+    expect(consoleErrors).toEqual([]);
+  });
+}
+
+test("a failed ECE 276A triptych keeps a descriptive fallback", async ({ page }) => {
+  await page.route("**/ece276a/ece276a-editorial-triptych.png", (route) =>
+    route.abort()
+  );
+  await page.goto("/");
+  await page
+    .locator('[data-project-trigger][data-project-id="state-estimation"]')
+    .click();
+  await expect(
+    page.getByRole("img", {
+      name: /orientation.*LiDAR mapping.*visual-inertial SLAM.*image unavailable/i,
+    })
+  ).toBeVisible();
 });
