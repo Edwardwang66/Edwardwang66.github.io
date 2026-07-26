@@ -25,7 +25,7 @@ for (const viewport of viewports) {
     await expectNoHorizontalOverflow(page);
     await expectEditorialFonts(page);
     await expect(page.locator("h1:visible")).toHaveCount(1);
-    expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
+    expect(await expandedProjectIds(page)).toEqual(["easy-a-radar"]);
     expect(
       await page
         .locator(".hero-socials > li > :is(a, button)")
@@ -76,11 +76,16 @@ for (const viewport of viewports) {
       await expect(page.locator(".contact-control")).toBeHidden();
     }
 
+    const liveFrame = page.locator(
+      '.archive-evidence[data-media-role="live-product"]'
+    ).first();
+    const frameBox = await liveFrame.boundingBox();
+    expect(frameBox.width / frameBox.height).toBeCloseTo(13 / 7, 1);
+    expect(frameBox.width).toBeLessThanOrEqual(
+      viewport.width < 640 ? viewport.width - 56 + 1 : 520.5
+    );
+
     if (viewport.width < 640) {
-      const evidence = await mediaBox(
-        page.locator(".archive-evidence img, .archive-evidence .media-fallback").first()
-      );
-      expect(evidence.height).toBeLessThanOrEqual(220);
       await page.getByRole("button", { name: "About" }).click();
       const aboutPortrait = await mediaBox(
         page.locator('.portrait[data-size="about"]')

@@ -7,7 +7,7 @@ import {
 test("desktop archive stays single-open for pointer and keyboard", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
-  await expect.poll(() => expandedProjectIds(page)).toEqual(["planning-control"]);
+  await expect.poll(() => expandedProjectIds(page)).toEqual(["easy-a-radar"]);
 
   const trigger02 = page.locator('[data-project-trigger][data-project-id="lab-robotic-arm"]');
   await trigger02.click();

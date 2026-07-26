@@ -1,19 +1,74 @@
 import { expect, test } from "@playwright/test";
 import { mediaBox, openProject } from "./helpers.js";
 
-test("failed homepage evidence is named and can recover", async ({ page }) => {
+test("failed archived DoorKey evidence is named and can recover", async ({ page }) => {
   await page.route("**/ece276b/pr1/doorkey-poster.png", (route) => route.abort());
   await page.goto("/");
+  await page
+    .locator('[data-project-trigger][data-project-id="planning-control"]')
+    .click();
   await expect(
     page.getByRole("img", { name: /DoorKey grid environment.*image unavailable/ })
   ).toBeVisible();
   await page.unroute("**/ece276b/pr1/doorkey-poster.png");
   await page.reload();
+  await page
+    .locator('[data-project-trigger][data-project-id="planning-control"]')
+    .click();
   await expect(
     page.getByRole("img", {
       name: "DoorKey grid environment used for discrete planning",
     })
   ).toBeVisible();
+});
+
+for (const product of [
+  {
+    id: "easy-a-radar",
+    live: "https://easy-a-radar.vercel.app/",
+    asset: "/products/easy-a-radar.png",
+  },
+  {
+    id: "stock-research-dashboard",
+    live: "https://stock-analysis-ten-phi.vercel.app/",
+    asset: "/products/stock-research-dashboard.png",
+  },
+]) {
+  test(`${product.id} renders a local complete product story`, async ({ page }) => {
+    await page.goto("/");
+    await openProject(page, product.id);
+    await expect(page.locator(`img[src="${product.asset}"]`)).toBeVisible();
+    for (const heading of [
+      "Overview",
+      "Problem",
+      "System",
+      "What shipped",
+      "Reliability and limits",
+      "Stack",
+      "Links",
+    ]) {
+      await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+    }
+    await expect(page.getByRole("link", { name: "Live Site" })).toHaveAttribute(
+      "href",
+      product.live
+    );
+  });
+}
+
+test("a failed live product screenshot keeps a named stable frame", async ({ page }) => {
+  await page.route("**/products/easy-a-radar.png", (route) => route.abort());
+  await page.goto("/");
+  await expect(
+    page.getByRole("img", {
+      name: /Easy-A Radar course-ranking.*image unavailable/,
+    })
+  ).toBeVisible();
+  const frame = await page
+    .locator('.archive-evidence[data-media-role="live-product"]')
+    .first()
+    .boundingBox();
+  expect(frame.width / frame.height).toBeCloseTo(13 / 7, 1);
 });
 
 test("videos, GIFs, and low-resolution evidence obey their lifecycle", async ({ page }) => {

@@ -76,18 +76,18 @@ describe("portfolio baseline", () => {
 
     fireEvent.click(
       container.querySelector(
-        '#project-panel-off-road-vehicle a[href="#project-off-road-vehicle"]'
+        '#project-panel-lab-robotic-arm a[href="#project-lab-robotic-arm"]'
       )
     );
     expect(document.title).toBe(
-      "1/5 Scale Autonomous Off-Road Vehicle — Edward Wang"
+      "Vision-Guided Robotic Arm for Automated Lab Operations — Edward Wang"
     );
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
     clock.advance(16);
 
     fireEvent.click(screen.getByRole("link", { name: /Next project/ }));
     expect(document.title).toBe(
-      "Vision-Guided Robotic Arm for Automated Lab Operations — Edward Wang"
+      "Dynamic Programming & 3D Motion Planning — Edward Wang"
     );
     expect(window.scrollTo).toHaveBeenCalledTimes(2);
     clock.restore();
