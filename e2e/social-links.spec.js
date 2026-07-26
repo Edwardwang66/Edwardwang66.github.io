@@ -32,6 +32,23 @@ function watchBrowserErrors(page) {
   return errors;
 }
 
+async function socialLayout(page) {
+  return page.locator(".hero-socials").evaluate((list) => {
+    const items = [...list.children].map((item) => item.getBoundingClientRect());
+    const controls = [
+      ...list.querySelectorAll(":scope > li > :is(a, button)"),
+    ].map((control) => control.getBoundingClientRect());
+    const style = getComputedStyle(list);
+
+    return {
+      display: style.display,
+      itemWidths: items.map(({ width }) => width),
+      controlLefts: controls.map(({ left }) => left),
+      controlTops: controls.map(({ top }) => top),
+    };
+  });
+}
+
 test("hero social rail keeps the approved order and native semantics", async ({
   page,
 }) => {
@@ -50,6 +67,45 @@ test("hero social rail keeps the approved order and native semantics", async ({
   await expect(instagram).toHaveAttribute("target", "_blank");
   await expect(instagram).toHaveAttribute("rel", "noreferrer");
 });
+
+for (const viewport of [
+  { width: 375, height: 667 },
+  { width: 390, height: 844 },
+]) {
+  test(`${viewport.width}px phone socials use an aligned three-column grid`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+
+    const layout = await socialLayout(page);
+    expect(layout.display).toBe("grid");
+    expect(
+      Math.max(...layout.itemWidths) - Math.min(...layout.itemWidths)
+    ).toBeLessThan(1);
+
+    for (let column = 0; column < 3; column += 1) {
+      expect(
+        Math.abs(
+          layout.controlLefts[column] - layout.controlLefts[column + 3]
+        )
+      ).toBeLessThan(1);
+    }
+
+    expect(new Set(layout.controlTops.map(Math.round)).size).toBe(2);
+    await expectNoHorizontalOverflow(page);
+  });
+}
+
+for (const width of [520, 640, 1440]) {
+  test(`${width}px keeps the existing non-phone social layout`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    expect((await socialLayout(page)).display).toBe("flex");
+  });
+}
 
 test("desktop social profiles stay open across pointer travel and clamp to hero copy", async ({
   page,
