@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ece276a-triptych": "node scripts/build-ece276a-triptych.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

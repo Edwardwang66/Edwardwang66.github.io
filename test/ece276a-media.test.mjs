@@ -1,4 +1,5 @@
 import { readFile, stat } from "node:fs/promises";
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { projects } from "../src/data/portfolio.js";
 
@@ -20,6 +21,9 @@ const expectedMedia = [
   ],
 ];
 
+const triptychPath = "public/ece276a/ece276a-editorial-triptych.png";
+const triptychMaxBytes = 2 * 1024 * 1024;
+
 describe("ECE 276A visualization contract", () => {
   it("keeps all authored assets valid and bounded", async () => {
     for (const [path, kind, maxBytes] of assets) {
@@ -35,6 +39,22 @@ describe("ECE 276A visualization contract", () => {
       }
       expect(metadata.size).toBeLessThanOrEqual(maxBytes);
     }
+  });
+
+  it("keeps the editorial triptych at its exact production contract", async () => {
+    const bytes = await readFile(triptychPath);
+    const file = await stat(triptychPath);
+    const metadata = await sharp(triptychPath).metadata();
+
+    expect([...bytes.subarray(0, 8)]).toEqual([
+      137, 80, 78, 71, 13, 10, 26, 10,
+    ]);
+    expect(metadata).toMatchObject({
+      format: "png",
+      width: 1560,
+      height: 840,
+    });
+    expect(file.size).toBeLessThanOrEqual(triptychMaxBytes);
   });
 
   it("shows exactly three GIFs with exact poster pairs and no reports", () => {
