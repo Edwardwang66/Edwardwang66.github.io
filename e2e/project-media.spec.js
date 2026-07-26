@@ -106,6 +106,46 @@ for (const viewport of [
   });
 }
 
+test("successful and failed product leads keep one aspect on a short mobile viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 440 });
+
+  for (const product of [
+    {
+      id: "easy-a-radar",
+      asset: "**/products/easy-a-radar.png",
+    },
+    {
+      id: "stock-research-dashboard",
+      asset: "**/products/stock-research-dashboard.png",
+    },
+  ]) {
+    await page.goto("/");
+    await openProject(page, product.id);
+
+    const image = page.locator(
+      '.lead-evidence .project-media[data-media-role="live-product"] img'
+    );
+    await expect(image).toBeVisible();
+    const imageBox = await mediaBox(image);
+    expect(imageBox.width / imageBox.height).toBeCloseTo(1440 / 1000, 2);
+
+    await page.route(product.asset, (route) => route.abort());
+    await page.goto("/");
+    await openProject(page, product.id);
+
+    const fallback = page.locator(
+      '.lead-evidence .project-media[data-media-role="live-product"] .media-fallback'
+    );
+    await expect(fallback).toBeVisible();
+    const fallbackBox = await mediaBox(fallback);
+    expect(fallbackBox.width / fallbackBox.height).toBeCloseTo(1440 / 1000, 2);
+
+    await page.unroute(product.asset);
+  }
+});
+
 test("videos, GIFs, and low-resolution evidence obey their lifecycle", async ({ page }) => {
   await page.goto("/");
   await openProject(page, "lab-robotic-arm");

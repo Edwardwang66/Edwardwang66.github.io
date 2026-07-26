@@ -1492,6 +1492,10 @@ a {
     max-height: 50vh;
   }
 
+  .lead-evidence .project-media[data-media-role="live-product"] img {
+    max-height: none;
+  }
+
   .project-story p {
     font-size: 16px;
   }
