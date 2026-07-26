@@ -26,11 +26,19 @@ for (const viewport of viewports) {
     await expectEditorialFonts(page);
     await expect(page.locator("h1:visible")).toHaveCount(1);
     expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
-    expect(await page.locator(".hero-socials a").allTextContents()).toEqual([
+    expect(
+      await page
+        .locator(".hero-socials > li > :is(a, button)")
+        .allTextContents()
+    ).toEqual([
       "GitHub",
       "LinkedIn",
       "Email",
+      "Instagram",
+      "Douyin",
+      "RedNote",
     ]);
+    await expectNoHorizontalOverflow(page);
 
     const targets = page.locator(
       ".brand-control, .nav-control, [data-project-trigger]"
