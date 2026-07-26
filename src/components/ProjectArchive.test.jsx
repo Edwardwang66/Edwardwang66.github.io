@@ -86,7 +86,30 @@ describe("ProjectArchive", () => {
     ).toHaveLength(1);
   });
 
-  it("hides the previous panel immediately without scheduling animation frames", () => {
+  it("registers every trigger and panel while reduced motion stays immediate", async () => {
+    setMediaQuery("(prefers-reduced-motion: reduce)", true);
+    setMediaQuery("(max-width: 639px)", true);
+    const user = userEvent.setup();
+    const { container } = render(
+      <ProjectArchive projects={projects} onOpenProject={vi.fn()} />
+    );
+
+    const stock = container.querySelector(
+      '[data-project-trigger][data-project-id="stock-research-dashboard"]'
+    );
+    await user.click(stock);
+
+    expect(stock).toHaveAttribute("aria-expanded", "true");
+    expect(container.querySelector("#project-panel-easy-a-radar")).toHaveAttribute(
+      "hidden"
+    );
+    expect(
+      container.querySelector("#project-panel-stock-research-dashboard")
+    ).not.toHaveAttribute("hidden");
+  });
+
+  it("hides the previous panel immediately without scheduling animation frames under reduced motion", () => {
+    setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const raf = vi.spyOn(window, "requestAnimationFrame");
     const { container } = render(
       <ProjectArchive projects={projects} onOpenProject={vi.fn()} />

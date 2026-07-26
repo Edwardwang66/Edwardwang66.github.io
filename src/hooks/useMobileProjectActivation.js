@@ -43,8 +43,14 @@ export function useMobileProjectActivation({
       frameRef.current = null;
       const scrollY = window.scrollY;
       const delta = scrollY - lastScrollYRef.current;
+      const enteringArchive = Math.abs(delta) > window.innerHeight / 2;
       if (delta !== 0) directionRef.current = delta > 0 ? 1 : -1;
       lastScrollYRef.current = scrollY;
+
+      if (enteringArchive) {
+        directionRef.current = 0;
+        return;
+      }
 
       if (
         isTapLockActive(lockRef.current, {
@@ -73,7 +79,7 @@ export function useMobileProjectActivation({
         centersById.set(id, rect.top + rect.height / 2);
       }
 
-      const nextId = chooseActiveProject({
+      let nextId = chooseActiveProject({
         ids,
         activeId: activeIdRef.current,
         centersById,
@@ -81,6 +87,12 @@ export function useMobileProjectActivation({
         direction: directionRef.current,
         hysteresisPx: 64,
       });
+
+      const activeIndex = ids.indexOf(activeIdRef.current);
+      const nextIndex = ids.indexOf(nextId);
+      if (activeIndex >= 0 && Math.abs(nextIndex - activeIndex) > 1) {
+        nextId = ids[activeIndex + Math.sign(nextIndex - activeIndex)];
+      }
 
       if (nextId && nextId !== activeIdRef.current) {
         activeIdRef.current = nextId;

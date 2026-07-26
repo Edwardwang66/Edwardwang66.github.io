@@ -70,17 +70,29 @@ test("rapid project selection remains immediate and single-open", async ({ page 
   );
 });
 
-test("mobile scrolling preserves the selected project and remains native", async ({ page }) => {
+test("mobile scrolling advances one project at a time without programmatic scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.locator("#selected-work").scrollIntoViewIfNeeded();
   await installProgrammaticScrollSpy(page);
-  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
-  await page.mouse.wheel(0, 900);
-  await page.waitForTimeout(150);
-  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
-  await page.mouse.wheel(0, -400);
-  await page.waitForTimeout(150);
-  expect(await expandedProjectIds(page)).toEqual(["planning-control"]);
-  expect(await page.evaluate(() => window.__programmaticScrollCalls)).toEqual([]);
+  await expect.poll(() => expandedProjectIds(page)).toEqual(["easy-a-radar"]);
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    if (
+      (await expandedProjectIds(page)).includes(
+        "stock-research-dashboard"
+      )
+    ) {
+      break;
+    }
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(50);
+  }
+
+  await expect
+    .poll(() => expandedProjectIds(page))
+    .toEqual(["stock-research-dashboard"]);
+  expect(await page.evaluate(() => window.__programmaticScrollCalls)).toEqual(
+    []
+  );
 });

@@ -14,7 +14,7 @@ const Harness = forwardRef(function Harness(
   { activeId, onActivate, triggers, panels },
   ref
 ) {
-  const ids = useMemo(() => ["01", "02"], []);
+  const ids = useMemo(() => [...triggers.keys()], [triggers]);
   const triggerNodes = useRef(triggers);
   const panelNodes = useRef(panels);
   const api = useMobileProjectActivation({
@@ -134,6 +134,44 @@ describe("useMobileProjectActivation", () => {
 
     activePanel.remove();
     now.mockRestore();
+    clock.restore();
+  });
+
+  it("rebases an archive-entry jump and advances no farther than the adjacent project", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+
+    render(
+      <Harness
+        activeId="01"
+        onActivate={onActivate}
+        triggers={new Map([
+          ["01", nodeAt(1000)],
+          ["02", nodeAt(700)],
+          ["03", nodeAt(421)],
+        ])}
+        panels={new Map()}
+      />
+    );
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 800 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 920 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledWith("02");
+
     clock.restore();
   });
 
