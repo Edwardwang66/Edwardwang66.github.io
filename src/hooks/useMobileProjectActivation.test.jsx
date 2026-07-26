@@ -31,7 +31,7 @@ const Harness = forwardRef(function Harness(
 function nodeAt(center) {
   const node = document.createElement("button");
   node.getBoundingClientRect = vi.fn(() => ({
-    top: center - 20,
+    top: (typeof center === "function" ? center() : center) - 20,
     height: 40,
   }));
   return node;
@@ -51,7 +51,7 @@ describe("useMobileProjectActivation", () => {
     const onActivate = vi.fn();
     const triggers = new Map([
       ["01", nodeAt(485)],
-      ["02", nodeAt(421)],
+      ["02", nodeAt(420)],
     ]);
 
     const { unmount } = render(
@@ -68,6 +68,11 @@ describe("useMobileProjectActivation", () => {
       expect.any(Function),
       { passive: true }
     );
+    fireEvent.scroll(window);
+    expect(clock.pending()).toBe(1);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
     fireEvent.scroll(window);
     fireEvent.scroll(window);
     expect(clock.pending()).toBe(1);
@@ -108,7 +113,7 @@ describe("useMobileProjectActivation", () => {
         onActivate={onActivate}
         triggers={new Map([
           ["01", nodeAt(520)],
-          ["02", nodeAt(421)],
+          ["02", nodeAt(420)],
         ])}
         panels={new Map([["01", activePanel]])}
       />
@@ -155,7 +160,7 @@ describe("useMobileProjectActivation", () => {
         triggers={new Map([
           ["01", nodeAt(1000)],
           ["02", nodeAt(700)],
-          ["03", nodeAt(421)],
+          ["03", nodeAt(420)],
         ])}
         panels={new Map()}
       />
@@ -193,11 +198,14 @@ describe("useMobileProjectActivation", () => {
         triggers={new Map([
           ["01", nodeAt(1000)],
           ["02", nodeAt(700)],
-          ["03", nodeAt(421)],
+          ["03", nodeAt(420)],
         ])}
         panels={new Map()}
       />
     );
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
     fireEvent.scroll(window);
     clock.advance(16);
     expect(onActivate).toHaveBeenCalledWith("03");
@@ -209,13 +217,16 @@ describe("useMobileProjectActivation", () => {
         activeId="03"
         onActivate={onActivate}
         triggers={new Map([
-          ["01", nodeAt(421)],
+          ["01", nodeAt(420)],
           ["02", nodeAt(700)],
           ["03", nodeAt(1000)],
         ])}
         panels={new Map()}
       />
     );
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
     fireEvent.scroll(window);
     clock.advance(16);
     expect(onActivate).toHaveBeenCalledTimes(1);
@@ -242,7 +253,7 @@ describe("useMobileProjectActivation", () => {
         onActivate={onActivate}
         triggers={new Map([
           ["01", nodeAt(1000)],
-          ["02", nodeAt(421)],
+          ["02", nodeAt(420)],
         ])}
         panels={new Map()}
       />
@@ -259,8 +270,109 @@ describe("useMobileProjectActivation", () => {
     Object.defineProperty(window, "scrollY", { configurable: true, value: 220 });
     fireEvent.scroll(window);
     clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 340 });
+    fireEvent.scroll(window);
+    clock.advance(16);
     expect(onActivate).toHaveBeenCalledTimes(1);
     expect(onActivate).toHaveBeenCalledWith("02");
+
+    clock.restore();
+  });
+
+  it("does not consume a fast swipe after entering the archive through small deltas", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+    const triggers = new Map([
+      ["01", nodeAt(() => 1200 - window.scrollY)],
+      ["02", nodeAt(() => 2000 - window.scrollY)],
+      ["03", nodeAt(() => 2800 - window.scrollY)],
+    ]);
+
+    render(
+      <Harness
+        activeId="01"
+        onActivate={onActivate}
+        triggers={triggers}
+        panels={new Map()}
+      />
+    );
+
+    for (const scrollY of [300, 600, 900]) {
+      Object.defineProperty(window, "scrollY", { configurable: true, value: scrollY });
+      fireEvent.scroll(window);
+      clock.advance(16);
+    }
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1600 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledWith("02");
+
+    clock.restore();
+  });
+
+  it("rebases each archive re-entry while later in-archive swipes stay active", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+    const triggers = new Map([
+      ["01", nodeAt(() => 1200 - window.scrollY)],
+      ["02", nodeAt(() => 2000 - window.scrollY)],
+      ["03", nodeAt(() => 2800 - window.scrollY)],
+    ]);
+
+    render(
+      <Harness
+        activeId="01"
+        onActivate={onActivate}
+        triggers={triggers}
+        panels={new Map()}
+      />
+    );
+
+    for (const scrollY of [300, 600, 900]) {
+      Object.defineProperty(window, "scrollY", { configurable: true, value: scrollY });
+      fireEvent.scroll(window);
+      clock.advance(16);
+    }
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1600 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledWith("02");
+
+    onActivate.mockClear();
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 3000 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1600 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 2300 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledWith("03");
 
     clock.restore();
   });

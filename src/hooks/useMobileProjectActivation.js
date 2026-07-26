@@ -23,7 +23,7 @@ export function useMobileProjectActivation({
     typeof window === "undefined" ? 0 : window.scrollY
   );
   const directionRef = useRef(0);
-  const hasRebasedEntryRef = useRef(false);
+  const wasWithinArchiveRef = useRef(false);
   const lockRef = useRef(null);
   const frameRef = useRef(null);
 
@@ -39,7 +39,7 @@ export function useMobileProjectActivation({
 
   useEffect(() => {
     if (!mobile) {
-      hasRebasedEntryRef.current = false;
+      wasWithinArchiveRef.current = false;
       lastScrollYRef.current = window.scrollY;
       directionRef.current = 0;
       return undefined;
@@ -52,17 +52,27 @@ export function useMobileProjectActivation({
       frameRef.current = null;
       const scrollY = window.scrollY;
       const delta = scrollY - lastScrollYRef.current;
-      const enteringArchive =
-        !hasRebasedEntryRef.current &&
-        Math.abs(delta) > window.innerHeight / 2;
       if (delta !== 0) directionRef.current = delta > 0 ? 1 : -1;
       lastScrollYRef.current = scrollY;
 
-      if (enteringArchive) {
-        hasRebasedEntryRef.current = true;
-        directionRef.current = 0;
-        return;
+      const centersById = new Map();
+      for (const id of ids) {
+        const node = nodeMap(triggerNodes).get(id);
+        if (!node) continue;
+        const rect = node.getBoundingClientRect();
+        centersById.set(id, rect.top + rect.height / 2);
       }
+
+      const readingLine = window.innerHeight * 0.42;
+      const centers = [...centersById.values()];
+      const withinArchive =
+        centers.length > 0 &&
+        Math.min(...centers) <= readingLine &&
+        Math.max(...centers) >= readingLine;
+      const enteringArchive = withinArchive && !wasWithinArchiveRef.current;
+      wasWithinArchiveRef.current = withinArchive;
+
+      if (!withinArchive || enteringArchive) return;
 
       if (
         isTapLockActive(lockRef.current, {
@@ -83,19 +93,11 @@ export function useMobileProjectActivation({
         return;
       }
 
-      const centersById = new Map();
-      for (const id of ids) {
-        const node = nodeMap(triggerNodes).get(id);
-        if (!node) continue;
-        const rect = node.getBoundingClientRect();
-        centersById.set(id, rect.top + rect.height / 2);
-      }
-
       let nextId = chooseActiveProject({
         ids,
         activeId: activeIdRef.current,
         centersById,
-        readingLine: window.innerHeight * 0.42,
+        readingLine,
         direction: directionRef.current,
         hysteresisPx: 64,
       });
