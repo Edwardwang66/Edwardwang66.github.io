@@ -12,3 +12,14 @@ dist-ssr
 *.log
 dist/
 node_modules/
+
+# Local Codex execution workspaces and review artifacts
+.worktrees/
+.superpowers/
+playwright-report/
+test-results/
+
+# Vercel local state and environment files
+.vercel/
+.env.local
+.env.*.local

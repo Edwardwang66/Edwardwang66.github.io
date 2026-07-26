@@ -1,0 +1,47 @@
+{
+  "slug": "curry-dog-winter",
+  "source": {
+    "packageUrl": "https://codex-pets.net/api/pets/curry-dog-winter/download?v=1784697885793",
+    "url": "https://codex-pets.net/assets/pets/v/1784697885793/curry-dog-winter/spritesheet.webp",
+    "version": "1784697885793",
+    "displayName": "咖喱狗 Curry",
+    "spriteVersionNumber": 2,
+    "manifestSha256": "f02ac992513d3dda29211cb7cefd467f9482673a3bf67557155fe10ad9e3d384",
+    "sha256": "dcb74a88a4f0fcbc5319c7a5ebded702b3c188ffeab74f58cdba66cf8491e4aa",
+    "width": 1536,
+    "height": 2288,
+    "columns": 8,
+    "rows": 11,
+    "cellWidth": 192,
+    "cellHeight": 208,
+    "populatedFrames": {
+      "idle": 7,
+      "wave": 4,
+      "look-right": 8,
+      "look-left": 8
+    }
+  },
+  "derivative": {
+    "path": "/pet/curry-companion.webp",
+    "sha256": "63901e2e95fe5ea7f25ff5611cbf92e2cec2057451568a9d33aa20db14f34be5",
+    "bytes": 86712,
+    "width": 768,
+    "height": 416,
+    "columns": 8,
+    "rows": 4,
+    "cellWidth": 96,
+    "cellHeight": 104,
+    "states": [
+      "idle",
+      "wave",
+      "look-right",
+      "look-left"
+    ],
+    "populatedFrames": {
+      "idle": 7,
+      "wave": 4,
+      "look-right": 8,
+      "look-left": 8
+    }
+  }
+}
