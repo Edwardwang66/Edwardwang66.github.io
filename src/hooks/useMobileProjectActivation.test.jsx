@@ -281,6 +281,50 @@ describe("useMobileProjectActivation", () => {
     clock.restore();
   });
 
+  it("clears a manual activation lock when breakpoint mode changes", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const now = vi.spyOn(performance, "now").mockReturnValue(100);
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+    const apiRef = { current: null };
+
+    render(
+      <Harness
+        ref={apiRef}
+        activeId="01"
+        onActivate={onActivate}
+        triggers={new Map([
+          ["01", nodeAt(520)],
+          ["02", nodeAt(420)],
+        ])}
+        panels={new Map()}
+      />
+    );
+
+    apiRef.current.noteManualActivation();
+    act(() => setMediaQuery("(max-width: 639px)", false));
+    act(() => setMediaQuery("(max-width: 639px)", true));
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 2 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledWith("02");
+
+    now.mockRestore();
+    clock.restore();
+  });
+
   it("does not consume a fast swipe after entering the archive through small deltas", () => {
     setMediaQuery("(max-width: 639px)", true);
     Object.defineProperty(window, "innerHeight", {

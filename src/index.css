@@ -1256,6 +1256,14 @@ a {
   width: min(100%, var(--media-max));
 }
 
+.project-media[data-media-role="live-product"] img,
+.project-media[data-media-role="live-product"] .media-fallback {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  aspect-ratio: 1440 / 1000;
+}
+
 .project-media img,
 .project-media video {
   display: block;

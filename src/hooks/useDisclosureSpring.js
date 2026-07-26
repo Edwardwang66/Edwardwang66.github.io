@@ -88,14 +88,15 @@ export function useDisclosureSpring({ ids, activeId, reducedMotion }) {
     }
 
     cancelFrame();
+    const activePanel = panelsRef.current.get(activeId);
+    if (activePanel) setPanelVisibility(activePanel, false);
+
     const heights = new Map();
     for (const id of ids) {
       heights.set(id, contentsRef.current.get(id)?.scrollHeight ?? 0);
     }
 
     controller.retarget(activeId);
-    const activePanel = panelsRef.current.get(activeId);
-    if (activePanel) setPanelVisibility(activePanel, false);
 
     for (const id of ids) {
       const panel = panelsRef.current.get(id);

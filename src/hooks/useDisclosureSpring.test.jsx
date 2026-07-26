@@ -25,6 +25,28 @@ function Harness({ activeId, reducedMotion = false }) {
 }
 
 describe("useDisclosureSpring", () => {
+  it("reveals the incoming panel before measuring its content height", () => {
+    const measuredWhileHidden = [];
+    const height = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockImplementation(function readHeight() {
+        if (this.dataset.height === "180") {
+          measuredWhileHidden.push(this.parentElement.hidden);
+        }
+        return Number(this.dataset.height || 0);
+      });
+    const clock = createRafClock();
+    clock.install();
+    const { rerender } = render(<Harness activeId="a" />);
+
+    rerender(<Harness activeId="b" />);
+
+    expect(measuredWhileHidden).toEqual([false]);
+
+    height.mockRestore();
+    clock.restore();
+  });
+
   it("uses one interruptible frame loop and settles semantic visibility", () => {
     const height = vi
       .spyOn(HTMLElement.prototype, "scrollHeight", "get")

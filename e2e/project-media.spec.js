@@ -71,6 +71,41 @@ test("a failed live product screenshot keeps a named stable frame", async ({ pag
   expect(frame.width / frame.height).toBeCloseTo(13 / 7, 1);
 });
 
+for (const viewport of [
+  { name: "desktop", width: 1440, height: 1000 },
+  { name: "mobile", width: 390, height: 844 },
+]) {
+  test(`failed product-page leads preserve their intended aspect on ${viewport.name}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+
+    for (const product of [
+      {
+        id: "easy-a-radar",
+        asset: "**/products/easy-a-radar.png",
+      },
+      {
+        id: "stock-research-dashboard",
+        asset: "**/products/stock-research-dashboard.png",
+      },
+    ]) {
+      await page.route(product.asset, (route) => route.abort());
+      await page.goto("/");
+      await openProject(page, product.id);
+
+      const fallback = page.locator(
+        '.lead-evidence .project-media[data-media-role="live-product"] .media-fallback'
+      );
+      await expect(fallback).toBeVisible();
+      const box = await mediaBox(fallback);
+      expect(box.width / box.height).toBeCloseTo(1440 / 1000, 2);
+
+      await page.unroute(product.asset);
+    }
+  });
+}
+
 test("videos, GIFs, and low-resolution evidence obey their lifecycle", async ({ page }) => {
   await page.goto("/");
   await openProject(page, "lab-robotic-arm");

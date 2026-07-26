@@ -38,6 +38,8 @@ export function useMobileProjectActivation({
   }, []);
 
   useEffect(() => {
+    lockRef.current = null;
+
     if (!mobile) {
       wasWithinArchiveRef.current = false;
       lastScrollYRef.current = window.scrollY;

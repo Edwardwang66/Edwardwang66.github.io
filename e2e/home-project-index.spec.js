@@ -8,6 +8,20 @@ test("desktop archive stays single-open for pointer and keyboard", async ({ page
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   await expect.poll(() => expandedProjectIds(page)).toEqual(["easy-a-radar"]);
+  expect(
+    await page.locator("[data-project-trigger]").evaluateAll((triggers) =>
+      triggers.map((trigger) => trigger.dataset.projectId)
+    )
+  ).toEqual([
+    "easy-a-radar",
+    "stock-research-dashboard",
+    "lab-robotic-arm",
+    "planning-control",
+    "state-estimation",
+    "off-road-vehicle",
+    "drug-delivery-ml",
+    "embedded-digital",
+  ]);
 
   const trigger02 = page.locator('[data-project-trigger][data-project-id="lab-robotic-arm"]');
   await trigger02.click();
@@ -26,6 +40,38 @@ test("desktop archive stays single-open for pointer and keyboard", async ({ page
   await trigger04.focus();
   await page.keyboard.press("Space");
   await expect.poll(() => expandedProjectIds(page)).toEqual(["drug-delivery-ml"]);
+});
+
+test("disclosure gains real height before it settles", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+
+  const animation = await page.evaluate(async () => {
+    const trigger = document.querySelector(
+      '[data-project-trigger][data-project-id="stock-research-dashboard"]'
+    );
+    const panel = document.querySelector(
+      "#project-panel-stock-research-dashboard"
+    );
+    trigger.click();
+
+    const samples = [];
+    for (let frame = 0; frame < 300; frame += 1) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      if (panel.style.height === "auto") break;
+      samples.push(Number.parseFloat(panel.style.height));
+    }
+    return {
+      samples,
+      settled: panel.style.height === "auto",
+    };
+  });
+
+  expect(animation.samples.some((height) => height > 0)).toBe(true);
+  expect(animation.settled).toBe(true);
+  await expect(
+    page.locator("#project-panel-easy-a-radar")
+  ).toHaveAttribute("hidden", "");
 });
 
 test("compact controls press immediately while archive rows keep geometry", async ({ page }) => {
