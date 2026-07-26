@@ -180,6 +180,185 @@ export const profile = {
 
 const projectRecords = [
   {
+    id: "easy-a-radar",
+    year: "Jul 2026 — Present",
+    status: "Live product",
+    title: "Easy-A Radar",
+    role: "Product design, data integration, and front-end engineering",
+    tags: ["Course intelligence", "Scheduling", "Academic planning"],
+    summary:
+      "A UCSD course-intelligence and planning tool that connects historical outcomes, current instructors, schedules, and degree requirements.",
+    context: "Independent product · UC San Diego",
+    overview:
+      "A live student tool for turning fragmented course, instructor, schedule, and degree information into one practical planning workflow.",
+    challenge:
+      "Students have to compare historical grade outcomes, instructors, current offerings, time conflicts, and program requirements across disconnected sources.",
+    approach:
+      "Built a static, data-backed interface with current-term instructor mapping, ranking and filtering, schedule construction, conflict detection, calendar export, campus context, and degree-planning views.",
+    outcome:
+      "A usable planning surface for course discovery through schedule and degree decisions, with clear boundaries around official academic advice.",
+    storySections: [
+      {
+        label: "Overview",
+        body:
+          "Easy-A Radar brings course history, current teaching information, scheduling, and degree planning into one live student tool.",
+      },
+      {
+        label: "Problem",
+        body:
+          "UCSD students otherwise compare grade distributions, instructor history, live offerings, time conflicts, and program requirements across multiple systems.",
+      },
+      {
+        label: "System",
+        body:
+          "The product combines a static HTML/CSS/JavaScript interface with structured datasets, current-term instructor mapping, and local planning workflows.",
+      },
+      {
+        label: "What shipped",
+        body:
+          "Course ranking, professor context, current-term filters, schedule building, conflict detection, calendar and ICS export, campus map, undergraduate requirements, and graduate degree planning.",
+      },
+      {
+        label: "Reliability and limits",
+        body:
+          "The interface uses real 2015–2026 course-grade distributions and RateMyProfessors context, but it is not an official UCSD system. Current offerings and academic requirements must be confirmed with UCSD and an advisor.",
+      },
+    ],
+    stack: [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "Structured JSON",
+      "Vercel Functions",
+      "Collection/processing scripts",
+    ],
+    links: [
+      { label: "Live Site", href: "https://easy-a-radar.vercel.app/" },
+      {
+        label: "GitHub",
+        href: "https://github.com/Edwardwang66/ucsd-easy-a-radar",
+      },
+    ],
+    homeEvidence: {
+      kind: "image",
+      src: "/products/easy-a-radar.png",
+      alt: "Easy-A Radar course-ranking and planning interface",
+      caption:
+        "Course rankings, current instructors, schedule tools, and degree planning in one live UCSD workflow.",
+      heading: "From fragmented course data to an actionable student workflow.",
+      width: 1440,
+      height: 1000,
+      role: "live-product",
+      fit: "cover",
+      position: "center top",
+    },
+    leadEvidence: {
+      kind: "image",
+      src: "/products/easy-a-radar.png",
+      alt: "Easy-A Radar course-ranking and planning interface",
+      caption:
+        "The live product surface combines ranking, filtering, schedule, and degree-planning entry points.",
+      width: 1440,
+      height: 1000,
+      role: "live-product",
+      fit: "contain",
+      position: "center top",
+    },
+    selectedEvidence: [],
+    moreEvidence: [],
+  },
+  {
+    id: "stock-research-dashboard",
+    year: "Jun 2026 — Present",
+    status: "Live product",
+    title: "Multi-Market Stock Research Dashboard",
+    role: "Full-stack product engineering and research automation",
+    tags: ["Market data", "Research tooling", "Automation"],
+    summary:
+      "A personal multi-market research workbench for monitoring, analysis, tracking, and durable research records.",
+    context: "Independent product · Personal research infrastructure",
+    overview:
+      "One research surface for US, Hong Kong, A-share, crypto, and index monitoring.",
+    challenge:
+      "Market data, technical context, watchlists, alerts, paper positions, and research notes otherwise live in disconnected tools.",
+    approach:
+      "Combined a Next.js interface with quote and OHLCV adapters, optional FastAPI services, Git-backed feeds, and Python research automation.",
+    outcome:
+      "A self-hostable research workbench that centralizes monitoring and analysis without presenting itself as a brokerage or execution system.",
+    storySections: [
+      {
+        label: "Overview",
+        body:
+          "The dashboard provides one research surface for US, Hong Kong, A-share, crypto, and index monitoring.",
+      },
+      {
+        label: "Problem",
+        body:
+          "Quotes, technical context, watchlists, alerts, paper positions, intelligence views, and research notes otherwise live in disconnected tools.",
+      },
+      {
+        label: "System",
+        body:
+          "A Next.js interface works with quote and OHLCV adapters, optional FastAPI services, Git-backed feeds, and Python research automation.",
+      },
+      {
+        label: "What shipped",
+        body:
+          "Multi-market dashboards, technical panels, screener, tracker, watchlist, alerts, paper portfolio, intelligence views, reports, and automated data-refresh paths.",
+      },
+      {
+        label: "Reliability and limits",
+        body:
+          "Public providers can delay, throttle, or fail. The product does not execute trades, does not provide multi-user authentication, and is not investment advice.",
+      },
+    ],
+    stack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "lightweight-charts",
+      "Optional FastAPI",
+      "Python",
+    ],
+    links: [
+      {
+        label: "Live Site",
+        href: "https://stock-analysis-ten-phi.vercel.app/",
+      },
+      {
+        label: "GitHub",
+        href: "https://github.com/Edwardwang66/stock-analysis",
+      },
+    ],
+    homeEvidence: {
+      kind: "image",
+      src: "/products/stock-research-dashboard.png",
+      alt: "Multi-market stock research dashboard interface",
+      caption:
+        "Multi-market monitoring, technical context, and research tools in one dashboard.",
+      heading: "A personal research workbench across markets and data sources.",
+      width: 1440,
+      height: 1000,
+      role: "live-product",
+      fit: "cover",
+      position: "center top",
+    },
+    leadEvidence: {
+      kind: "image",
+      src: "/products/stock-research-dashboard.png",
+      alt: "Multi-market stock research dashboard interface",
+      caption:
+        "The live workbench joins market monitoring, analysis, tracking, and research records.",
+      width: 1440,
+      height: 1000,
+      role: "live-product",
+      fit: "contain",
+      position: "center top",
+    },
+    selectedEvidence: [],
+    moreEvidence: [],
+  },
+  {
     id: "off-road-vehicle",
     no: "01",
     year: "2025",
@@ -595,10 +774,12 @@ const projectRecords = [
 ];
 
 const projectOrder = [
+  "easy-a-radar",
+  "stock-research-dashboard",
+  "lab-robotic-arm",
   "planning-control",
   "state-estimation",
   "off-road-vehicle",
-  "lab-robotic-arm",
   "drug-delivery-ml",
   "embedded-digital",
 ];

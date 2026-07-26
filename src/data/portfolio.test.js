@@ -82,27 +82,84 @@ describe("Original+ portfolio content", () => {
     ]);
   });
 
-  it("puts ECE 276B and ECE 276A first with approved course timestamps", () => {
+  it("puts two live products ahead of the c12.ai robotic arm and ECE 276B", () => {
     expect(projects.map((project) => project.id)).toEqual([
+      "easy-a-radar",
+      "stock-research-dashboard",
+      "lab-robotic-arm",
       "planning-control",
       "state-estimation",
       "off-road-vehicle",
-      "lab-robotic-arm",
       "drug-delivery-ml",
       "embedded-digital",
     ]);
     expect(
-      projects.slice(0, 2).map(({ id, no, year }) => ({ id, no, year }))
+      projects.slice(0, 4).map(({ id, no, year }) => ({ id, no, year }))
     ).toEqual([
-      { id: "planning-control", no: "01", year: "Spring 2026" },
-      { id: "state-estimation", no: "02", year: "Winter 2026" },
+      { id: "easy-a-radar", no: "01", year: "Jul 2026 — Present" },
+      {
+        id: "stock-research-dashboard",
+        no: "02",
+        year: "Jun 2026 — Present",
+      },
+      { id: "lab-robotic-arm", no: "03", year: "2024" },
+      { id: "planning-control", no: "04", year: "Spring 2026" },
     ]);
-    expect(projects[0].homeEvidence.src).toBe(
-      "/ece276b/pr1/doorkey-poster.png"
-    );
-    expect(projects[1].homeEvidence.src).toBe("/ece276a/1.png");
-    expect(projects[4].homeEvidence).toBeNull();
-    expect(projects[5].homeEvidence).toBeNull();
+    expect(projects.map(({ no }) => no)).toEqual([
+      "01", "02", "03", "04", "05", "06", "07", "08",
+    ]);
+    expect(
+      projects.slice(0, 2).map(({ id, role }) => ({ id, role }))
+    ).toEqual([
+      {
+        id: "easy-a-radar",
+        role: "Product design, data integration, and front-end engineering",
+      },
+      {
+        id: "stock-research-dashboard",
+        role: "Full-stack product engineering and research automation",
+      },
+    ]);
+
+    for (const [id, liveHref, githubHref] of [
+      [
+        "easy-a-radar",
+        "https://easy-a-radar.vercel.app/",
+        "https://github.com/Edwardwang66/ucsd-easy-a-radar",
+      ],
+      [
+        "stock-research-dashboard",
+        "https://stock-analysis-ten-phi.vercel.app/",
+        "https://github.com/Edwardwang66/stock-analysis",
+      ],
+    ]) {
+      const project = projects.find((record) => record.id === id);
+      expect(project.status).toBe("Live product");
+      expect(project.links).toEqual([
+        { label: "Live Site", href: liveHref },
+        { label: "GitHub", href: githubHref },
+      ]);
+      expect(project.storySections.map((section) => section.label)).toEqual([
+        "Overview",
+        "Problem",
+        "System",
+        "What shipped",
+        "Reliability and limits",
+      ]);
+    }
+
+    expect(
+      projects.find(({ id }) => id === "planning-control").homeEvidence.src
+    ).toBe("/ece276b/pr1/doorkey-poster.png");
+    expect(
+      projects.find(({ id }) => id === "state-estimation").homeEvidence.src
+    ).toBe("/ece276a/1.png");
+    expect(
+      projects.find(({ id }) => id === "drug-delivery-ml").homeEvidence
+    ).toBeNull();
+    expect(
+      projects.find(({ id }) => id === "embedded-digital").homeEvidence
+    ).toBeNull();
   });
 
   it("uses report-grounded course copy without exposing course PDFs", () => {
