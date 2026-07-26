@@ -13,17 +13,19 @@ import { socialIcons } from "./socialIcons.js";
 const CARD_GAP = 8;
 const VISIBLE_TOP_GAP = 8;
 
-function cardId(label) {
-  return `social-profile-card-${label.toLowerCase()}`;
+function cardId(label, idPrefix) {
+  return `${idPrefix}social-profile-card-${label.toLowerCase()}`;
 }
 
-function triggerId(label) {
-  return `social-profile-trigger-${label.toLowerCase()}`;
+function triggerId(label, idPrefix) {
+  return `${idPrefix}social-profile-trigger-${label.toLowerCase()}`;
 }
 
 export default function SocialLinks({
   socials,
   listClassName = "hero-socials",
+  profileCardPlacement = "auto",
+  idPrefix = "",
 }) {
   const profiles = useMemo(
     () => socials.filter(({ kind }) => kind === "profile-card"),
@@ -77,7 +79,9 @@ export default function SocialLinks({
       const visibleTop =
         Math.max(0, headerBottom, visualViewportTop) + VISIBLE_TOP_GAP;
       const aboveTop = rootRect.top - CARD_GAP - card.offsetHeight;
-      const placement = aboveTop >= visibleTop ? "above" : "below";
+      const automaticPlacement = aboveTop >= visibleTop ? "above" : "below";
+      const placement =
+        profileCardPlacement === "above" ? "above" : automaticPlacement;
       setCardLayouts((current) => ({
         ...current,
         [activeLabel]: { left, placement },
@@ -87,7 +91,7 @@ export default function SocialLinks({
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [activeLabel]);
+  }, [activeLabel, profileCardPlacement]);
 
   useEffect(() => {
     if (!activeLabel) return undefined;
@@ -168,10 +172,10 @@ export default function SocialLinks({
             <li key={social.label}>
               <button
                 ref={(node) => setTriggerRef(social.label, node)}
-                id={triggerId(social.label)}
+                id={triggerId(social.label, idPrefix)}
                 type="button"
                 aria-expanded={expanded}
-                aria-controls={cardId(social.label)}
+                aria-controls={cardId(social.label, idPrefix)}
                 onPointerDown={() => {
                   pointerFocusLabel.current = social.label;
                   focusOwnedLabel.current = null;
@@ -215,10 +219,10 @@ export default function SocialLinks({
           <section
             ref={(node) => setCardRef(social.label, node)}
             key={social.label}
-            id={cardId(social.label)}
+            id={cardId(social.label, idPrefix)}
             className="social-profile-card"
             role="region"
-            aria-labelledby={triggerId(social.label)}
+            aria-labelledby={triggerId(social.label, idPrefix)}
             aria-hidden={!open}
             data-state={open ? "open" : "closed"}
             data-placement={layout?.placement ?? "above"}

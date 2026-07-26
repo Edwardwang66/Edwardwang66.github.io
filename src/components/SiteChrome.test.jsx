@@ -68,13 +68,36 @@ describe("SiteChrome", () => {
     expect(header).toHaveClass("site-nav");
   });
 
-  it("keeps the footer to direct social links", () => {
-    renderChrome();
-    for (const label of ["GitHub", "LinkedIn", "Email"]) {
-      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
-    }
-    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Douyin" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "RedNote" })).toBeNull();
+  it("renders the six approved footer socials with native semantics", () => {
+    const { container } = renderChrome();
+    const footer = container.querySelector(".site-footer");
+    const controls = [
+      ...footer.querySelectorAll(".footer-socials > li > :is(a, button)"),
+    ];
+
+    expect(controls.map((control) => control.textContent)).toEqual([
+      "GitHub",
+      "LinkedIn",
+      "Email",
+      "Instagram",
+      "Douyin",
+      "RedNote",
+    ]);
+    expect(controls.slice(0, 4).every((node) => node.tagName === "A")).toBe(true);
+    expect(controls.slice(4).every((node) => node.tagName === "BUTTON")).toBe(
+      true
+    );
+    expect(
+      footer.querySelector("#footer-social-profile-card-douyin")
+    ).toHaveAttribute("data-placement", "above");
+    expect(
+      footer.querySelector("#footer-social-profile-card-rednote")
+    ).toHaveAttribute("data-placement", "above");
+    expect(
+      footer.querySelector("#footer-social-profile-trigger-douyin")
+    ).toHaveAttribute("aria-controls", "footer-social-profile-card-douyin");
+    expect(
+      footer.querySelector("#footer-social-profile-card-douyin")
+    ).toHaveAttribute("aria-labelledby", "footer-social-profile-trigger-douyin");
   });
 });

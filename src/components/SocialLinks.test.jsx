@@ -10,8 +10,8 @@ import { profile } from "../data/portfolio.js";
 import { setMediaQuery } from "../test/setup.js";
 import SocialLinks from "./SocialLinks.jsx";
 
-function renderSocials() {
-  return render(<SocialLinks socials={profile.socials} />);
+function renderSocials(props = {}) {
+  return render(<SocialLinks socials={profile.socials} {...props} />);
 }
 
 it("renders four links and two disclosure buttons in approved order", () => {
@@ -306,4 +306,59 @@ it("places a tall card below when it cannot clear the visible top inset", async 
   await user.click(douyin);
   expect(card).toHaveAttribute("data-placement", "below");
   expect(card.style.getPropertyValue("--social-card-left")).toBe("0px");
+});
+
+it("honors an explicit upward placement without changing auto placement", async () => {
+  setMediaQuery("(hover: hover) and (pointer: fine)", false);
+  const user = userEvent.setup();
+  const { container } = renderSocials({
+    profileCardPlacement: "above",
+    listClassName: "footer-socials",
+  });
+  const root = container.querySelector(".social-links");
+  const douyin = screen.getByRole("button", { name: "Douyin" });
+  const card = container.querySelector("#social-profile-card-douyin");
+
+  vi.spyOn(root, "getBoundingClientRect").mockReturnValue({
+    x: 40, left: 40, right: 304, width: 264,
+    y: 120, top: 120, bottom: 164, height: 44, toJSON() {},
+  });
+  vi.spyOn(douyin, "getBoundingClientRect").mockReturnValue({
+    x: 184, left: 184, right: 252, width: 68,
+    y: 120, top: 120, bottom: 164, height: 44, toJSON() {},
+  });
+  Object.defineProperties(card, {
+    offsetHeight: { configurable: true, value: 500 },
+    offsetWidth: { configurable: true, value: 264 },
+  });
+
+  await user.click(douyin);
+  expect(card).toHaveAttribute("data-placement", "above");
+  expect(card.style.getPropertyValue("--social-card-left")).toBe("0px");
+});
+
+it("namespaces profile controls so multiple instances keep unique IDs", () => {
+  const { container } = render(
+    <>
+      <SocialLinks socials={profile.socials} />
+      <SocialLinks socials={profile.socials} idPrefix="footer-" />
+    </>
+  );
+  const ids = [...container.querySelectorAll("[id]")].map(({ id }) => id);
+  const footerTrigger = container.querySelector(
+    "#footer-social-profile-trigger-douyin"
+  );
+  const footerCard = container.querySelector(
+    "#footer-social-profile-card-douyin"
+  );
+
+  expect(new Set(ids).size).toBe(ids.length);
+  expect(footerTrigger).toHaveAttribute(
+    "aria-controls",
+    "footer-social-profile-card-douyin"
+  );
+  expect(footerCard).toHaveAttribute(
+    "aria-labelledby",
+    "footer-social-profile-trigger-douyin"
+  );
 });
