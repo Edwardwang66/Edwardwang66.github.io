@@ -4,7 +4,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { vi } from "vitest";
 import { setMediaQuery } from "../test/setup.js";
 import { createRafClock } from "../test/rafClock.js";
@@ -221,6 +221,46 @@ describe("useMobileProjectActivation", () => {
     expect(onActivate).toHaveBeenCalledTimes(1);
     expect(onActivate).toHaveBeenCalledWith("02");
     reverse.unmount();
+
+    clock.restore();
+  });
+
+  it("resets the mobile scroll baseline after a desktop breakpoint transition", () => {
+    setMediaQuery("(max-width: 639px)", true);
+    Object.defineProperty(window, "innerHeight", {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
+    const clock = createRafClock();
+    clock.install();
+    const onActivate = vi.fn();
+
+    render(
+      <Harness
+        activeId="01"
+        onActivate={onActivate}
+        triggers={new Map([
+          ["01", nodeAt(1000)],
+          ["02", nodeAt(421)],
+        ])}
+        panels={new Map()}
+      />
+    );
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 800 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).not.toHaveBeenCalled();
+
+    act(() => setMediaQuery("(max-width: 639px)", false));
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 100 });
+    act(() => setMediaQuery("(max-width: 639px)", true));
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 220 });
+    fireEvent.scroll(window);
+    clock.advance(16);
+    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledWith("02");
 
     clock.restore();
   });

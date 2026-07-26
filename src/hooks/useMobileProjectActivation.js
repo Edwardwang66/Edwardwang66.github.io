@@ -40,8 +40,13 @@ export function useMobileProjectActivation({
   useEffect(() => {
     if (!mobile) {
       hasRebasedEntryRef.current = false;
+      lastScrollYRef.current = window.scrollY;
+      directionRef.current = 0;
       return undefined;
     }
+
+    lastScrollYRef.current = window.scrollY;
+    directionRef.current = 0;
 
     const measure = () => {
       frameRef.current = null;
