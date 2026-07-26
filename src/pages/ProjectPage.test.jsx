@@ -26,7 +26,7 @@ function renderProjectById(id) {
 describe("ProjectPage", () => {
   it("uses the approved technical-journal order and complete stack", () => {
     const { container, onBack, onOpenProject, nextProject, project } =
-      renderProject(0);
+      renderProjectById("planning-control");
     const title = screen.getByRole("heading", { level: 1, name: project.title });
     expect(title).toHaveAttribute("id", "project-title");
     expect(title).toHaveAttribute("tabindex", "-1");
@@ -86,8 +86,53 @@ describe("ProjectPage", () => {
     expect(container.querySelector(".more-evidence-body")).toBeNull();
   });
 
-  it("wraps the next project from 06 to 01", () => {
-    const { nextProject } = renderProject(5);
+  it.each(["easy-a-radar", "stock-research-dashboard"])(
+    "renders the complete product story for %s",
+    (id) => {
+      const { container, project } = renderProjectById(id);
+      const labels = [
+        "Overview",
+        "Problem",
+        "System",
+        "What shipped",
+        "Reliability and limits",
+        "Stack",
+        "Links",
+      ];
+
+      for (const label of labels) {
+        expect(
+          screen.getByRole("heading", { name: label })
+        ).toBeInTheDocument();
+      }
+      expect(textOrder(container, labels)).toBe(true);
+      expect(screen.getByRole("link", { name: /Live Site/ })).toHaveAttribute(
+        "href",
+        project.links[0].href
+      );
+      expect(screen.getByRole("link", { name: /GitHub/ })).toHaveAttribute(
+        "href",
+        project.links[1].href
+      );
+      expect(screen.queryByRole("heading", { name: "Context" })).toBeNull();
+    }
+  );
+
+  it("keeps the legacy four-section story for existing projects", () => {
+    renderProjectById("planning-control");
+    for (const heading of [
+      "Context",
+      "Challenge",
+      "Contribution",
+      "Outcome",
+    ]) {
+      expect(screen.getByRole("heading", { name: heading })).toBeInTheDocument();
+    }
+    expect(screen.queryByRole("heading", { name: "Problem" })).toBeNull();
+  });
+
+  it("wraps the last project back to the first", () => {
+    const { nextProject } = renderProject(projects.length - 1);
     expect(nextProject).toBe(projects[0]);
     expect(
       screen.getByRole("link", { name: new RegExp(projects[0].title) })

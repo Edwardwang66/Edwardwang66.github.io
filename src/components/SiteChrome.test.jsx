@@ -67,4 +67,14 @@ describe("SiteChrome", () => {
     expect(header).not.toHaveAttribute("data-scrolled");
     expect(header).toHaveClass("site-nav");
   });
+
+  it("keeps the footer to direct social links", () => {
+    renderChrome();
+    for (const label of ["GitHub", "LinkedIn", "Email"]) {
+      expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
+    }
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Douyin" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "RedNote" })).toBeNull();
+  });
 });

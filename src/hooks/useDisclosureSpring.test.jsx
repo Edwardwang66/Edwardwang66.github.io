@@ -4,8 +4,22 @@ import { vi } from "vitest";
 import { createRafClock } from "../test/rafClock.js";
 import { useDisclosureSpring } from "./useDisclosureSpring.js";
 
-function Harness({ activeId, reducedMotion = false }) {
-  const ids = useMemo(() => ["a", "b"], []);
+const TWO_IDS = ["a", "b"];
+const RAPID_RETARGET_IDS = [
+  "easy-a-radar",
+  "lab-robotic-arm",
+  "planning-control",
+];
+const HEIGHTS = {
+  a: "120",
+  b: "180",
+  "easy-a-radar": "120",
+  "lab-robotic-arm": "180",
+  "planning-control": "240",
+};
+
+function Harness({ activeId, reducedMotion = false, sourceIds = TWO_IDS }) {
+  const ids = useMemo(() => sourceIds, [sourceIds]);
   const { registerPanel, registerPanelContent } = useDisclosureSpring({
     ids,
     activeId,
@@ -15,7 +29,7 @@ function Harness({ activeId, reducedMotion = false }) {
   return ids.map((id) => (
     <div key={id} data-testid={`panel-${id}`} ref={registerPanel(id)}>
       <div
-        data-height={id === "a" ? "120" : "180"}
+        data-height={HEIGHTS[id]}
         ref={registerPanelContent(id)}
       >
         {id}
@@ -25,6 +39,28 @@ function Harness({ activeId, reducedMotion = false }) {
 }
 
 describe("useDisclosureSpring", () => {
+  it("reveals the incoming panel before measuring its content height", () => {
+    const measuredWhileHidden = [];
+    const height = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockImplementation(function readHeight() {
+        if (this.dataset.height === "180") {
+          measuredWhileHidden.push(this.parentElement.hidden);
+        }
+        return Number(this.dataset.height || 0);
+      });
+    const clock = createRafClock();
+    clock.install();
+    const { rerender } = render(<Harness activeId="a" />);
+
+    rerender(<Harness activeId="b" />);
+
+    expect(measuredWhileHidden).toEqual([false]);
+
+    height.mockRestore();
+    clock.restore();
+  });
+
   it("uses one interruptible frame loop and settles semantic visibility", () => {
     const height = vi
       .spyOn(HTMLElement.prototype, "scrollHeight", "get")
@@ -60,6 +96,42 @@ describe("useDisclosureSpring", () => {
     expect(panelB).toHaveAttribute("hidden");
     expect(panelB).toHaveAttribute("aria-hidden", "true");
     expect(panelB).toHaveAttribute("inert");
+
+    height.mockRestore();
+    clock.restore();
+  });
+
+  it("hides a superseded zero-height panel before the new target settles", () => {
+    const height = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockImplementation(function readHeight() {
+        return Number(this.dataset.height || 0);
+      });
+    const clock = createRafClock();
+    clock.install();
+    const { getByTestId, rerender } = render(
+      <Harness activeId="easy-a-radar" sourceIds={RAPID_RETARGET_IDS} />
+    );
+
+    rerender(
+      <Harness activeId="lab-robotic-arm" sourceIds={RAPID_RETARGET_IDS} />
+    );
+    expect(getByTestId("panel-lab-robotic-arm")).not.toHaveAttribute("hidden");
+
+    rerender(
+      <Harness activeId="planning-control" sourceIds={RAPID_RETARGET_IDS} />
+    );
+    clock.advance(16);
+
+    expect(clock.pending()).toBe(1);
+    expect(getByTestId("panel-lab-robotic-arm").style.height).toBe("0px");
+    expect(getByTestId("panel-lab-robotic-arm")).toHaveAttribute("hidden");
+    expect(getByTestId("panel-lab-robotic-arm")).toHaveAttribute("inert");
+    expect(getByTestId("panel-lab-robotic-arm")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+    expect(getByTestId("panel-planning-control").style.height).not.toBe("auto");
 
     height.mockRestore();
     clock.restore();

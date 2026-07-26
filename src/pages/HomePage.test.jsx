@@ -52,8 +52,19 @@ describe("HomePage", () => {
     );
     const heroSocials = container.querySelector(".hero-socials");
     expect(
-      within(heroSocials).getAllByRole("link").map((link) => link.textContent)
-    ).toEqual(["GitHub", "LinkedIn", "Email"]);
+      [...heroSocials.querySelectorAll(":scope > li > :is(a, button)")].map(
+        (control) => control.textContent
+      )
+    ).toEqual([
+      "GitHub",
+      "LinkedIn",
+      "Email",
+      "Instagram",
+      "Douyin",
+      "RedNote",
+    ]);
+    expect(within(heroSocials).getAllByRole("link")).toHaveLength(4);
+    expect(within(heroSocials).getAllByRole("button")).toHaveLength(2);
     expect(
       container.querySelector("#selected-experience").compareDocumentPosition(
         container.querySelector("#selected-work")
@@ -80,7 +91,7 @@ describe("HomePage", () => {
     );
   });
 
-  it("embeds the portrait naturally and opens the first project record", () => {
+  it("embeds the portrait naturally and opens Easy-A Radar as the first project record", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const onOpenProject = vi.fn();
     const { container } = render(

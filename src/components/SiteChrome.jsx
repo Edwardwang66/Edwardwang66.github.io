@@ -2,8 +2,13 @@ import { ArrowUpRight } from "lucide-react";
 import { profile } from "../data/portfolio.js";
 import { socialIcons } from "./socialIcons.js";
 
+const existingSocialLabels = new Set(["GitHub", "LinkedIn", "Email"]);
+
 export default function SiteChrome({ view, onNavigate, children }) {
   const workIsCurrent = view === "home" || view === "project";
+  const existingSocials = profile.socials.filter(({ label }) =>
+    existingSocialLabels.has(label)
+  );
 
   return (
     <>
@@ -55,11 +60,17 @@ export default function SiteChrome({ view, onNavigate, children }) {
             © {new Date().getFullYear()} {profile.name}. Built with care.
           </p>
           <ul aria-label="Social links">
-            {profile.socials.map((social) => {
+            {existingSocials.map((social) => {
               const Icon = socialIcons[social.icon];
+              const external = social.href.startsWith("http");
               return (
                 <li key={social.label}>
-                  <a href={social.href} aria-label={social.label}>
+                  <a
+                    href={social.href}
+                    aria-label={social.label}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noreferrer" : undefined}
+                  >
                     {Icon ? <Icon aria-hidden="true" /> : null}
                     <span>{social.label}</span>
                   </a>

@@ -6,19 +6,23 @@ import { setMediaQuery } from "../test/setup.js";
 import ProjectArchive from "./ProjectArchive.jsx";
 
 describe("ProjectArchive", () => {
-  it("renders six sibling trigger/panel pairs with exactly one open", () => {
+  it("renders eight sibling trigger/panel pairs with exactly one open", () => {
     setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const { container } = render(
       <ProjectArchive projects={projects} onOpenProject={vi.fn()} />
     );
     const triggers = container.querySelectorAll("[data-project-trigger]");
-    expect(triggers).toHaveLength(6);
+    expect(triggers).toHaveLength(8);
     expect(
       [...triggers].filter(
         (trigger) => trigger.getAttribute("aria-expanded") === "true"
       )
     ).toHaveLength(1);
-    expect(triggers[0]).toHaveAttribute("aria-expanded", "true");
+    expect(
+      container.querySelector(
+        '[data-project-trigger][data-project-id="easy-a-radar"]'
+      )
+    ).toHaveAttribute("aria-expanded", "true");
 
     for (const trigger of triggers) {
       const panel = container.querySelector(`#${trigger.getAttribute("aria-controls")}`);
@@ -27,6 +31,34 @@ describe("ProjectArchive", () => {
       expect(projectLink).not.toBeNull();
       expect(trigger.contains(projectLink)).toBe(false);
     }
+  });
+
+  it("keeps product actions outside the disclosure trigger", async () => {
+    const onOpenProject = vi.fn();
+    const user = userEvent.setup();
+    const { container } = render(
+      <ProjectArchive projects={projects} onOpenProject={onOpenProject} />
+    );
+    const panel = container.querySelector("#project-panel-easy-a-radar");
+    const trigger = container.querySelector(
+      '[data-project-trigger][data-project-id="easy-a-radar"]'
+    );
+
+    expect(within(trigger).getByText("Live product")).toBeInTheDocument();
+    const live = within(panel).getByRole("link", { name: "Live Site" });
+    const github = within(panel).getByRole("link", { name: "GitHub" });
+    expect(trigger.contains(live)).toBe(false);
+    expect(trigger.contains(github)).toBe(false);
+    expect(live).toHaveAttribute(
+      "href",
+      "https://easy-a-radar.vercel.app/"
+    );
+    expect(live).toHaveAttribute("target", "_blank");
+    expect(live).toHaveAttribute("rel", "noreferrer");
+
+    await user.click(live);
+    expect(onOpenProject).not.toHaveBeenCalled();
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
   it("switches by pointer and keyboard without closing the active row", async () => {
@@ -54,7 +86,49 @@ describe("ProjectArchive", () => {
     ).toHaveLength(1);
   });
 
-  it("hides the previous panel immediately without scheduling animation frames", () => {
+  it("keeps mobile selection single-open across sequential taps", async () => {
+    setMediaQuery("(prefers-reduced-motion: reduce)", true);
+    setMediaQuery("(max-width: 639px)", true);
+    const user = userEvent.setup();
+    const { container } = render(
+      <ProjectArchive projects={projects} onOpenProject={vi.fn()} />
+    );
+
+    const stock = container.querySelector(
+      '[data-project-trigger][data-project-id="stock-research-dashboard"]'
+    );
+    await user.click(stock);
+
+    expect(stock).toHaveAttribute("aria-expanded", "true");
+    expect(container.querySelector("#project-panel-easy-a-radar")).toHaveAttribute(
+      "hidden"
+    );
+    expect(
+      container.querySelector("#project-panel-stock-research-dashboard")
+    ).not.toHaveAttribute("hidden");
+
+    const roboticArm = container.querySelector(
+      '[data-project-trigger][data-project-id="lab-robotic-arm"]'
+    );
+    await user.click(roboticArm);
+
+    expect(roboticArm).toHaveAttribute("aria-expanded", "true");
+    expect(stock).toHaveAttribute("aria-expanded", "false");
+    expect(
+      [...container.querySelectorAll("[data-project-trigger]")].filter(
+        (trigger) => trigger.getAttribute("aria-expanded") === "true"
+      )
+    ).toHaveLength(1);
+    expect(
+      container.querySelector("#project-panel-stock-research-dashboard")
+    ).toHaveAttribute("hidden");
+    expect(
+      container.querySelector("#project-panel-lab-robotic-arm")
+    ).not.toHaveAttribute("hidden");
+  });
+
+  it("hides the previous panel immediately without scheduling animation frames under reduced motion", () => {
+    setMediaQuery("(prefers-reduced-motion: reduce)", true);
     const raf = vi.spyOn(window, "requestAnimationFrame");
     const { container } = render(
       <ProjectArchive projects={projects} onOpenProject={vi.fn()} />
@@ -62,7 +136,7 @@ describe("ProjectArchive", () => {
     const trigger02 = container.querySelector(
       '[data-project-id="lab-robotic-arm"][data-project-trigger]'
     );
-    const panel01 = container.querySelector("#project-panel-planning-control");
+    const panel01 = container.querySelector("#project-panel-easy-a-radar");
     const panel02 = container.querySelector("#project-panel-lab-robotic-arm");
 
     fireEvent.click(trigger02);
@@ -103,6 +177,8 @@ describe("ProjectArchive", () => {
     const onOpenProject = vi.fn();
     render(<ProjectArchive projects={projects} onOpenProject={onOpenProject} />);
     fireEvent.click(screen.getByRole("link", { name: /Open project/ }));
-    expect(onOpenProject).toHaveBeenCalledWith(projects[0]);
+    expect(onOpenProject).toHaveBeenCalledWith(
+      projects.find((project) => project.id === "easy-a-radar")
+    );
   });
 });

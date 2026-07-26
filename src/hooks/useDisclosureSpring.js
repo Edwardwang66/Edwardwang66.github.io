@@ -88,20 +88,21 @@ export function useDisclosureSpring({ ids, activeId, reducedMotion }) {
     }
 
     cancelFrame();
+    const activePanel = panelsRef.current.get(activeId);
+    if (activePanel) setPanelVisibility(activePanel, false);
+
     const heights = new Map();
     for (const id of ids) {
       heights.set(id, contentsRef.current.get(id)?.scrollHeight ?? 0);
     }
 
     controller.retarget(activeId);
-    const activePanel = panelsRef.current.get(activeId);
-    if (activePanel) setPanelVisibility(activePanel, false);
 
     for (const id of ids) {
       const panel = panelsRef.current.get(id);
       if (!panel) continue;
       const state = controller.get(id);
-      if (state.value > 0) setPanelVisibility(panel, false);
+      setPanelVisibility(panel, id !== activeId && state.value <= 0);
       panel.style.overflow = "hidden";
       panel.style.height = `${heights.get(id) * state.value}px`;
       panel.style.opacity = String(state.value);
@@ -122,6 +123,7 @@ export function useDisclosureSpring({ ids, activeId, reducedMotion }) {
         const panel = panelsRef.current.get(id);
         if (!panel) continue;
         const { value } = controller.get(id);
+        setPanelVisibility(panel, id !== activeId && value <= 0);
         panel.style.height = `${heights.get(id) * value}px`;
         panel.style.opacity = String(value);
         panel.style.transform = `translateY(${(1 - value) * 2}px)`;

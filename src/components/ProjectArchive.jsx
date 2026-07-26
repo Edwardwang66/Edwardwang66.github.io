@@ -1,9 +1,20 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useDisclosureSpring } from "../hooks/useDisclosureSpring.js";
+import { useMediaPreference } from "../hooks/useMediaPreference.js";
 import SafeImage from "./SafeImage.jsx";
 
 export default function ProjectArchive({ projects, onOpenProject }) {
   const [activeId, setActiveId] = useState(projects[0].id);
+  const ids = useMemo(() => projects.map((project) => project.id), [projects]);
+  const reducedMotion = useMediaPreference("(prefers-reduced-motion: reduce)");
+
+  const { registerPanel, registerPanelContent } = useDisclosureSpring({
+    ids,
+    activeId,
+    reducedMotion,
+  });
+
   const activate = useCallback((id) => {
     setActiveId((current) => (current === id ? current : id));
   }, []);
@@ -34,7 +45,15 @@ export default function ProjectArchive({ projects, onOpenProject }) {
                 <span className="project-title font-serif">{project.title}</span>
                 <span className="project-role">{project.role}</span>
               </span>
-              <span className="project-year">{project.year}</span>
+              <span className="project-meta">
+                {project.status ? (
+                  <span className="project-live-status">
+                    <span aria-hidden="true" />
+                    {project.status}
+                  </span>
+                ) : null}
+                <span className="project-year">{project.year}</span>
+              </span>
               <ArrowRight className="project-state-arrow" aria-hidden="true" />
             </button>
             <div
@@ -42,10 +61,12 @@ export default function ProjectArchive({ projects, onOpenProject }) {
               className="project-archive-panel"
               role="region"
               aria-labelledby={`project-trigger-${project.id}`}
-              aria-hidden={expanded ? undefined : "true"}
-              hidden={!expanded}
+              ref={registerPanel(project.id)}
             >
-              <div className="project-panel-content">
+              <div
+                className="project-panel-content"
+                ref={registerPanelContent(project.id)}
+              >
                 {project.homeEvidence ? (
                   <figure
                     className="archive-evidence"
@@ -83,6 +104,23 @@ export default function ProjectArchive({ projects, onOpenProject }) {
                     {project.homeEvidence?.heading ?? project.outcome}
                   </h3>
                   <p>{project.summary}</p>
+                  {project.links.length ? (
+                    <div
+                      className="project-panel-actions"
+                      aria-label={`${project.title} links`}
+                    >
+                      {project.links.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {link.label} <ArrowUpRight aria-hidden="true" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                   <a
                     href={`#project-${project.id}`}
                     onClick={(event) => {
