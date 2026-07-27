@@ -4,6 +4,11 @@ import { projects } from "../data/portfolio.js";
 import { setMediaQuery } from "../test/setup.js";
 import HomePage from "./HomePage.jsx";
 
+const bioyondRole =
+  "Forward Deployed Engineer Intern · Physical AI & Laboratory Automation";
+const experienceNote =
+  "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments. Taking end-to-end responsibility for the path from experimental intent and resource binding through simulation validation and physical execution, with emphasis on reliability, traceability, and human oversight.";
+
 describe("HomePage", () => {
   it("mounts one Curry companion inside the homepage boundary", () => {
     const { container } = render(<HomePage onOpenProject={vi.fn()} />);
@@ -20,7 +25,7 @@ describe("HomePage", () => {
 
     expect(
       screen.getByText(
-        "Pudong, Shanghai · Agentic AI Engineer Intern at Bioyond Robotics"
+        "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics"
       )
     ).toBeInTheDocument();
     expect(
@@ -80,6 +85,8 @@ describe("HomePage", () => {
     expect(records).toHaveLength(2);
     expect(records[0]).toHaveTextContent("Bioyond Robotics");
     expect(records[0]).toHaveTextContent("Jul 2026 — Present");
+    expect(records[0]).toHaveTextContent(bioyondRole);
+    expect(records[0]).toHaveTextContent(experienceNote);
     expect(records[1]).toHaveTextContent("c12.ai");
     expect(records[1]).toHaveTextContent("Jun 2024 — Aug 2024");
     expect(

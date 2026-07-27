@@ -2,6 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { profile } from "../data/portfolio.js";
 import AboutPage from "./AboutPage.jsx";
 
+const bioyondRole =
+  "Forward Deployed Engineer Intern · Physical AI & Laboratory Automation";
+const experienceNote =
+  "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments. Taking end-to-end responsibility for the path from experimental intent and resource binding through simulation validation and physical execution, with emphasis on reliability, traceability, and human oversight.";
+
 describe("AboutPage", () => {
   it("renders the approved opening, shared portrait, and complete biography", () => {
     const { container } = render(<AboutPage />);
@@ -32,10 +37,10 @@ describe("AboutPage", () => {
       text.indexOf("c12.ai")
     );
     for (const value of [
-      "Agentic AI Engineer Intern · AI for Science",
+      bioyondRole,
       "Jul 2026 — Present",
       "Pudong, Shanghai, China · On-site",
-      profile.experience[0].note,
+      experienceNote,
     ]) {
       expect(screen.getByText(value)).toBeInTheDocument();
     }

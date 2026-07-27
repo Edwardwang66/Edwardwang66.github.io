@@ -1,11 +1,37 @@
 import { profile, projects } from "./portfolio.js";
 
+const bioyondRole =
+  "Forward Deployed Engineer Intern · Physical AI & Laboratory Automation";
+const currentPracticeNote =
+  "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments—from experimental intent and resource binding through simulation validation and physical execution.";
+const experienceNote =
+  "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments. Taking end-to-end responsibility for the path from experimental intent and resource binding through simulation validation and physical execution, with emphasis on reliability, traceability, and human oversight.";
+
 describe("Original+ portfolio content", () => {
   it("features the two cv-aligned internships in the approved order", () => {
     expect(profile.positioning).toBe("Robotics · Agentic AI · AI for Science");
     expect(profile.aboutHeading).toBe(
       "I'm Edward Wang. I work across robotics, Agentic AI, and AI for Science."
     );
+    expect(profile.location).toBe(
+      "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics"
+    );
+    expect(profile.currentPractice).toMatchObject({
+      year: "Jul 2026 — Present",
+      location: "Pudong, Shanghai, China · On-site",
+      org: "Bioyond Robotics",
+      role: bioyondRole,
+      note: currentPracticeNote,
+    });
+    expect(profile.experience[0]).toMatchObject({
+      year: "Jul 2026 — Present",
+      role: bioyondRole,
+      org: "Bioyond Robotics",
+      location: "Pudong, Shanghai, China · On-site",
+      website: "https://www.bioyond.com/en/",
+      featured: true,
+      note: experienceNote,
+    });
     expect(
       profile.experience
         .filter((record) => record.featured)
@@ -19,7 +45,7 @@ describe("Original+ portfolio content", () => {
     ).toEqual([
       {
         org: "Bioyond Robotics",
-        role: "Agentic AI Engineer Intern · AI for Science",
+        role: bioyondRole,
         year: "Jul 2026 — Present",
         location: "Pudong, Shanghai, China · On-site",
         website: "https://www.bioyond.com/en/",

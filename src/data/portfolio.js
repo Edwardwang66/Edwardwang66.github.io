@@ -2,7 +2,8 @@ export const profile = {
   name: "Edward Wang",
   initials: "EW",
   role: "Robotics, Agentic AI & AI for Science",
-  location: "Pudong, Shanghai · Agentic AI Engineer Intern at Bioyond Robotics",
+  location:
+    "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics",
   positioning: "Robotics · Agentic AI · AI for Science",
   tagline: "I build intelligent systems that carry intent into reliable execution.",
   aboutHeading:
@@ -13,9 +14,10 @@ export const profile = {
     year: "Jul 2026 — Present",
     location: "Pudong, Shanghai, China · On-site",
     org: "Bioyond Robotics",
-    role: "Agentic AI Engineer Intern · AI for Science",
+    role:
+      "Forward Deployed Engineer Intern · Physical AI & Laboratory Automation",
     note:
-      "Designing and developing an agentic AI platform for scientific workflow automation. Building modular planning, orchestration, validation and feedback mechanisms for executable, adaptive and auditable laboratory processes.",
+      "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments—from experimental intent and resource binding through simulation validation and physical execution.",
   },
   bio: [
     "I'm an Electrical and Computer Engineering graduate from UC San Diego, continuing into the M.S. program in Intelligent Systems, Robotics & Control in Fall 2026.",
@@ -102,13 +104,14 @@ export const profile = {
   experience: [
     {
       year: "Jul 2026 — Present",
-      role: "Agentic AI Engineer Intern · AI for Science",
+      role:
+        "Forward Deployed Engineer Intern · Physical AI & Laboratory Automation",
       org: "Bioyond Robotics",
       location: "Pudong, Shanghai, China · On-site",
       website: "https://www.bioyond.com/en/",
       featured: true,
       note:
-        "Contributing to an agentic AI platform for scientific workflow automation—building modular planning, orchestration, validation and feedback mechanisms that translate scientific intent into executable, verifiable and adaptive laboratory processes.",
+        "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments. Taking end-to-end responsibility for the path from experimental intent and resource binding through simulation validation and physical execution, with emphasis on reliability, traceability, and human oversight.",
     },
     {
       year: "Oct 2024 — Present",
