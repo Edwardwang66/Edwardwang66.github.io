@@ -232,6 +232,38 @@ test("text-only projects have no fabricated media surface", async ({ page }) => 
   }
 });
 
+test("PR2 containment does not reframe ECE 191 technical images or ECE 276A GIFs", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await openProject(page, "off-road-vehicle");
+
+  const ece191Image = page
+    .locator(
+      '.selected-evidence [data-media-kind="image"][data-media-role="technical"] img'
+    )
+    .first();
+  await expect(ece191Image).toBeVisible();
+  const ece191Box = await mediaBox(ece191Image);
+  expect(ece191Box.width / ece191Box.height).toBeCloseTo(954 / 702, 2);
+
+  await page.getByRole("button", { name: "Back to Work" }).click();
+  await openProject(page, "state-estimation");
+  const gifs = page.locator(
+    '.selected-evidence [data-media-kind="gif"][data-media-role="technical"] img'
+  );
+  await expect(gifs).toHaveCount(3);
+  for (let index = 0; index < 3; index += 1) {
+    const gif = gifs.nth(index);
+    const box = await mediaBox(gif);
+    expect(box.width / box.height).toBeCloseTo(16 / 9, 2);
+    expect(await gif.evaluate((image) => getComputedStyle(image).aspectRatio)).not.toBe(
+      "13 / 7"
+    );
+  }
+});
+
 for (const viewport of [
   { name: "desktop", width: 1440, height: 900 },
   { name: "mobile", width: 390, height: 844 },

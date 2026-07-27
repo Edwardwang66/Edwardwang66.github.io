@@ -71,7 +71,11 @@ export default function ProjectPage({
   const productStory = Boolean(project.storySections?.length);
 
   return (
-    <main className="page-shell project-page" aria-labelledby="project-title">
+    <main
+      className="page-shell project-page"
+      data-project-id={project.id}
+      aria-labelledby="project-title"
+    >
       <button
         type="button"
         className="project-back compact-control"

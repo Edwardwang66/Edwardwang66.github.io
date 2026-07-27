@@ -834,8 +834,8 @@ a {
   height: auto;
 }
 
-.archive-evidence[data-media-role="technical"] img,
-.project-media[data-media-kind="image"][data-media-role="technical"] img {
+#project-panel-state-estimation .archive-evidence[data-media-role="technical"] img,
+.project-page[data-project-id="state-estimation"] .lead-evidence .project-media[data-media-kind="image"][data-media-role="technical"] img {
   width: 100%;
   aspect-ratio: 13 / 7;
 }
@@ -1322,7 +1322,9 @@ a {
 }
 
 .project-media[data-media-role="technical"] img {
+  width: auto;
   max-width: 100%;
+  height: auto;
 }
 
 .project-media figcaption {
