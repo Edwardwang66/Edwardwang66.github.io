@@ -239,14 +239,25 @@ test("PR2 containment does not reframe ECE 191 technical images or ECE 276A GIFs
   await page.goto("/");
   await openProject(page, "off-road-vehicle");
 
-  const ece191Image = page
-    .locator(
-      '.selected-evidence [data-media-kind="image"][data-media-role="technical"] img'
-    )
-    .first();
-  await expect(ece191Image).toBeVisible();
-  const ece191Box = await mediaBox(ece191Image);
-  expect(ece191Box.width / ece191Box.height).toBeCloseTo(954 / 702, 2);
+  const ece191Images = page.locator(
+    '.selected-evidence [data-media-kind="image"][data-media-role="technical"] img'
+  );
+  await expect(ece191Images).toHaveCount(2);
+  for (const [index, width, height] of [
+    [0, 954, 702],
+    [1, 548, 326],
+  ]) {
+    const image = ece191Images.nth(index);
+    await expect(image).toBeVisible();
+    expect(
+      await image.evaluate((node) => ({
+        naturalWidth: node.naturalWidth,
+        naturalHeight: node.naturalHeight,
+      }))
+    ).toEqual({ naturalWidth: width, naturalHeight: height });
+    const box = await mediaBox(image);
+    expect(box.width / box.height).toBeCloseTo(width / height, 2);
+  }
 
   await page.getByRole("button", { name: "Back to Work" }).click();
   await openProject(page, "state-estimation");
