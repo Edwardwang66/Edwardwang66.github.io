@@ -834,6 +834,12 @@ a {
   height: auto;
 }
 
+.archive-evidence[data-media-role="technical"] img,
+.project-media[data-media-kind="image"][data-media-role="technical"] img {
+  width: 100%;
+  aspect-ratio: 13 / 7;
+}
+
 .archive-evidence[data-media-role="live-product"] {
   position: relative;
   width: min(100%, 520px);
@@ -1316,9 +1322,7 @@ a {
 }
 
 .project-media[data-media-role="technical"] img {
-  width: auto;
   max-width: 100%;
-  height: auto;
 }
 
 .project-media figcaption {

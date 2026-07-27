@@ -21,15 +21,6 @@ const expectedMedia = [
   ],
 ];
 
-const triptychPath = "public/ece276a/ece276a-editorial-triptych.png";
-const triptychMaxBytes = 2 * 1024 * 1024;
-const formerTopStripGlyphs = [
-  [46, 53],
-  [563, 79],
-  [1003, 76],
-  [1035, 156],
-];
-
 describe("ECE 276A visualization contract", () => {
   it("keeps all authored assets valid and bounded", async () => {
     for (const [path, kind, maxBytes] of assets) {
@@ -47,34 +38,16 @@ describe("ECE 276A visualization contract", () => {
     }
   });
 
-  it("keeps the editorial triptych at its exact production contract", async () => {
-    const bytes = await readFile(triptychPath);
-    const file = await stat(triptychPath);
-    const metadata = await sharp(triptychPath).metadata();
+  it("keeps the selected PR2 poster at its authored dimensions", async () => {
+    const metadata = await sharp(
+      "public/ece276a/posters/pr2-lidar-slam.png"
+    ).metadata();
 
-    expect([...bytes.subarray(0, 8)]).toEqual([
-      137, 80, 78, 71, 13, 10, 26, 10,
-    ]);
     expect(metadata).toMatchObject({
       format: "png",
-      width: 1560,
-      height: 840,
+      width: 960,
+      height: 540,
     });
-    expect(file.size).toBeLessThanOrEqual(triptychMaxBytes);
-  });
-
-  it("removes source text strips from all three triptych panels", async () => {
-    const { data, info } = await sharp(triptychPath)
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-
-    for (const [x, y] of formerTopStripGlyphs) {
-      const offset = (y * info.width + x) * info.channels;
-      expect(Math.min(...data.subarray(offset, offset + 3))).toBeGreaterThan(
-        80
-      );
-    }
   });
 
   it("shows exactly three GIFs with exact poster pairs and no reports", () => {

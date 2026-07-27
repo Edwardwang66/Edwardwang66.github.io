@@ -236,7 +236,7 @@ for (const viewport of [
   { name: "desktop", width: 1440, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ]) {
-  test(`ECE 276A triptych stays complete in archive and detail on ${viewport.name}`, async ({
+  test(`ECE 276A PR2 poster stays complete in archive and detail on ${viewport.name}`, async ({
     page,
   }) => {
     const consoleErrors = [];
@@ -250,7 +250,7 @@ for (const viewport of [
       .click();
 
     const archiveImage = page.locator(
-      '#project-panel-state-estimation img[src="/ece276a/ece276a-editorial-triptych.png"]'
+      '#project-panel-state-estimation img[src="/ece276a/posters/pr2-lidar-slam.png"]'
     );
     await expect(archiveImage).toBeVisible();
     expect(
@@ -260,8 +260,8 @@ for (const viewport of [
         objectFit: getComputedStyle(image).objectFit,
       }))
     ).toEqual({
-      naturalWidth: 1560,
-      naturalHeight: 840,
+      naturalWidth: 960,
+      naturalHeight: 540,
       objectFit: "contain",
     });
     const archiveBox = await mediaBox(archiveImage);
@@ -270,7 +270,7 @@ for (const viewport of [
 
     await openProject(page, "state-estimation");
     const leadImage = page.locator(
-      '.lead-evidence img[src="/ece276a/ece276a-editorial-triptych.png"]'
+      '.lead-evidence img[src="/ece276a/posters/pr2-lidar-slam.png"]'
     );
     await expect(leadImage).toBeVisible();
     expect(
@@ -280,8 +280,8 @@ for (const viewport of [
         objectFit: getComputedStyle(image).objectFit,
       }))
     ).toEqual({
-      naturalWidth: 1560,
-      naturalHeight: 840,
+      naturalWidth: 960,
+      naturalHeight: 540,
       objectFit: "contain",
     });
     const leadBox = await mediaBox(leadImage);
@@ -291,8 +291,8 @@ for (const viewport of [
   });
 }
 
-test("a failed ECE 276A triptych keeps a descriptive fallback", async ({ page }) => {
-  await page.route("**/ece276a/ece276a-editorial-triptych.png", (route) =>
+test("a failed ECE 276A PR2 poster keeps a descriptive fallback", async ({ page }) => {
+  await page.route("**/ece276a/posters/pr2-lidar-slam.png", (route) =>
     route.abort()
   );
   await page.goto("/");
@@ -301,7 +301,7 @@ test("a failed ECE 276A triptych keeps a descriptive fallback", async ({ page })
     .click();
   await expect(
     page.getByRole("img", {
-      name: /orientation.*LiDAR mapping.*visual-inertial SLAM.*image unavailable/i,
+      name: /LiDAR SLAM occupancy map with corrected robot trajectory.*image unavailable/i,
     })
   ).toBeVisible();
 });

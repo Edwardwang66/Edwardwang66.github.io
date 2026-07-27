@@ -181,16 +181,21 @@ describe("Original+ portfolio content", () => {
     for (const evidence of [estimation.homeEvidence, estimation.leadEvidence]) {
       expect(evidence).toMatchObject({
         kind: "image",
-        src: "/ece276a/ece276a-editorial-triptych.png",
-        width: 1560,
-        height: 840,
+        src: "/ece276a/posters/pr2-lidar-slam.png",
+        alt: "LiDAR SLAM occupancy map with corrected robot trajectory",
+        width: 960,
+        height: 540,
         role: "technical",
         fit: "contain",
       });
-      expect(evidence.alt).toMatch(
-        /orientation.*LiDAR mapping.*visual-inertial SLAM/i
-      );
     }
+    expect(estimation.homeEvidence).toMatchObject({
+      caption: "PR2 · Submap ICP trajectory correction and occupancy-grid mapping.",
+      heading: "LiDAR mapping refined through scan-to-submap alignment.",
+    });
+    expect(estimation.leadEvidence.caption).toBe(
+      "Submap ICP trajectory correction while sampled LiDAR scans build the occupancy grid."
+    );
     expect(
       projects.find(({ id }) => id === "drug-delivery-ml").homeEvidence
     ).toBeNull();
