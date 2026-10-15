@@ -25,7 +25,7 @@ describe("HomePage", () => {
 
     expect(
       screen.getByText(
-        "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics"
+        "La Jolla, California · M.S. Student at UC San Diego"
       )
     ).toBeInTheDocument();
     expect(

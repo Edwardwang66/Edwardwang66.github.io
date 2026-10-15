@@ -8,13 +8,19 @@ const experienceNote =
   "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments. Taking end-to-end responsibility for the path from experimental intent and resource binding through simulation validation and physical execution, with emphasis on reliability, traceability, and human oversight.";
 
 describe("Original+ portfolio content", () => {
+  it("presents Edward's current La Jolla graduate-student status", () => {
+    expect(profile.location).toBe(
+      "La Jolla, California · M.S. Student at UC San Diego"
+    );
+    expect(profile.bio[0]).toBe(
+      "I'm an M.S. student in Electrical and Computer Engineering at UC San Diego, focused on Intelligent Systems, Robotics & Control."
+    );
+  });
+
   it("features the two cv-aligned internships in the approved order", () => {
     expect(profile.positioning).toBe("Robotics · Agentic AI · AI for Science");
     expect(profile.aboutHeading).toBe(
       "I'm Edward Wang. I work across robotics, Agentic AI, and AI for Science."
-    );
-    expect(profile.location).toBe(
-      "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics"
     );
     expect(profile.currentPractice).toMatchObject({
       year: "Jul 2026 — Present",

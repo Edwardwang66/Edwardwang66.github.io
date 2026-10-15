@@ -2,8 +2,7 @@ export const profile = {
   name: "Edward Wang",
   initials: "EW",
   role: "Robotics, Agentic AI & AI for Science",
-  location:
-    "Pudong, Shanghai · Forward Deployed Engineer Intern at Bioyond Robotics",
+  location: "La Jolla, California · M.S. Student at UC San Diego",
   positioning: "Robotics · Agentic AI · AI for Science",
   tagline: "I build intelligent systems that carry intent into reliable execution.",
   aboutHeading:
@@ -20,7 +19,7 @@ export const profile = {
       "Deploying agentic AI, digital-twin, and laboratory automation systems into real-world scientific environments—from experimental intent and resource binding through simulation validation and physical execution.",
   },
   bio: [
-    "I'm an Electrical and Computer Engineering graduate from UC San Diego, continuing into the M.S. program in Intelligent Systems, Robotics & Control in Fall 2026.",
+    "I'm an M.S. student in Electrical and Computer Engineering at UC San Diego, focused on Intelligent Systems, Robotics & Control.",
     "My work spans agentic scientific workflows, perception, planning, control, and the long tail of failures that appear when software meets physical systems—calibration, latency, drift, execution mismatch, and traceability.",
     "I care about systems that are reliable enough to inspect, adapt, and hand to another person.",
   ],
